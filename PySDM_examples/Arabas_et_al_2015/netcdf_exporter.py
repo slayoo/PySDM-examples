@@ -20,7 +20,8 @@ class NetCDFExporter:
         ncdf.createDimension("T", len(self.settings.output_steps))
         for index, label in enumerate(self.XZ):
             ncdf.createDimension(label, self.settings.grid[index])
-        ncdf.createDimension("ParticleVolume", len(self.settings.v_bins) - 1)
+        ncdf.createDimension("ParticleVolume",
+                             len(self.settings.formulae.trivia.volume(self.settings.r_bins_edges)) - 1)
 
     def _create_variables(self, ncdf):
         self.vars["T"] = ncdf.createVariable("T", "f", ["T"])
@@ -28,7 +29,8 @@ class NetCDFExporter:
 
         for index, label in enumerate(self.XZ):
             self.vars[label] = ncdf.createVariable(label, "f", (label,))
-            self.vars[label][:] = (self.settings.size[index] / self.settings.grid[index]) * (1 / 2 + np.arange(self.settings.grid[index]))
+            self.vars[label][:] = ((self.settings.size[index] / self.settings.grid[index])
+                                   * (1 / 2 + np.arange(self.settings.grid[index])))
             self.vars[label].units = "metres"
 
         # TODO #340 ParticleVolume var

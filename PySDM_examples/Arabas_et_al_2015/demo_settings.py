@@ -86,7 +86,7 @@ class DemoSettings:
         }
 
         # TODO #37
-        self.v_bins = settings.v_bins
+        self.r_bins_edges = settings.r_bins_edges
         self.size = settings.size
         self.condensation_substeps = settings.condensation_substeps
         self.condensation_dt_cond_range = settings.condensation_dt_cond_range

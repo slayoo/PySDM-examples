@@ -45,7 +45,7 @@ class Simulation:
         builder.add_dynamic(condensation)
 
         products = [
-            PySDM_products.ParticlesWetSizeSpectrum(v_bins=self.formulae.trivia.volume(settings.r_bins_edges)),
+            PySDM_products.ParticlesWetSizeSpectrum(radius_bins_edges=settings.r_bins_edges),
             PySDM_products.CondensationTimestepMin(),
             PySDM_products.CondensationTimestepMax(),
             PySDM_products.RipeningRate()

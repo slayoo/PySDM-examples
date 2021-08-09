@@ -50,9 +50,9 @@ class Settings:
         self.dt = 5 * si.second
         self.spin_up_time = 1 * si.hour
 
-        self.v_bins = self.formulae.trivia.volume(
-            np.logspace(np.log10(0.001 * si.micrometre), np.log10(100 * si.micrometre), 101, endpoint=True)
-        )
+        self.r_bins_edges = np.logspace(np.log10(0.001 * si.micrometre),
+                                        np.log10(100 * si.micrometre),
+                                        101, endpoint=True)
 
         self.mode_1 = spectra.Lognormal(
             norm_factor=60 / si.centimetre ** 3 / const.rho_STP,

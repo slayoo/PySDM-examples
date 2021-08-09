@@ -44,8 +44,9 @@ class Simulation:
         if products is not None:
             products = list(products)
         products = products or [
-            PySDM_products.ParticlesWetSizeSpectrum(v_bins=self.settings.v_bins, normalise_by_dv=True),
-            PySDM_products.ParticlesDrySizeSpectrum(v_bins=self.settings.v_bins, normalise_by_dv=True),  # Note: better v_bins
+            # Note: consider better radius_bins_edges
+            PySDM_products.ParticlesWetSizeSpectrum(radius_bins_edges=self.settings.r_bins_edges, normalise_by_dv=True),
+            PySDM_products.ParticlesDrySizeSpectrum(radius_bins_edges=self.settings.r_bins_edges, normalise_by_dv=True),
             PySDM_products.TotalParticleConcentration(),
             PySDM_products.TotalParticleSpecificConcentration(),
             PySDM_products.AerosolConcentration(radius_threshold=self.settings.aerosol_radius_threshold),

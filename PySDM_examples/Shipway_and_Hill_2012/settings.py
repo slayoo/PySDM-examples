@@ -10,7 +10,7 @@ from pystrict import strict
 
 @strict
 class Settings:
-    def __init__(self, n_sd_per_gridbox: int, w_1: float = 2*si.m/si.s, dt: float = 1*si.s,
+    def __init__(self, n_sd_per_gridbox: int, rho_times_w_1: float = 2*si.m/si.s, dt: float = 1*si.s,
                  dz: float = 25*si.m, precip: bool = True):
         self.formulae = Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox
@@ -29,7 +29,7 @@ class Settings:
         self.t_max = 60 * si.minutes
 
         t_1 = 600 * si.s
-        self.w = lambda t: w_1 * np.sin(np.pi * t/t_1) if t < t_1 else 0
+        self.rho_times_w = lambda t: rho_times_w_1 * np.sin(np.pi * t/t_1) if t < t_1 else 0
 
         self._th = interp1d((0, 740, 3260), (297.9, 297.9, 312.66))
         self.qv = interp1d((0, 740, 3260), (.015, .0138, .0024))  # TODO #414: is initial particle water included in initial qv? (q1 logic)
@@ -61,7 +61,7 @@ class Settings:
         self.condensation_adaptive = True
         self.coalescence_adaptive = True
 
-        self.v_bin_edges = self.formulae.trivia.volume(np.logspace(np.log10(0.001 * si.um), np.log10(100 * si.um), 101, endpoint=True))
+        self.r_bins_edges = np.logspace(np.log10(0.001 * si.um), np.log10(100 * si.um), 101, endpoint=True)
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
 

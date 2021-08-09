@@ -23,7 +23,7 @@ def run(settings, backend=CPU, observers=()):
     attributes['volume'], attributes['n'] = ConstantMultiplicity(settings.spectrum).sample(settings.n_sd)
     coalescence = Coalescence(settings.kernel, adaptive=settings.adaptive)
     builder.add_dynamic(coalescence)
-    products = [ParticlesVolumeSpectrum(), WallTime()]
+    products = [ParticlesVolumeSpectrum(settings.radius_bins_edges), WallTime()]
     core = builder.build(attributes, products)
     if hasattr(settings, 'u_term') and 'terminal velocity' in core.particles.attributes:
         core.particles.attributes['terminal velocity'].approximation = settings.u_term(core)
@@ -35,7 +35,7 @@ def run(settings, backend=CPU, observers=()):
     core.products['wall_time'].reset()
     for step in settings.output_steps:
         core.run(step - core.n_steps)
-        vals[step] = core.products['dv/dlnr'].get(settings.radius_bins_edges)
+        vals[step] = core.products['dv/dlnr'].get()[0]
         vals[step][:] *= settings.rho
 
     exec_time = core.products['wall_time'].get()

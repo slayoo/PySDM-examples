@@ -43,7 +43,7 @@ class DemoViewer:
             if len(val.shape) == 2
         ]
 
-        r_bins = self.settings.formulae.trivia.radius(volume=self.settings.v_bins)
+        r_bins = self.settings.r_bins_edges.copy()
         const.convert_to(r_bins, const.si.micrometres)
         self.spectrumOutput = Output()
         with self.spectrumOutput:
