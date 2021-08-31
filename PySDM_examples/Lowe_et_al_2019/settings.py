@@ -11,6 +11,7 @@ class Settings:
     def __init__(self, dt: float, n_sd_per_mode: int,
                  aerosol: _Aerosol,
                  model: str,
+                 w: float,
                  spectral_sampling: spec_sampling.SpectralSampling,
                  ):
         assert model in ('bulk', 'film')
@@ -23,7 +24,7 @@ class Settings:
         self.output_interval = 10 * si.s
         self.dt = dt
 
-        self.w = .32 * si.m / si.s
+        self.w = w
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 980 * si.mbar
