@@ -1,5 +1,5 @@
 pytest
 nbconvert
 Jinja2<3.0.0  # https://github.com/jupyter/nbconvert/issues/1568 
-PySDM @ git+https://github.com/slayoo/PySDM@93be081#egg=PySDM
+PySDM @ git+https://github.com/slayoo/PySDM@cef2e32#egg=PySDM
 PyMPDATA @ git+https://github.com/atmos-cloud-sim-uj/PyMPDATA@9445f04#egg=PyMPDATA

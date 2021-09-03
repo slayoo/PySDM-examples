@@ -39,8 +39,7 @@ class Settings:
 
         self.mass_of_dry_air = 44
         
-        self.dry_radius_bins_edges = np.logspace(np.log10(.01 * si.um), np.log10(10 * si.um), 51, endpoint=True) / 2
-        self.wet_radius_bins_edges = np.logspace(np.log10(.1 * si.um), np.log10(100 * si.um), 51, endpoint=True) / 2
+        self.wet_radius_bins_edges = np.logspace(np.log10(4 * si.um), np.log10(12 * si.um), 128+1, endpoint=True)
 
     @property
     def rho0(self):
