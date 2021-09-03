@@ -82,9 +82,8 @@ class Simulation:
 
     def run(self):
         output = {k: [] for k in self.core.products.keys()}
-        self._save_scalars(output)
-        for _ in range(0, self.settings.nt+1, self.settings.steps_per_output_interval):
-            self.core.run(steps=self.settings.steps_per_output_interval)
+        for step in self.settings.output_steps:
+            self.core.run(step - self.core.n_steps)
             self._save_scalars(output)
         self._save_spectrum(output)
         return output
