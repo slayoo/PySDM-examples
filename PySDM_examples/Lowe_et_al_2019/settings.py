@@ -11,8 +11,8 @@ class Settings:
     def __init__(self, dt: float, n_sd_per_mode: int,
                  aerosol: _Aerosol,
                  model: str,
-                 w: float,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
+                 w: float = 0.32 * si.m / si.s,
                  ):
         assert model in ('bulk', 'film')
         self.model = model
