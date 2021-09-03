@@ -43,7 +43,7 @@ ionic_dissociation_phi = {
 
 def volume_fractions(mass_fractions: dict):
     volume_fractions = {
-        k: (mass_fractions[k] / densities[k]) / np.sum(
+        k: (mass_fractions[k] / densities[k]) / sum(
             mass_fractions[i] / densities[i] for i in compounds
         ) for k in compounds
     }
@@ -51,7 +51,7 @@ def volume_fractions(mass_fractions: dict):
 
 def f_org_volume(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
-    return np.sum(is_organic[k] * volfrac[k] for k in compounds)
+    return sum(is_organic[k] * volfrac[k] for k in compounds)
 
 def kappa(mass_fractions: dict):
     kappa = {}
@@ -60,14 +60,14 @@ def kappa(mass_fractions: dict):
         molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
 
         _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
-        volume_fractions_of_just_inorg = {k:_masked[k] / np.sum(list(_masked.values())) for k in compounds}
+        volume_fractions_of_just_inorg = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
 
         if model == 'film':
-            ns_per_vol = (1 - f_org_volume(mass_fractions))  * np.sum(
+            ns_per_vol = (1 - f_org_volume(mass_fractions))  * sum(
                 ionic_dissociation_phi[i] * volume_fractions_of_just_inorg[i] / molar_volumes[i] for i in compounds
             )
         elif model == 'bulk':
-            ns_per_vol = np.sum(ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i] for i in compounds)
+            ns_per_vol = sum(ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i] for i in compounds)
         else:
             raise AssertionError()
         kappa[model] = ns_per_vol * const.Mv / const.rho_w
