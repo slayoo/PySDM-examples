@@ -1,8 +1,3 @@
-"""
-Created at 23.04.2020
-"""
-
-
 from PySDM.backends import CPU
 from PySDM.builder import Builder
 from PySDM.dynamics import AmbientThermodynamics

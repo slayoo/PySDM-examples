@@ -19,7 +19,7 @@ class Simulation:
         builder.set_environment(env)
 
         attributes = {
-            'dry volume inorganic':np.empty(0),
+            'dry volume':np.empty(0),
             'dry volume organic':np.empty(0),
             'kappa times dry volume':np.empty(0),
             'n': np.ndarray(0)
@@ -29,7 +29,7 @@ class Simulation:
             n_in_dv /= (settings.rho0 / settings.mass_of_dry_air)
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
             attributes['n'] = np.append(attributes['n'], n_in_dv)
-            attributes['dry volume inorganic'] = np.append(attributes['dry volume inorganic'], (1 - mode['f_org']) * v_dry)
+            attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
             attributes['dry volume organic'] = np.append(attributes['dry volume organic'], mode['f_org'] * v_dry)
             attributes['kappa times dry volume'] = np.append(attributes['kappa times dry volume'], v_dry * mode['kappa'][settings.model])
         for attribute in attributes.values():
@@ -46,12 +46,15 @@ class Simulation:
             significant=5
         )
         r_wet = r_wet_init(
-            r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume inorganic']+attributes['dry volume organic']),
+            r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
             environment=env,
             kappa_times_dry_volume=attributes['kappa times dry volume'],
-            f_org=attributes['dry volume organic']/(attributes['dry volume organic']+attributes['dry volume inorganic'])
+            f_org=attributes['dry volume organic'] / attributes['dry volume']
         )
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
+
+        if settings.model == 'bulk':
+            del attributes['dry volume organic']
 
         builder.add_dynamic(AmbientThermodynamics())
         builder.add_dynamic(Condensation())

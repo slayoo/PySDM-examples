@@ -42,9 +42,8 @@ class Simulation:
         ))
         attributes = {}
         r_dry = np.array([settings.r_dry])
-        attributes['dry volume inorganic'] = settings.formulae.trivia.volume(radius=r_dry)
-        attributes['dry volume organic'] = np.zeros_like(r_dry)
-        attributes['kappa times dry volume'] = attributes['dry volume inorganic'] * settings.kappa
+        attributes['dry volume'] = settings.formulae.trivia.volume(radius=r_dry)
+        attributes['kappa times dry volume'] = attributes['dry volume'] * settings.kappa
         attributes['n'] = np.array([settings.n_in_dv], dtype=np.int64)
         environment = builder.core.environment
         r_wet = r_wet_init(r_dry, environment,
