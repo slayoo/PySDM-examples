@@ -75,7 +75,7 @@ class _ImagePlot(_Plot):
                                  extent=(*xlim, *zlim),
                                  cmap=cmap,
                                  norm=matplotlib.colors.LogNorm() if product_scale == 'log' and np.isfinite(
-                                     data).all() else None  # TODO #37 this is always None!!!
+                                     data).all() else None
                                  )
         plt.colorbar(self.im, ax=self.ax).set_label(label)
         self.im.set_clim(vmin=product_range[0], vmax=product_range[1])

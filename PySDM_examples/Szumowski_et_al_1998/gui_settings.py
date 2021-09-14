@@ -78,7 +78,6 @@ class GUISettings:
                 min=10, max=100, step=5)
         }
 
-        # TODO #37
         self.r_bins_edges = settings.r_bins_edges
         self.T_bins_edges = settings.T_bins_edges
         self.size = settings.size

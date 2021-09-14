@@ -56,7 +56,7 @@ class Simulation:
             PySDM_products.CloudDropletEffectiveRadius(radius_range=cloud_range)
         ]
 
-        if self.settings.processes['fluid advection']:  # TODO #37 ambient thermodynamics checkbox
+        if self.settings.processes['fluid advection']:
             builder.add_dynamic(AmbientThermodynamics())
         if self.settings.processes["condensation"]:
             condensation = Condensation(
@@ -68,7 +68,7 @@ class Simulation:
                 schedule=self.settings.condensation_schedule
             )
             builder.add_dynamic(condensation)
-            products.append(PySDM_products.CondensationTimestepMin())  # TODO #37 and what if a user doesn't want it?
+            products.append(PySDM_products.CondensationTimestepMin())
             products.append(PySDM_products.CondensationTimestepMax())
             products.append(PySDM_products.PeakSupersaturation())
         displacement = None
@@ -102,7 +102,7 @@ class Simulation:
             builder.add_dynamic(EulerianAdvection(solver))
         if self.settings.processes["particle advection"]:
             builder.add_dynamic(displacement)
-            products.append(PySDM_products.SurfacePrecipitation())  # TODO #37 ditto
+            products.append(PySDM_products.SurfacePrecipitation())
         if self.settings.processes["coalescence"]:
             builder.add_dynamic(Coalescence(
                 kernel=self.settings.kernel,
