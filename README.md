@@ -20,6 +20,12 @@ Please use the [PySDM issue-tracking](https://github.com/atmos-cloud-sim-uj/PySD
   - Fig. 1: 
       [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Alpert_and_Knopf_2016/fig_1.ipynb)
       [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Alpert_and_Knopf_2016/fig_1.ipynb)    
+  - Fig. 2: 
+      [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Alpert_and_Knopf_2016/fig_2.ipynb)
+      [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Alpert_and_Knopf_2016/fig_2.ipynb)    
+  - Fig. 3: 
+      [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Alpert_and_Knopf_2016/fig_3.ipynb)
+      [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Alpert_and_Knopf_2016/fig_3.ipynb)    
   
 ### 0D parcel-model condensation only examples:
 - [Arabas & Shima 2017](http://dx.doi.org/10.5194/npg-24-535-2017) (monodisperse size spectrum activation/deactivation test case):
