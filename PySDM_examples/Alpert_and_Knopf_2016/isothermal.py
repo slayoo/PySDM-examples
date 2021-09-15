@@ -1,6 +1,8 @@
 from .simulation import simulation
 from PySDM.physics import si
 from matplotlib import pylab
+import matplotlib
+from packaging import version
 import numpy as np
 
 
@@ -45,7 +47,8 @@ class Isothermal:
                     color=self.cases[key]['color'],
                     linewidth=.666
                 )
-        pylab.gca().set_box_aspect(1)
+        if version.parse(matplotlib.__version__) >= version.parse('3.3.0'):
+            pylab.gca().set_box_aspect(1)
         pylab.legend()
         pylab.yscale('log')
         if grid is not None:
