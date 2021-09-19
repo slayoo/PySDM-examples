@@ -19,6 +19,7 @@ setup(
                       'ipywidgets',
                       'ghapi'],  # note: test-time-requirement?
     author='https://github.com/orgs/atmos-cloud-sim-uj/people',
+    author_email='sylwester.arabas@uj.edu.pl',
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/atmos-cloud-sim-uj/PySDM-examples",

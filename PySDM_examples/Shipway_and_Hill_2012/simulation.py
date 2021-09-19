@@ -66,26 +66,26 @@ class Simulation:
             PySDM_products.CloudDropletEffectiveRadius(radius_range=settings.cloud_water_radius_range),
             PySDM_products.PeakSupersaturation()
         ]
-        self.core = builder.build(attributes=attributes, products=products)
+        self.particulator = builder.build(attributes=attributes, products=products)
         if settings.precip:
             displacement.upload_courant_field(courant_field=(np.zeros(settings.nz + 1),))  # TODO #414
 
     def save(self, output, step):
-        for k, v in self.core.products.items():
+        for k, v in self.particulator.products.items():
             if len(v.shape) == 1:
                 output[k][:, step] = v.get()
 
     def run(self, nt=None):
         nt = self.nt if nt is None else nt
-        mesh = self.core.mesh
+        mesh = self.particulator.mesh
 
-        output = {k: np.zeros((mesh.grid[-1], nt+1)) for k in self.core.products.keys()}
+        output = {k: np.zeros((mesh.grid[-1], nt+1)) for k in self.particulator.products.keys()}
         assert 't' not in output and 'z' not in output
-        output['t'] = np.linspace(0, self.nt*self.core.dt, self.nt+1, endpoint=True)
+        output['t'] = np.linspace(0, self.nt * self.particulator.dt, self.nt + 1, endpoint=True)
         output['z'] = np.linspace(mesh.dz/2, (mesh.grid[-1]-1/2)*mesh.dz, mesh.grid[-1], endpoint=True)
 
         self.save(output, 0)
         for step in range(nt):
-            self.core.run(steps=1)
+            self.particulator.run(steps=1)
             self.save(output, step+1)
         return output

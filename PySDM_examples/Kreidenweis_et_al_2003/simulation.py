@@ -54,20 +54,20 @@ class Simulation:
             PySDM_products.AqueousMassSpectrum("S_VI", settings.dry_radius_bins_edges)
         )
 
-        self.core = builder.build(attributes=attributes, products=products)
+        self.particulator = builder.build(attributes=attributes, products=products)
         self.settings = settings
 
     def _save(self, output):
-        for k, v in self.core.products.items():
+        for k, v in self.particulator.products.items():
             value = v.get()
             if isinstance(value, np.ndarray) and value.shape[0] == 1:
                 value = value[0]
             output[k].append(value)
 
     def run(self):
-        output = {k: [] for k in self.core.products.keys()}
+        output = {k: [] for k in self.particulator.products.keys()}
         self._save(output)
         for _ in range(0, self.settings.nt+1, self.settings.steps_per_output_interval):
-            self.core.run(steps=self.settings.steps_per_output_interval)
+            self.particulator.run(steps=self.settings.steps_per_output_interval)
             self._save(output)
         return output

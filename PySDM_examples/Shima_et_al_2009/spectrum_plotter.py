@@ -1,7 +1,3 @@
-"""
-Created at 12.08.2019
-"""
-
 import numpy as np
 from matplotlib import pyplot
 from PySDM.physics.constants import si
@@ -123,8 +119,10 @@ class SpectrumPlotter:
                     for i in range(scope, len(spectrum) - scope):
                         spectrum[i] = np.mean(new[i - scope:i + scope + 1])
 
+            x = settings.radius_bins_edges[:-scope]
+            dx = np.diff(x)
             self.ax.plot(
-                settings.radius_bins_edges[:-scope - 1] * si.metres / si.micrometres,
+                (x[:-1] + dx/2) * si.metres / si.micrometres,
                 spectrum[:-scope] * si.kilograms / si.grams,
                 label=f"t = {t}s",
                 color=self.colors(t / (self.settings.output_steps[-1] * self.settings.dt))

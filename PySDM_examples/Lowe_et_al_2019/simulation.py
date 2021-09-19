@@ -67,11 +67,11 @@ class Simulation:
             PySDM_products.ParticlesWetSizeSpectrum(radius_bins_edges=settings.wet_radius_bins_edges),
         )
 
-        self.core = builder.build(attributes=attributes, products=products)
+        self.particulator = builder.build(attributes=attributes, products=products)
         self.settings = settings
 
     def _save_scalars(self, output):
-        for k, v in self.core.products.items():
+        for k, v in self.particulator.products.items():
             if len(v.shape) > 1:
                 continue
             value = v.get()
@@ -80,13 +80,13 @@ class Simulation:
             output[k].append(value)
 
     def _save_spectrum(self, output):
-        value = self.core.products['Particles Wet Size Spectrum'].get()
+        value = self.particulator.products['Particles Wet Size Spectrum'].get()
         output['spectrum'] = value
 
     def run(self):
-        output = {k: [] for k in self.core.products.keys()}
+        output = {k: [] for k in self.particulator.products.keys()}
         for step in self.settings.output_steps:
-            self.core.run(step - self.core.n_steps)
+            self.particulator.run(step - self.particulator.n_steps)
             self._save_scalars(output)
         self._save_spectrum(output)
         return output

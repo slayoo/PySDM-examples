@@ -55,7 +55,6 @@ class Common:
             "coalescence": True,
             "condensation": True,
             "sedimentation": True,
-            # "relaxation": False  # TODO #338,
             "freezing": False,
             "PartMC piggy-backer": False
         }

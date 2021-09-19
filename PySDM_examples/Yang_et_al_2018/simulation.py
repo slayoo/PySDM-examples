@@ -28,7 +28,7 @@ class Simulation:
             z0=settings.z0
         ))
 
-        environment = builder.core.environment
+        environment = builder.particulator.environment
         builder.add_dynamic(AmbientThermodynamics())
         condensation = Condensation(
             adaptive=settings.adaptive,
@@ -51,23 +51,23 @@ class Simulation:
             r_dry=settings.r_dry
         )
 
-        self.core = builder.build(attributes, products)
+        self.particulator = builder.build(attributes, products)
 
         self.n_steps = settings.n_steps
 
     def save(self, output):
         cell_id = 0
-        output["r_bins_values"].append(self.core.products["Particles Wet Size Spectrum"].get())
-        volume = self.core.particles['volume'].to_ndarray()
+        output["r_bins_values"].append(self.particulator.products["Particles Wet Size Spectrum"].get())
+        volume = self.particulator.attributes['volume'].to_ndarray()
         output["r"].append(self.formulae.trivia.radius(volume=volume))
-        output["S"].append(self.core.environment["RH"][cell_id] - 1)
-        output["qv"].append(self.core.environment["qv"][cell_id])
-        output["T"].append(self.core.environment["T"][cell_id])
-        output["z"].append(self.core.environment["z"][cell_id])
-        output["t"].append(self.core.environment["t"][cell_id])
-        output["dt_cond_max"].append(self.core.products["dt_cond_max"].get()[cell_id].copy())
-        output["dt_cond_min"].append(self.core.products["dt_cond_min"].get()[cell_id].copy())
-        output['ripening_rate'].append(self.core.products['ripening_rate'].get()[cell_id].copy())
+        output["S"].append(self.particulator.environment["RH"][cell_id] - 1)
+        output["qv"].append(self.particulator.environment["qv"][cell_id])
+        output["T"].append(self.particulator.environment["T"][cell_id])
+        output["z"].append(self.particulator.environment["z"][cell_id])
+        output["t"].append(self.particulator.environment["t"][cell_id])
+        output["dt_cond_max"].append(self.particulator.products["dt_cond_max"].get()[cell_id].copy())
+        output["dt_cond_min"].append(self.particulator.products["dt_cond_min"].get()[cell_id].copy())
+        output['ripening_rate'].append(self.particulator.products['ripening_rate'].get()[cell_id].copy())
 
     def run(self):
         output = {"r": [], "S": [], "z": [], "t": [], "qv": [], "T": [],
@@ -75,6 +75,6 @@ class Simulation:
 
         self.save(output)
         for step in range(self.n_steps):
-            self.core.run(self.n_substeps)
+            self.particulator.run(self.n_substeps)
             self.save(output)
         return output

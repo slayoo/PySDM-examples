@@ -45,7 +45,7 @@ class Simulation:
         attributes['dry volume'] = settings.formulae.trivia.volume(radius=r_dry)
         attributes['kappa times dry volume'] = attributes['dry volume'] * settings.kappa
         attributes['n'] = np.array([settings.n_in_dv], dtype=np.int64)
-        environment = builder.core.environment
+        environment = builder.particulator.environment
         r_wet = r_wet_init(r_dry, environment,
                            kappa_times_dry_volume=attributes['kappa times dry volume'])
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
@@ -61,20 +61,20 @@ class Simulation:
             PySDM_products.PeakSupersaturation()
         ]
 
-        self.core = builder.build(attributes, products)
+        self.particulator = builder.build(attributes, products)
 
         self.n_output = settings.n_output
 
     def save(self, output):
         cell_id = 0
-        output["r"].append(self.core.products['radius_m1'].get(unit=const.si.metre)[cell_id])
-        output["dt_cond_min"].append(self.core.products['dt_cond_min'].get()[cell_id])
-        output["z"].append(self.core.products["z"].get()[cell_id])
-        output["S"].append(self.core.products["RH_env"].get()[cell_id]/100 - 1)
-        output["t"].append(self.core.products["t"].get())
+        output["r"].append(self.particulator.products['radius_m1'].get(unit=const.si.metre)[cell_id])
+        output["dt_cond_min"].append(self.particulator.products['dt_cond_min'].get()[cell_id])
+        output["z"].append(self.particulator.products["z"].get()[cell_id])
+        output["S"].append(self.particulator.products["RH_env"].get()[cell_id]/100 - 1)
+        output["t"].append(self.particulator.products["t"].get())
 
         for event in ('activating', 'deactivating', 'ripening'):
-            output[event+"_rate"].append(self.core.products[event+'_rate'].get()[cell_id])
+            output[event+"_rate"].append(self.particulator.products[event+'_rate'].get()[cell_id])
 
     def run(self):
         output = {"r": [], "S": [], "z": [], "t": [], "dt_cond_min": [], "activating_rate": [],
@@ -82,7 +82,7 @@ class Simulation:
 
         self.save(output)
         for step in range(self.n_output):
-            self.core.run(self.n_substeps)
+            self.particulator.run(self.n_substeps)
             self.save(output)
 
         return output

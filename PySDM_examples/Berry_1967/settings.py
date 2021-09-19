@@ -13,7 +13,7 @@ class Settings:
         self.n_sd = 2 ** 13
         self.n_part = 239 / si.cm**3
         self.X0 = self.formulae.trivia.volume(radius=10 * si.micrometres)
-        self.dv = 1e1 * si.metres**3  # TODO #565: 1e6 caused overflows on ThrustRTC (32 bit ints for multiplicities)
+        self.dv = 1e1 * si.metres**3  # note: 1e6 caused overflows on ThrustRTC (32 bit ints for multiplicities)
         self.norm_factor = self.n_part * self.dv
         self.rho = 1000 * si.kilogram / si.metre**3
         self.dt = 1 * si.seconds

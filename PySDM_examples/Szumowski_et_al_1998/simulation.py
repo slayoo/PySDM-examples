@@ -14,13 +14,13 @@ class Simulation:
     def __init__(self, settings, storage, SpinUp, backend=CPU):
         self.settings = settings
         self.storage = storage
-        self.core = None
+        self.particulator = None
         self.backend = backend
         self.SpinUp = SpinUp
 
     @property
     def products(self):
-        return self.core.products
+        return self.particulator.products
 
     def reinit(self, products=None):
         builder = Builder(n_sd=self.settings.n_sd, backend=self.backend, formulae=self.settings.formulae)
@@ -146,9 +146,9 @@ class Simulation:
         if self.settings.processes["freezing"]:
             attributes['spheroid mass'] = np.zeros(self.settings.n_sd),
 
-        self.core = builder.build(attributes, products)
+        self.particulator = builder.build(attributes, products)
         if self.SpinUp is not None:
-            self.SpinUp(self.core, self.settings.n_spin_up)
+            self.SpinUp(self.particulator, self.settings.n_spin_up)
         if self.storage is not None:
             self.storage.init(self.settings)
 
@@ -158,15 +158,15 @@ class Simulation:
                 if controller.panic:
                     break
 
-                self.core.run(step - self.core.n_steps)
+                self.particulator.run(step - self.particulator.n_steps)
 
                 self.store(step)
                 
                 if vtk_exporter is not None:
-                    vtk_exporter.export_particles(self.core)
+                    vtk_exporter.export_particles(self.particulator)
 
                 controller.set_percent(step / self.settings.output_steps[-1])
 
     def store(self, step):
-        for name, product in self.core.products.items():
+        for name, product in self.particulator.products.items():
             self.storage.save(product.get(), step, name)
