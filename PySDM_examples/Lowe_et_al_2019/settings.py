@@ -20,7 +20,7 @@ class Settings:
         self.formulae = Formulae(surface_tension='CompressedFilm' if model=='film' else 'Constant')
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        self.t_max = (400 + 196) * si.s
+        self.t_max = int(210 / w) * si.m
         self.output_interval = 10 * si.s
         self.dt = dt
 
