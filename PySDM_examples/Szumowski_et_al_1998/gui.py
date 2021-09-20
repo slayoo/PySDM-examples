@@ -2,7 +2,7 @@ import sys
 from PySDM_examples.Szumowski_et_al_1998.gui_controller import GUIController
 from PySDM_examples.Szumowski_et_al_1998.gui_viewer import GUIViewer
 from PySDM.exporters import NetCDFExporter
-from PySDM_examples.utils.temporary_file import TemporaryFile
+from atmos_cloud_sim_uj_utils import TemporaryFile
 from PySDM_examples.utils.widgets import display, Tab, VBox, HTML
 
 

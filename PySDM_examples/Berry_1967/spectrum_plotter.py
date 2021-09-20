@@ -4,7 +4,7 @@ Created at 12.08.2019
 
 from matplotlib import pyplot
 from PySDM_examples.Shima_et_al_2009.spectrum_plotter import SpectrumPlotter as SuperSpectrumPlotter
-from PySDM_examples.utils.show_plot import show_plot
+from atmos_cloud_sim_uj_utils import show_plot
 
 
 class SpectrumPlotter(SuperSpectrumPlotter):

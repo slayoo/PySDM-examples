@@ -2,7 +2,8 @@ from PySDM.exporters import NetCDFExporter
 from PySDM.physics import si
 from PySDM_examples.Arabas_et_al_2015 import Settings, SpinUp
 from PySDM_examples.Szumowski_et_al_1998 import Simulation, Storage
-from PySDM_examples.utils import TemporaryFile, DummyController
+from PySDM_examples.utils import DummyController
+from atmos_cloud_sim_uj_utils import TemporaryFile
 
 
 def main():

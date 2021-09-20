@@ -1,6 +1,6 @@
 from PySDM.physics.constants import si, convert_to
 from matplotlib import pyplot
-from PySDM_examples.utils.show_plot import show_plot
+from atmos_cloud_sim_uj_utils import show_plot
 import numpy as np
 
 

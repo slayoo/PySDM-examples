@@ -14,6 +14,7 @@ setup(
     setup_requires=['setuptools_scm'],
     install_requires=['PySDM',
                       'PyMPDATA',
+                      'atmos-cloud-sim-uj-utils',
                       'pystrict',
                       'matplotlib',
                       'ipywidgets',

@@ -1,6 +1,6 @@
 import numpy as np
 from PySDM.physics import constants as const
-from PySDM_examples.utils.show_plot import save_and_make_link
+from atmos_cloud_sim_uj_utils import save_and_make_link
 from PySDM_examples.utils.widgets import VBox, Box, Play, Output, IntSlider, IntRangeSlider, jslink, \
     HBox, Dropdown, Button, Layout, clear_output, display
 from .plots import _ImagePlot, _SpectrumPlot, _TimeseriesPlot, _TemperaturePlot

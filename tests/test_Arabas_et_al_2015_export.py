@@ -3,7 +3,8 @@ from PySDM_examples.Szumowski_et_al_1998.storage import Storage
 from PySDM_examples.Szumowski_et_al_1998.gui_settings import GUISettings
 from PySDM_examples.Szumowski_et_al_1998.simulation import Simulation
 from PySDM_examples.Arabas_et_al_2015 import Settings, SpinUp
-from PySDM_examples.utils import TemporaryFile, DummyController
+from PySDM_examples.utils import DummyController
+from atmos_cloud_sim_uj_utils import TemporaryFile
 from PySDM_examples.utils.widgets import IntSlider
 from PySDM.backends import CPU
 from tempfile import TemporaryDirectory
