@@ -2,6 +2,7 @@ from PySDM import Builder
 from PySDM.dynamics import Freezing
 from PySDM.environments import Box
 from PySDM.physics import constants as const, Formulae
+from PySDM.physics.heterogeneous_ice_nucleation_rate import constant
 from PySDM.initialisation import spectral_sampling
 from PySDM.initialisation.multiplicities import discretise_n
 from PySDM.products import IceWaterContent
@@ -10,12 +11,13 @@ import numpy as np
 
 
 def simulation(*, seed, n_sd, dt, dv, spectrum, droplet_volume, multiplicity, J_het, total_time, number_of_real_droplets):
-    formulae = Formulae(seed=seed)
+    constant.J_het = J_het
+    formulae = Formulae(seed=seed, heterogeneous_ice_nucleation_rate='Constant')
     builder = Builder(n_sd=n_sd, backend=CPU, formulae=formulae)
     builder.set_environment(Box(dt=dt, dv=dv))
-    builder.add_dynamic(Freezing(singular=False, J_het=J_het))
+    builder.add_dynamic(Freezing(singular=False))
 
-    if hasattr(spectrum, 's_geom') and spectrum.s_geom==1:
+    if hasattr(spectrum, 's_geom') and spectrum.s_geom == 1:
         _isa, _conc = np.full(n_sd, spectrum.m_mode), np.full(n_sd, multiplicity / dv)
     else:
         _isa, _conc = spectral_sampling.ConstantMultiplicity(spectrum).sample(n_sd)
