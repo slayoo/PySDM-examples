@@ -34,7 +34,7 @@ from PySDM.backends import CPU, GPU
 import importlib
 
 
-def reload_CPU_backend():
+def reload_cpu_backend():
     importlib.reload(PySDM.backends.numba.impl._algorithmic_methods)
     importlib.reload(PySDM.backends.numba.impl._index_methods)
     importlib.reload(PySDM.backends.numba.impl._pair_methods)
@@ -56,6 +56,7 @@ def main():
         &#34;coalescence&#34;: True,
         &#34;condensation&#34;: False,
         &#34;sedimentation&#34;: True,
+        &#39;freezing&#39;: False
     }
 
     n_sd = range(14, 16, 1)
@@ -67,13 +68,13 @@ def main():
     for backend, mode in backends:
         if backend is CPU:
             PySDM.backends.numba.conf.NUMBA_PARALLEL = mode
-            reload_CPU_backend()
+            reload_cpu_backend()
         key = f&#34;{backend} (mode={mode})&#34;
         times[key] = []
         for sd in n_sd:
             settings.n_sd_per_gridbox = sd
             storage = Storage()
-            simulation = Simulation(settings, storage, backend)
+            simulation = Simulation(settings, storage, None, backend)
             simulation.reinit(products=[WallTime()])
             simulation.run()
             times[key].append(storage.load(&#39;wall_time&#39;)[-1])
@@ -118,6 +119,7 @@ if __name__ == &#39;__main__&#39;:
         &#34;coalescence&#34;: True,
         &#34;condensation&#34;: False,
         &#34;sedimentation&#34;: True,
+        &#39;freezing&#39;: False
     }
 
     n_sd = range(14, 16, 1)
@@ -129,13 +131,13 @@ if __name__ == &#39;__main__&#39;:
     for backend, mode in backends:
         if backend is CPU:
             PySDM.backends.numba.conf.NUMBA_PARALLEL = mode
-            reload_CPU_backend()
+            reload_cpu_backend()
         key = f&#34;{backend} (mode={mode})&#34;
         times[key] = []
         for sd in n_sd:
             settings.n_sd_per_gridbox = sd
             storage = Storage()
-            simulation = Simulation(settings, storage, backend)
+            simulation = Simulation(settings, storage, None, backend)
             simulation.reinit(products=[WallTime()])
             simulation.run()
             times[key].append(storage.load(&#39;wall_time&#39;)[-1])
@@ -148,8 +150,8 @@ if __name__ == &#39;__main__&#39;:
     plt.savefig(&#34;benchmark.pdf&#34;, format=&#34;pdf&#34;)</code></pre>
 </details>
 </dd>
-<dt id="PySDM_examples.Arabas_et_al_2015.example_benchmark.reload_CPU_backend"><code class="name flex">
-<span>def <span class="ident">reload_CPU_backend</span></span>(<span>)</span>
+<dt id="PySDM_examples.Arabas_et_al_2015.example_benchmark.reload_cpu_backend"><code class="name flex">
+<span>def <span class="ident">reload_cpu_backend</span></span>(<span>)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -157,7 +159,7 @@ if __name__ == &#39;__main__&#39;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def reload_CPU_backend():
+<pre><code class="python">def reload_cpu_backend():
     importlib.reload(PySDM.backends.numba.impl._algorithmic_methods)
     importlib.reload(PySDM.backends.numba.impl._index_methods)
     importlib.reload(PySDM.backends.numba.impl._pair_methods)
@@ -186,7 +188,7 @@ if __name__ == &#39;__main__&#39;:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="PySDM_examples.Arabas_et_al_2015.example_benchmark.main" href="#PySDM_examples.Arabas_et_al_2015.example_benchmark.main">main</a></code></li>
-<li><code><a title="PySDM_examples.Arabas_et_al_2015.example_benchmark.reload_CPU_backend" href="#PySDM_examples.Arabas_et_al_2015.example_benchmark.reload_CPU_backend">reload_CPU_backend</a></code></li>
+<li><code><a title="PySDM_examples.Arabas_et_al_2015.example_benchmark.reload_cpu_backend" href="#PySDM_examples.Arabas_et_al_2015.example_benchmark.reload_cpu_backend">reload_cpu_backend</a></code></li>
 </ul>
 </li>
 </ul>
