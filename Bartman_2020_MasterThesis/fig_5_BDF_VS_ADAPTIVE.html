@@ -26,7 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy as np
+<pre><code class="python">import os
+
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.collections import LineCollection
@@ -79,9 +81,10 @@ def add_color_line(fig, ax, x, y, z):
     fig.colorbar(lc, ax=ax)
 
 
-def plot(data, rtols, schemes, setups_num, path=None):
+def plot(data, rtols, schemes, setups_num, show_plot, path=None):
     _rtol = &#39;$r_{tol}$&#39;
 
+    plt.ioff()
     fig, axs = plt.subplots(setups_num, len(rtols),
                             sharex=True, sharey=True, figsize=(10, 13))
     for settings_idx in range(setups_num):
@@ -117,19 +120,20 @@ def plot(data, rtols, schemes, setups_num, path=None):
 
     if path is not None:
         plt.savefig(path + &#39;.pdf&#39;, format=&#39;pdf&#39;)
-    plt.show()
+    if show_plot:
+        plt.show()
 
 
-def main(save=None):
+def main(save=None, show_plot=True):
     rtols = [1e-7, 1e-11]
     schemes = [&#39;CPU&#39;, &#39;BDF&#39;]
     setups_num = len(setups)
     input_data = data(80, rtols, schemes, setups_num)
-    plot(input_data, rtols, schemes, setups_num, save)
+    plot(input_data, rtols, schemes, setups_num, show_plot, save)
 
 
 if __name__ == &#39;__main__&#39;:
-    main(&#39;BDF_VS_ADAPTIVE&#39;)</code></pre>
+    main(&#39;BDF_VS_ADAPTIVE&#39;, show_plot=&#39;CI&#39; not in os.environ)</code></pre>
 </details>
 </section>
 <section>
@@ -201,7 +205,7 @@ if __name__ == &#39;__main__&#39;:
 </details>
 </dd>
 <dt id="PySDM_examples.Bartman_2020_MasterThesis.fig_5_BDF_VS_ADAPTIVE.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>save=None)</span>
+<span>def <span class="ident">main</span></span>(<span>save=None, show_plot=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -209,16 +213,16 @@ if __name__ == &#39;__main__&#39;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main(save=None):
+<pre><code class="python">def main(save=None, show_plot=True):
     rtols = [1e-7, 1e-11]
     schemes = [&#39;CPU&#39;, &#39;BDF&#39;]
     setups_num = len(setups)
     input_data = data(80, rtols, schemes, setups_num)
-    plot(input_data, rtols, schemes, setups_num, save)</code></pre>
+    plot(input_data, rtols, schemes, setups_num, show_plot, save)</code></pre>
 </details>
 </dd>
 <dt id="PySDM_examples.Bartman_2020_MasterThesis.fig_5_BDF_VS_ADAPTIVE.plot"><code class="name flex">
-<span>def <span class="ident">plot</span></span>(<span>data, rtols, schemes, setups_num, path=None)</span>
+<span>def <span class="ident">plot</span></span>(<span>data, rtols, schemes, setups_num, show_plot, path=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -226,9 +230,10 @@ if __name__ == &#39;__main__&#39;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def plot(data, rtols, schemes, setups_num, path=None):
+<pre><code class="python">def plot(data, rtols, schemes, setups_num, show_plot, path=None):
     _rtol = &#39;$r_{tol}$&#39;
 
+    plt.ioff()
     fig, axs = plt.subplots(setups_num, len(rtols),
                             sharex=True, sharey=True, figsize=(10, 13))
     for settings_idx in range(setups_num):
@@ -264,7 +269,8 @@ if __name__ == &#39;__main__&#39;:
 
     if path is not None:
         plt.savefig(path + &#39;.pdf&#39;, format=&#39;pdf&#39;)
-    plt.show()</code></pre>
+    if show_plot:
+        plt.show()</code></pre>
 </details>
 </dd>
 </dl>

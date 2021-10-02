@@ -26,7 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from matplotlib import pyplot as plt
+<pre><code class="python">import os
+
+from matplotlib import pyplot as plt
 from PySDM_examples.Shima_et_al_2009.settings import Settings
 from PySDM_examples.Shima_et_al_2009.example import run
 from PySDM_examples.Shima_et_al_2009.spectrum_plotter import SpectrumPlotter
@@ -38,6 +40,7 @@ def main(plot: bool = True, save: str = None):
     iters = 10
     base_time = None
 
+    plt.ioff()
     fig, axs = plt.subplots(len(dts), len(n_sds),
                             sharex=True, sharey=True, figsize=(10, 10))
 
@@ -85,7 +88,7 @@ def main(plot: bool = True, save: str = None):
 
 
 if __name__ == &#39;__main__&#39;:
-    main(plot=True, save=&#39;.&#39;)</code></pre>
+    main(plot=&#39;CI&#39; not in os.environ, save=&#39;.&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -110,6 +113,7 @@ if __name__ == &#39;__main__&#39;:
     iters = 10
     base_time = None
 
+    plt.ioff()
     fig, axs = plt.subplots(len(dts), len(n_sds),
                             sharex=True, sharey=True, figsize=(10, 10))
 
