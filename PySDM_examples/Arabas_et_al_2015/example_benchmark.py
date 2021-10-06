@@ -6,7 +6,7 @@ from PySDM.backends import CPU, GPU
 import importlib
 
 
-def reload_CPU_backend():
+def reload_cpu_backend():
     importlib.reload(PySDM.backends.numba.impl._algorithmic_methods)
     importlib.reload(PySDM.backends.numba.impl._index_methods)
     importlib.reload(PySDM.backends.numba.impl._pair_methods)
@@ -28,6 +28,7 @@ def main():
         "coalescence": True,
         "condensation": False,
         "sedimentation": True,
+        'freezing': False
     }
 
     n_sd = range(14, 16, 1)
@@ -39,13 +40,13 @@ def main():
     for backend, mode in backends:
         if backend is CPU:
             PySDM.backends.numba.conf.NUMBA_PARALLEL = mode
-            reload_CPU_backend()
+            reload_cpu_backend()
         key = f"{backend} (mode={mode})"
         times[key] = []
         for sd in n_sd:
             settings.n_sd_per_gridbox = sd
             storage = Storage()
-            simulation = Simulation(settings, storage, backend)
+            simulation = Simulation(settings, storage, None, backend)
             simulation.reinit(products=[WallTime()])
             simulation.run()
             times[key].append(storage.load('wall_time')[-1])

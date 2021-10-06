@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot
 from PySDM.physics.constants import si
-from .error_measure import error_measure
+from PySDM_examples.Shima_et_al_2009.error_measure import error_measure
 from atmos_cloud_sim_uj_utils import show_plot
 from distutils.version import StrictVersion
 import matplotlib

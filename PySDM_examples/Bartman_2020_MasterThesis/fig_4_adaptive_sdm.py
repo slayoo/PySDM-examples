@@ -1,11 +1,9 @@
-"""
-Created at 20.08.2020
-"""
+import os
 
+from matplotlib import pyplot as plt
 from PySDM_examples.Shima_et_al_2009.settings import Settings
 from PySDM_examples.Shima_et_al_2009.example import run
 from PySDM_examples.Shima_et_al_2009.spectrum_plotter import SpectrumPlotter
-from matplotlib import pyplot as plt
 
 
 def main(plot: bool = True, save: str = None):
@@ -14,6 +12,7 @@ def main(plot: bool = True, save: str = None):
     iters = 10
     base_time = None
 
+    plt.ioff()
     fig, axs = plt.subplots(len(dts), len(n_sds),
                             sharex=True, sharey=True, figsize=(10, 10))
 
@@ -21,7 +20,7 @@ def main(plot: bool = True, save: str = None):
         for j, n_sd in enumerate(n_sds):
             outputs = []
             exec_time = 0
-            for iter in range(iters):
+            for _ in range(iters):
                 settings = Settings()
 
                 settings.n_sd = 2 ** n_sd
@@ -61,4 +60,4 @@ def main(plot: bool = True, save: str = None):
 
 
 if __name__ == '__main__':
-    main(plot=True, save='.')
+    main(plot='CI' not in os.environ, save='.')

@@ -1,15 +1,13 @@
-"""
-Created at 20.08.2020
-"""
+import os
 
-from PySDM_examples.Arabas_and_Shima_2017.simulation import Simulation
-from PySDM_examples.Arabas_and_Shima_2017.settings import setups
-from PySDM.backends.numba.test_helpers import bdf
-from PySDM.backends import CPU, GPU
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.collections import LineCollection
+from PySDM_examples.Arabas_and_Shima_2017.simulation import Simulation
+from PySDM_examples.Arabas_and_Shima_2017.settings import setups
+from PySDM.backends.numba.test_helpers import bdf
+from PySDM.backends import CPU, GPU
 
 
 def data(n_output, rtols, schemes, setups_num):
@@ -55,9 +53,10 @@ def add_color_line(fig, ax, x, y, z):
     fig.colorbar(lc, ax=ax)
 
 
-def plot(data, rtols, schemes, setups_num, path=None):
+def plot(data, rtols, schemes, setups_num, show_plot, path=None):
     _rtol = '$r_{tol}$'
 
+    plt.ioff()
     fig, axs = plt.subplots(setups_num, len(rtols),
                             sharex=True, sharey=True, figsize=(10, 13))
     for settings_idx in range(setups_num):
@@ -93,16 +92,17 @@ def plot(data, rtols, schemes, setups_num, path=None):
 
     if path is not None:
         plt.savefig(path + '.pdf', format='pdf')
-    plt.show()
+    if show_plot:
+        plt.show()
 
 
-def main(save=None):
+def main(save=None, show_plot=True):
     rtols = [1e-7, 1e-11]
     schemes = ['CPU', 'BDF']
     setups_num = len(setups)
     input_data = data(80, rtols, schemes, setups_num)
-    plot(input_data, rtols, schemes, setups_num, save)
+    plot(input_data, rtols, schemes, setups_num, show_plot, save)
 
 
 if __name__ == '__main__':
-    main('BDF_VS_ADAPTIVE')
+    main('BDF_VS_ADAPTIVE', show_plot='CI' not in os.environ)

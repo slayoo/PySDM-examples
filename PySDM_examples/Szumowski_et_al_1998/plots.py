@@ -70,13 +70,16 @@ class _ImagePlot(_Plot):
         self.ax.set_xlabel('X [m]')
         self.ax.set_ylabel('Z [m]')
 
-        self.im = self.ax.imshow(self._transpose(data),
-                                 origin='lower',
-                                 extent=(*xlim, *zlim),
-                                 cmap=cmap,
-                                 norm=matplotlib.colors.LogNorm() if product_scale == 'log' and np.isfinite(
-                                     data).all() else None
-                                 )
+        self.im = self.ax.imshow(
+            self._transpose(data),
+            origin='lower',
+            extent=(*xlim, *zlim),
+            cmap=cmap,
+            norm=(
+                matplotlib.colors.LogNorm() if product_scale == 'log' and np.isfinite(data).all()
+                else None
+            )
+        )
         plt.colorbar(self.im, ax=self.ax).set_label(label)
         self.im.set_clim(vmin=product_range[0], vmax=product_range[1])
         if show:
@@ -91,7 +94,9 @@ class _ImagePlot(_Plot):
         data = self._transpose(data)
         if data is not None:
             self.im.set_data(data)
-            self.ax.set_title(f"min:{np.nanmin(data): .3g}    max:{np.nanmax(data): .3g}    t/dt_out:{step: >6}")
+            self.ax.set_title(
+                f"min:{np.nanmin(data): .3g}    max:{np.nanmax(data): .3g}    t/dt_out:{step: >6}"
+            )
 
     def update_lines(self, focus_x, focus_z):
         self.lines['X'][0].set_xdata(x=focus_x[0] * self.dx)
@@ -114,8 +119,10 @@ class _SpectrumPlot(_Plot):
         vals = initial_spectrum_per_mass_of_dry_air.size_distribution(r_bins * const.si.um)
         const.convert_to(vals, const.si.mg**-1 / const.si.um)
         self.ax.plot(r_bins, vals, label='spectrum sampled at t=0')
-        self.spec_wet = self.ax.step(r_bins, np.full_like(r_bins, np.nan), label='binned super-particle wet sizes')[0]
-        self.spec_dry = self.ax.step(r_bins, np.full_like(r_bins, np.nan), label='binned super-particle dry sizes')[0]
+        self.spec_wet = self.ax.step(r_bins, np.full_like(r_bins, np.nan),
+                                     label='binned super-particle wet sizes')[0]
+        self.spec_dry = self.ax.step(r_bins, np.full_like(r_bins, np.nan),
+                                     label='binned super-particle dry sizes')[0]
         self.ax.legend()
         if show:
             plt.show()
@@ -165,7 +172,8 @@ class _TemperaturePlot(_Plot):
         T0 = 33
         bigg_cdf = lambda TS: np.exp(np.log(1-P0)*np.exp(T0-TS))
         self.ax.plot(T_bins, bigg_cdf(const.T0 - T_bins), label=f'Bigg 1953 for (TS_median={T0})')
-        self.spec = self.ax.step(T_bins, np.full_like(T_bins, np.nan), label='binned super-particle attributes', where='mid')[0]
+        self.spec = self.ax.step(T_bins, np.full_like(T_bins, np.nan),
+                                 label='binned super-particle attributes', where='mid')[0]
         self.ax.legend()
         if show:
             plt.show()

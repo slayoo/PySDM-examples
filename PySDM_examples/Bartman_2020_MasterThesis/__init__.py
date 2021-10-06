@@ -1,3 +1,1 @@
-"""
-Created at 20.08.2020
-"""
+# pylint: disable=invalid-name

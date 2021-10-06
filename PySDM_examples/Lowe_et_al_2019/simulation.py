@@ -14,7 +14,7 @@ class Simulation:
         env = Parcel(dt=settings.dt, mass_of_dry_air=settings.mass_of_dry_air, p0=settings.p0, q0=settings.q0,
                      T0=settings.T0, w=settings.w, g=settings.g)
         n_sd = settings.n_sd_per_mode * len(settings.aerosol.aerosol_modes_per_cc)
-        builder = Builder(n_sd=n_sd, backend=CPU, formulae=settings.formulae)
+        builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
 
         attributes = {

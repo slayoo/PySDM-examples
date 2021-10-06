@@ -1,5 +1,5 @@
 from PySDM.physics.constants import si
-from PySDM.physics import constants as const, formulae as phys
+from PySDM.physics import constants as const
 from PySDM.dynamics import condensation
 from PySDM.physics.formulae import Formulae
 import numpy as np

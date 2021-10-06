@@ -19,6 +19,8 @@ class DummyController(AbstractContextManager):
         print(f"{100 * value:.1f}% (times since last print: cpu={cpu_time:.1f}s wall={wall_time:.1f}s)")
         self.t_last = self.__times()
 
-    def __enter__(*_): pass
+    def __enter__(*_):
+        pass
 
-    def __exit__(*_): pass
+    def __exit__(*_):
+        pass

@@ -1,11 +1,7 @@
-"""
-Created at 08.08.2019
-"""
-
 import numpy as np
+from pystrict import strict
 from PySDM.physics.coalescence_kernels import Golovin
 from PySDM.physics import si, spectra, Formulae
-from pystrict import strict
 
 
 @strict

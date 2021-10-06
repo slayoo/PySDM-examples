@@ -13,7 +13,7 @@ class Simulation:
         env = Parcel(dt=settings.dt, mass_of_dry_air=settings.mass_of_dry_air, p0=settings.p0, q0=settings.q0,
                      T0=settings.T0, w=settings.w, g=settings.g)
 
-        builder = Builder(n_sd=settings.n_sd, backend=CPU, formulae=settings.formulae)
+        builder = Builder(n_sd=settings.n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
 
         attributes = env.init_attributes(

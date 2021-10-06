@@ -1,6 +1,7 @@
 """
 Created at 08.08.2019
 """
+import os
 
 import numpy as np
 
@@ -60,4 +61,4 @@ def main(plot: bool, save):
 
 
 if __name__ == '__main__':
-    main(plot=False, save=".")
+    main(plot='CI' not in os.environ, save=".")

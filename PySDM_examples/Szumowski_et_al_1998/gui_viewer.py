@@ -3,7 +3,7 @@ from PySDM.physics import constants as const
 from atmos_cloud_sim_uj_utils import save_and_make_link
 from PySDM_examples.utils.widgets import VBox, Box, Play, Output, IntSlider, IntRangeSlider, jslink, \
     HBox, Dropdown, Button, Layout, clear_output, display
-from .plots import _ImagePlot, _SpectrumPlot, _TimeseriesPlot, _TemperaturePlot
+from PySDM_examples.Szumowski_et_al_1998.plots import _ImagePlot, _SpectrumPlot, _TimeseriesPlot, _TemperaturePlot
 from matplotlib import pyplot, rcParams
 
 
