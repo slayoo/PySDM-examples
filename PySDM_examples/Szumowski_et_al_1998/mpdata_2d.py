@@ -1,7 +1,7 @@
 import numpy as np
 from threading import Thread
 from PyMPDATA import Options, Stepper, VectorField, ScalarField, Solver
-from PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
+from PyMPDATA.boundary_conditions import Periodic
 from PySDM.backends.numba import conf
 from PySDM_examples.Szumowski_et_al_1998.fields import nondivergent_vector_field_2d, x_vec_coord, z_vec_coord
 from PySDM.state.arakawa_c import make_rhod
@@ -12,7 +12,7 @@ class MPDATA_2D:
     def __init__(self, *, advectees, stream_function, rhod_of_zZ, dt, grid, size,
                  displacement,
                  n_iters=2, infinite_gauge=True,
-                 flux_corrected_transport=True,
+                 nonoscillatory=True,
                  third_order_terms=False
                  ):
         self.grid = grid
@@ -28,7 +28,7 @@ class MPDATA_2D:
         options = Options(
             n_iters=n_iters,
             infinite_gauge=infinite_gauge,
-            flux_corrected_transport=flux_corrected_transport,
+            nonoscillatory=nonoscillatory,
             third_order_terms=third_order_terms
         )
         disable_threads_if_needed = {}
@@ -43,12 +43,12 @@ class MPDATA_2D:
                 np.full((grid[0], grid[1]+1), np.nan)
             ),
             halo=options.n_halo,
-            boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+            boundary_conditions=(Periodic(), Periodic())
         )
 
         g_factor = make_rhod(self.grid, rhod_of_zZ)
         g_factor_impl = ScalarField(g_factor.astype(dtype=options.dtype), halo=options.n_halo,
-                               boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                               boundary_conditions=(Periodic(), Periodic()))
 
         self.g_factor_vec = (
             rhod_of_zZ(zZ=x_vec_coord(self.grid)[-1]),
@@ -57,7 +57,7 @@ class MPDATA_2D:
         self.mpdatas = {}
         for k, v in advectees.items():
             advectee_impl = ScalarField(np.asarray(v, dtype=options.dtype), halo=options.n_halo,
-                                   boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                                   boundary_conditions=(Periodic(), Periodic()))
             self.mpdatas[k] = Solver(stepper=stepper, advectee=advectee_impl, advector=advector_impl, g_factor=g_factor_impl)
 
     def __getitem__(self, item):

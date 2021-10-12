@@ -1,4 +1,5 @@
-from PyMPDATA import Solver, Stepper, Options, ScalarField, VectorField, ExtrapolatedBoundaryCondition
+from PyMPDATA import Solver, Stepper, Options, ScalarField, VectorField
+from PyMPDATA.boundary_conditions import Extrapolated
 from PySDM.state import arakawa_c
 import numpy as np
 
@@ -13,11 +14,11 @@ class MPDATA_1D:
         options = Options(
             n_iters=mpdata_settings['n_iters'],
             infinite_gauge=mpdata_settings['iga'],
-            flux_corrected_transport=mpdata_settings['fct'],
+            nonoscillatory=mpdata_settings['fct'],
             third_order_terms=mpdata_settings['tot']
         )
         stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
-        bcs = (ExtrapolatedBoundaryCondition(),)
+        bcs = (Extrapolated(),)
         g_factor = ScalarField(
             data=g_factor_of_zZ(arakawa_c.z_scalar_coord(grid)),
             halo=options.n_halo,
