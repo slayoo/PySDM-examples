@@ -12,7 +12,7 @@ setup(
     description='PySDM usage examples reproducing results from literature and depicting how to use PySDM from Python Jupyter notebooks',
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
-    install_requires=['PySDM==1.17',
+    install_requires=['PySDM',
                       'PyMPDATA==0.9',
                       'atmos-cloud-sim-uj-utils==0.3',
                       'pystrict',
