@@ -5,7 +5,6 @@ from PySDM.physics import si, Formulae, constants as const
 from PySDM_examples.Lowe_et_al_2019.aerosol import _Aerosol
 from PySDM.dynamics.condensation import default_rtol_x, default_rtol_thd
 
-
 @strict
 class Settings:
     def __init__(self, dt: float, n_sd_per_mode: int,
@@ -19,7 +18,9 @@ class Settings:
         assert model in ('bulk', 'film')
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
-        self.formulae = Formulae(surface_tension='CompressedFilm' if model=='film' else 'Constant')
+        self.formulae = Formulae(
+            surface_tension='CompressedFilm_Ovadnevaite' if model == 'film' else 'Constant'
+        )
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
         self.t_max = int(210 / w) * si.m
