@@ -9,6 +9,7 @@ from PySDM_examples.utils.widgets import IntSlider
 from PySDM.backends import CPU
 from tempfile import TemporaryDirectory
 from scipy.io import netcdf
+import os
 
 
 def test_Arabas_et_al_2015_export():
@@ -32,7 +33,13 @@ def test_Arabas_et_al_2015_export():
     simulator.reinit()
     simulator.run(vtk_exporter=vtk_exporter)
     ncdf_exporter.run(controller=DummyController())
+    vtk_exporter.write_pvd()
 
     # Assert
     versions = netcdf.netcdf_file(file.absolute_path).versions
     assert 'PyMPDATA' in str(versions)
+
+    filenames_list = os.listdir(os.path.join(tempdir.name, 'output'))
+    assert len(list(filter(lambda x: x.endswith('.pvd'), filenames_list))) == 2
+    assert len(list(filter(lambda x: x.endswith('.vts'), filenames_list))) == 2
+    assert len(list(filter(lambda x: x.endswith('.vtu'), filenames_list))) == 2

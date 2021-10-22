@@ -165,7 +165,8 @@ class Simulation:
                 self.store(step)
                 
                 if vtk_exporter is not None:
-                    vtk_exporter.export_particles(self.particulator)
+                    vtk_exporter.export_attributes(self.particulator)
+                    vtk_exporter.export_products(self.particulator)
 
                 controller.set_percent(step / self.settings.output_steps[-1])
 
