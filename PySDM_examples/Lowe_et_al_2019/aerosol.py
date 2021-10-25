@@ -81,7 +81,7 @@ class _Aerosol:
 class AerosolMarine(_Aerosol):
     def __init__(self, Acc_Forg: float = 0.2, Acc_N2: float = 134):
         Aitken = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': .8, 'NH4NO3': 0, 'NaCl': 0}
-        Accumulation = {'palmitic': Acc_Forg, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': (1-Acc_Forg), 'NaCl': 0}
+        Accumulation = {'palmitic': Acc_Forg, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': 0, 'NaCl': (1-Acc_Forg)}
         self.aerosol_modes_per_cc = (
         {
             'f_org': f_org_volume(Aitken),
