@@ -16,7 +16,7 @@ def param_transform(mcmc_params):
 def get_model(params, args): 
     T, v_wet, v_dry, f_org = args
     compressed_film_Ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
-    compressed_film_Ovadnevaite.delta_min = param_transform(params)[0] * si.nm
+    compressed_film_Ovadnevaite.delta_min = param_transform(params)[1] * si.nm
     formulae = Formulae(surface_tension='CompressedFilm_Ovadnevaite')
     y = formulae.surface_tension.sigma(T, v_wet, v_dry, f_org)
     return y
