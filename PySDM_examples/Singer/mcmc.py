@@ -1,8 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 from PySDM.physics import si, Formulae, constants as const
 from PySDM.physics.surface_tension import compressed_film_Ovadnevaite
+
+os.environ['NUMBA_DISABLE_JIT'] = "1"
 
 # parameter transformation so the MCMC parameters range from [-inf, inf]
 # but the compressed film parameters are bounded appropriately [0,72.8] and [0,inf]
