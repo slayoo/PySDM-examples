@@ -39,11 +39,11 @@ import numpy as np
 
 class Simulation:
 
-    def __init__(self, settings, storage, SpinUp, backend=CPU):
+    def __init__(self, settings, storage, SpinUp, backend_class=CPU):
         self.settings = settings
         self.storage = storage
         self.particulator = None
-        self.backend = backend
+        self.backend_class = backend_class
         self.SpinUp = SpinUp
 
     @property
@@ -51,7 +51,7 @@ class Simulation:
         return self.particulator.products
 
     def reinit(self, products=None):
-        builder = Builder(n_sd=self.settings.n_sd, backend=self.backend(formulae=self.settings.formulae))
+        builder = Builder(n_sd=self.settings.n_sd, backend=self.backend_class(formulae=self.settings.formulae))
         environment = Kinematic2D(dt=self.settings.dt,
                                   grid=self.settings.grid,
                                   size=self.settings.size,
@@ -214,7 +214,7 @@ class Simulation:
 <dl>
 <dt id="PySDM_examples.Szumowski_et_al_1998.simulation.Simulation"><code class="flex name class">
 <span>class <span class="ident">Simulation</span></span>
-<span>(</span><span>settings, storage, SpinUp, backend=PySDM.backends.numba.numba.Numba)</span>
+<span>(</span><span>settings, storage, SpinUp, backend_class=PySDM.backends.numba.Numba)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -224,11 +224,11 @@ class Simulation:
 </summary>
 <pre><code class="python">class Simulation:
 
-    def __init__(self, settings, storage, SpinUp, backend=CPU):
+    def __init__(self, settings, storage, SpinUp, backend_class=CPU):
         self.settings = settings
         self.storage = storage
         self.particulator = None
-        self.backend = backend
+        self.backend_class = backend_class
         self.SpinUp = SpinUp
 
     @property
@@ -236,7 +236,7 @@ class Simulation:
         return self.particulator.products
 
     def reinit(self, products=None):
-        builder = Builder(n_sd=self.settings.n_sd, backend=self.backend(formulae=self.settings.formulae))
+        builder = Builder(n_sd=self.settings.n_sd, backend=self.backend_class(formulae=self.settings.formulae))
         environment = Kinematic2D(dt=self.settings.dt,
                                   grid=self.settings.grid,
                                   size=self.settings.size,
@@ -414,7 +414,7 @@ def products(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def reinit(self, products=None):
-    builder = Builder(n_sd=self.settings.n_sd, backend=self.backend(formulae=self.settings.formulae))
+    builder = Builder(n_sd=self.settings.n_sd, backend=self.backend_class(formulae=self.settings.formulae))
     environment = Kinematic2D(dt=self.settings.dt,
                               grid=self.settings.grid,
                               size=self.settings.size,
