@@ -38,8 +38,7 @@ from PySDM.initialisation.spectral_sampling import ConstantMultiplicity
 
 from PySDM_examples.Shima_et_al_2009.settings import Settings
 from PySDM_examples.Shima_et_al_2009.spectrum_plotter import SpectrumPlotter
-from PySDM.products.state import ParticlesVolumeSpectrum
-from PySDM.products.stats.timers import WallTime
+from PySDM.products import ParticlesVolumeSpectrum, WallTime
 
 
 def run(settings, backend=CPU, observers=()):

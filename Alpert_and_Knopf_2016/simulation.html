@@ -80,7 +80,7 @@ class Simulation:
                 abifm.m = case[&#39;ABIFM_m&#39;]
             if &#39;cooling_rate&#39; not in case:
                 case[&#39;cooling_rate&#39;] = 0
-                constant.J_het = case[&#39;J_het&#39;]
+                constant.J_HET = case[&#39;J_het&#39;]
 
             self.output[key] = []
             for i in range(self.n_runs_per_case):
@@ -143,7 +143,7 @@ class Simulation:
         yunit = 1 / si.cm**2 / si.s
 
         plot_x = np.linspace(*self.temperature_range) * si.K
-        plot_y = formulae.heterogeneous_ice_nucleation_rate.J_het(
+        plot_y = formulae.heterogeneous_ice_nucleation_rate.j_het(
             formulae.saturation_vapour_pressure.a_w_ice.py_func(plot_x)
         )
         pylab.grid()
@@ -350,7 +350,7 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
                 abifm.m = case[&#39;ABIFM_m&#39;]
             if &#39;cooling_rate&#39; not in case:
                 case[&#39;cooling_rate&#39;] = 0
-                constant.J_het = case[&#39;J_het&#39;]
+                constant.J_HET = case[&#39;J_het&#39;]
 
             self.output[key] = []
             for i in range(self.n_runs_per_case):
@@ -413,7 +413,7 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
         yunit = 1 / si.cm**2 / si.s
 
         plot_x = np.linspace(*self.temperature_range) * si.K
-        plot_y = formulae.heterogeneous_ice_nucleation_rate.J_het(
+        plot_y = formulae.heterogeneous_ice_nucleation_rate.j_het(
             formulae.saturation_vapour_pressure.a_w_ice.py_func(plot_x)
         )
         pylab.grid()
@@ -521,7 +521,7 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
     yunit = 1 / si.cm**2 / si.s
 
     plot_x = np.linspace(*self.temperature_range) * si.K
-    plot_y = formulae.heterogeneous_ice_nucleation_rate.J_het(
+    plot_y = formulae.heterogeneous_ice_nucleation_rate.j_het(
         formulae.saturation_vapour_pressure.a_w_ice.py_func(plot_x)
     )
     pylab.grid()
@@ -592,7 +592,7 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
             abifm.m = case[&#39;ABIFM_m&#39;]
         if &#39;cooling_rate&#39; not in case:
             case[&#39;cooling_rate&#39;] = 0
-            constant.J_het = case[&#39;J_het&#39;]
+            constant.J_HET = case[&#39;J_het&#39;]
 
         self.output[key] = []
         for i in range(self.n_runs_per_case):
