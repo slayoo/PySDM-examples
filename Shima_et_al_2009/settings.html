@@ -49,7 +49,11 @@ class Settings:
         self._steps = [0, 1200, 2400, 3600]
         self.kernel = Golovin(b=1.5e3 / si.second)
         self.spectrum = spectra.Exponential(norm_factor=self.norm_factor, scale=self.X0)
-        self.radius_bins_edges = np.logspace(np.log10(10 * si.um), np.log10(5e3 * si.um), num=128, endpoint=True)
+        self.radius_bins_edges = np.logspace(
+            np.log10(10 * si.um),
+            np.log10(5e3 * si.um),
+            num=128, endpoint=True
+        )
 
     @property
     def output_steps(self):
@@ -91,7 +95,11 @@ class Settings:
         self._steps = [0, 1200, 2400, 3600]
         self.kernel = Golovin(b=1.5e3 / si.second)
         self.spectrum = spectra.Exponential(norm_factor=self.norm_factor, scale=self.X0)
-        self.radius_bins_edges = np.logspace(np.log10(10 * si.um), np.log10(5e3 * si.um), num=128, endpoint=True)
+        self.radius_bins_edges = np.logspace(
+            np.log10(10 * si.um),
+            np.log10(5e3 * si.um),
+            num=128, endpoint=True
+        )
 
     @property
     def output_steps(self):
