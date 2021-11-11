@@ -36,8 +36,9 @@ from PySDM_examples.Morrison_and_Grabowski_2007.strato_cumulus import StratoCumu
 @strict
 class Settings(StratoCumulus):
     def __dir__(self) -&gt; Iterable[str]:
-        return &#39;dt&#39;, &#39;grid&#39;, &#39;size&#39;, &#39;n_spin_up&#39;, &#39;versions&#39;, &#39;steps_per_output_interval&#39;, &#39;formulae&#39;, \
-            &#39;initial_dry_potential_temperature_profile&#39;, &#39;initial_vapour_mixing_ratio_profile&#39;
+        return &#39;dt&#39;, &#39;grid&#39;, &#39;size&#39;, &#39;n_spin_up&#39;, &#39;versions&#39;, &#39;steps_per_output_interval&#39;,\
+               &#39;formulae&#39;, &#39;initial_dry_potential_temperature_profile&#39;,\
+               &#39;initial_vapour_mixing_ratio_profile&#39;
 
     def __init__(self, fastmath: bool = JIT_FLAGS[&#39;fastmath&#39;]):
         super().__init__(fastmath)
@@ -74,8 +75,9 @@ class Settings(StratoCumulus):
 <pre><code class="python">@strict
 class Settings(StratoCumulus):
     def __dir__(self) -&gt; Iterable[str]:
-        return &#39;dt&#39;, &#39;grid&#39;, &#39;size&#39;, &#39;n_spin_up&#39;, &#39;versions&#39;, &#39;steps_per_output_interval&#39;, &#39;formulae&#39;, \
-            &#39;initial_dry_potential_temperature_profile&#39;, &#39;initial_vapour_mixing_ratio_profile&#39;
+        return &#39;dt&#39;, &#39;grid&#39;, &#39;size&#39;, &#39;n_spin_up&#39;, &#39;versions&#39;, &#39;steps_per_output_interval&#39;,\
+               &#39;formulae&#39;, &#39;initial_dry_potential_temperature_profile&#39;,\
+               &#39;initial_vapour_mixing_ratio_profile&#39;
 
     def __init__(self, fastmath: bool = JIT_FLAGS[&#39;fastmath&#39;]):
         super().__init__(fastmath)

@@ -27,13 +27,13 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import numpy as np
-from PySDM_examples.Morrison_and_Grabowski_2007.common import Common
+from scipy.integrate import solve_ivp
 from PySDM.physics import si
 from PySDM.backends.impl_numba.conf import JIT_FLAGS
-from PySDM_examples.Szumowski_et_al_1998 import sounding
 from scipy.interpolate import interp1d
 from PySDM.physics import constants as const
-from scipy.integrate import solve_ivp
+from PySDM_examples.Morrison_and_Grabowski_2007.common import Common
+from PySDM_examples.Szumowski_et_al_1998 import sounding
 
 
 class Cumulus(Common):
@@ -59,12 +59,20 @@ class Cumulus(Common):
         p_of_z = interp1d(z_of_p, sounding.pressure)
         q_of_z = interp1d(z_of_p, sounding.mixing_ratio)
 
-        z_points_scalar = np.linspace(self.dz/2, self.size[-1]-self.dz/2, num=self.grid[-1], endpoint=True)
+        z_points_scalar = np.linspace(
+            self.dz/2,
+            self.size[-1]-self.dz/2,
+            num=self.grid[-1],
+            endpoint=True
+        )
         z_points_both = np.linspace(0, self.size[-1], num=2 * self.grid[-1] + 1, endpoint=True)
         rhod_of_z = self.__rhod_of_z(T_of_z, p_of_z, q_of_z, z_of_p, z_points_both)
         self.rhod = interp1d(z_points_both/self.size[-1], rhod_of_z)
         self.qv0 = q_of_z(z_points_scalar)
-        self.th_std0 = self.formulae.trivia.th_std(p_of_z(z_points_scalar), T_of_z(z_points_scalar))
+        self.th_std0 = self.formulae.trivia.th_std(
+            p_of_z(z_points_scalar),
+            T_of_z(z_points_scalar)
+        )
 
     def rhod_of_zZ(self, zZ):
         return self.rhod(zZ)
@@ -72,10 +80,15 @@ class Cumulus(Common):
     def __rhod_of_z(self, T_of_z, p_of_z, q_of_z, z_of_p, z_points):
         def drhod_dz(z, _):
             lv = self.formulae.latent_heat.lv(T_of_z(z))
-            return self.formulae.hydrostatics.drho_dz(const.g_std, p_of_z(z), T_of_z(z), q_of_z(z), lv)
+            return self.formulae.hydrostatics.drho_dz(
+                const.g_std, p_of_z(z), T_of_z(z), q_of_z(z), lv)
 
         theta_std0 = self.formulae.trivia.th_std(sounding.pressure[0], sounding.temperature[0])
-        rhod0 = self.formulae.state_variable_triplet.rho_d(sounding.pressure[0], sounding.mixing_ratio[0], theta_std0)
+        rhod0 = self.formulae.state_variable_triplet.rho_d(
+            sounding.pressure[0],
+            sounding.mixing_ratio[0],
+            theta_std0
+        )
         rhod_solution = solve_ivp(
             fun=drhod_dz,
             t_span=(0, np.amax(z_of_p)),
@@ -88,7 +101,11 @@ class Cumulus(Common):
     def __z_of_p(self):
         T_virt_of_p = interp1d(
             sounding.pressure,
-            sounding.temperature * (1 + sounding.mixing_ratio / const.eps) / (1 + sounding.mixing_ratio)
+            sounding.temperature * (
+                1 + sounding.mixing_ratio / const.eps
+            ) / (
+                1 + sounding.mixing_ratio
+            )
         )
 
         def dz_dp(p, _):
@@ -148,7 +165,8 @@ class Cumulus(Common):
         )
 
     def rhod(self, zZ):
-        p = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_qv(self.g, self.p0, self.th_std0, self.qv0, z=zZ * self.size[-1])
+        p = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_qv(
+            self.g, self.p0, self.th_std0, self.qv0, z=zZ * self.size[-1])
         rhod = self.formulae.state_variable_triplet.rho_d(p, self.qv0, self.th_std0)
         return rhod</code></pre>
 </details>
@@ -195,12 +213,20 @@ class Cumulus(Common):
         p_of_z = interp1d(z_of_p, sounding.pressure)
         q_of_z = interp1d(z_of_p, sounding.mixing_ratio)
 
-        z_points_scalar = np.linspace(self.dz/2, self.size[-1]-self.dz/2, num=self.grid[-1], endpoint=True)
+        z_points_scalar = np.linspace(
+            self.dz/2,
+            self.size[-1]-self.dz/2,
+            num=self.grid[-1],
+            endpoint=True
+        )
         z_points_both = np.linspace(0, self.size[-1], num=2 * self.grid[-1] + 1, endpoint=True)
         rhod_of_z = self.__rhod_of_z(T_of_z, p_of_z, q_of_z, z_of_p, z_points_both)
         self.rhod = interp1d(z_points_both/self.size[-1], rhod_of_z)
         self.qv0 = q_of_z(z_points_scalar)
-        self.th_std0 = self.formulae.trivia.th_std(p_of_z(z_points_scalar), T_of_z(z_points_scalar))
+        self.th_std0 = self.formulae.trivia.th_std(
+            p_of_z(z_points_scalar),
+            T_of_z(z_points_scalar)
+        )
 
     def rhod_of_zZ(self, zZ):
         return self.rhod(zZ)
@@ -208,10 +234,15 @@ class Cumulus(Common):
     def __rhod_of_z(self, T_of_z, p_of_z, q_of_z, z_of_p, z_points):
         def drhod_dz(z, _):
             lv = self.formulae.latent_heat.lv(T_of_z(z))
-            return self.formulae.hydrostatics.drho_dz(const.g_std, p_of_z(z), T_of_z(z), q_of_z(z), lv)
+            return self.formulae.hydrostatics.drho_dz(
+                const.g_std, p_of_z(z), T_of_z(z), q_of_z(z), lv)
 
         theta_std0 = self.formulae.trivia.th_std(sounding.pressure[0], sounding.temperature[0])
-        rhod0 = self.formulae.state_variable_triplet.rho_d(sounding.pressure[0], sounding.mixing_ratio[0], theta_std0)
+        rhod0 = self.formulae.state_variable_triplet.rho_d(
+            sounding.pressure[0],
+            sounding.mixing_ratio[0],
+            theta_std0
+        )
         rhod_solution = solve_ivp(
             fun=drhod_dz,
             t_span=(0, np.amax(z_of_p)),
@@ -224,7 +255,11 @@ class Cumulus(Common):
     def __z_of_p(self):
         T_virt_of_p = interp1d(
             sounding.pressure,
-            sounding.temperature * (1 + sounding.mixing_ratio / const.eps) / (1 + sounding.mixing_ratio)
+            sounding.temperature * (
+                1 + sounding.mixing_ratio / const.eps
+            ) / (
+                1 + sounding.mixing_ratio
+            )
         )
 
         def dz_dp(p, _):
@@ -284,7 +319,8 @@ class Cumulus(Common):
         )
 
     def rhod(self, zZ):
-        p = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_qv(self.g, self.p0, self.th_std0, self.qv0, z=zZ * self.size[-1])
+        p = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_qv(
+            self.g, self.p0, self.th_std0, self.qv0, z=zZ * self.size[-1])
         rhod = self.formulae.state_variable_triplet.rho_d(p, self.qv0, self.th_std0)
         return rhod</code></pre>
 </details>
@@ -404,7 +440,8 @@ def z0(z):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rhod(self, zZ):
-    p = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_qv(self.g, self.p0, self.th_std0, self.qv0, z=zZ * self.size[-1])
+    p = self.formulae.hydrostatics.p_of_z_assuming_const_th_and_qv(
+        self.g, self.p0, self.th_std0, self.qv0, z=zZ * self.size[-1])
     rhod = self.formulae.state_variable_triplet.rho_d(p, self.qv0, self.th_std0)
     return rhod</code></pre>
 </details>

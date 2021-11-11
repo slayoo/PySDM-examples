@@ -39,7 +39,7 @@ qi_unit = si.g / si.m ** 3
 
 def make_sampling_plot(data):
     ensemble_n = len(data) // 2
-    fig, axs = pyplot.subplots(nrows=ensemble_n, ncols=2)  # , constrained_layout=True)
+    _, axs = pyplot.subplots(nrows=ensemble_n, ncols=2)  # , constrained_layout=True)
     for i, v in enumerate(data):
         row = i % ensemble_n
         col = i // ensemble_n
@@ -66,11 +66,13 @@ def make_temperature_plot(data):
 
     xy2 = xy1.twinx()
     plotted = {singular: False for singular in (True, False)}
-    for i, v in enumerate(data):
+    for v in data:
         datum = v[&#39;products&#39;]
-        xy2.plot(datum[&#39;t&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit,  # marker=&#39;.&#39;,
-                 label=f&#34;Monte-Carlo ({labels[v[&#39;singular&#39;]]})&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
-                 color=colors[v[&#39;singular&#39;]])
+        xy2.plot(
+            datum[&#39;t&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit,  # marker=&#39;.&#39;,
+            label=f&#34;Monte-Carlo ({labels[v[&#39;singular&#39;]]})&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
+            color=colors[v[&#39;singular&#39;]]
+        )
         plotted[v[&#39;singular&#39;]] = True
     xy2.set_ylabel(&#39;ice water content [g/m3]&#39;)
 
@@ -79,17 +81,21 @@ def make_temperature_plot(data):
     xy2.legend()  # bbox_to_anchor=(.7, 1.15))
 
 
-def make_freezing_spec_plot(data, formulae, volume, droplet_volume, total_particle_number, surf_spec):
+def make_freezing_spec_plot(
+    data, formulae, volume, droplet_volume, total_particle_number, surf_spec
+):
     pyplot.xlabel(&#39;temperature [K]&#39;)
     plotted = {singular: False for singular in (True, False)}
 
     prim = pyplot.gca()
-    for i, v in enumerate(data):
+    for v in data:
         datum = v[&#39;products&#39;]
         color = colors[v[&#39;singular&#39;]]
-        prim.plot(datum[&#39;T_env&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit, marker=&#39;.&#39;, linewidth=.333,
-                  label=f&#34;Monte-Carlo: {labels[v[&#39;singular&#39;]]}&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
-                  color=color)
+        prim.plot(
+            datum[&#39;T_env&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit, marker=&#39;.&#39;, linewidth=.333,
+            label=f&#34;Monte-Carlo: {labels[v[&#39;singular&#39;]]}&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
+            color=color
+        )
         plotted[v[&#39;singular&#39;]] = True
 
     ff = FrozenFraction(
@@ -107,7 +113,9 @@ def make_freezing_spec_plot(data, formulae, volume, droplet_volume, total_partic
     for multiplier, color in {.1: &#39;orange&#39;, 1: &#39;red&#39;, 10: &#39;brown&#39;}.items():
         prim.plot(
             T,
-            ff.ff2qi(formulae.freezing_temperature_spectrum.cdf(T, multiplier * surf_spec.median)) / qi_unit,
+            ff.ff2qi(
+                formulae.freezing_temperature_spectrum.cdf(T, multiplier * surf_spec.median)
+            ) / qi_unit,
             label=f&#39;singular CDF for {multiplier}x median surface&#39;,
             linewidth=2.5,
             color=color,
@@ -158,17 +166,21 @@ def make_pdf_plot(A_spec, Shima_T_fz, A_range, T_range):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_freezing_spec_plot(data, formulae, volume, droplet_volume, total_particle_number, surf_spec):
+<pre><code class="python">def make_freezing_spec_plot(
+    data, formulae, volume, droplet_volume, total_particle_number, surf_spec
+):
     pyplot.xlabel(&#39;temperature [K]&#39;)
     plotted = {singular: False for singular in (True, False)}
 
     prim = pyplot.gca()
-    for i, v in enumerate(data):
+    for v in data:
         datum = v[&#39;products&#39;]
         color = colors[v[&#39;singular&#39;]]
-        prim.plot(datum[&#39;T_env&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit, marker=&#39;.&#39;, linewidth=.333,
-                  label=f&#34;Monte-Carlo: {labels[v[&#39;singular&#39;]]}&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
-                  color=color)
+        prim.plot(
+            datum[&#39;T_env&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit, marker=&#39;.&#39;, linewidth=.333,
+            label=f&#34;Monte-Carlo: {labels[v[&#39;singular&#39;]]}&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
+            color=color
+        )
         plotted[v[&#39;singular&#39;]] = True
 
     ff = FrozenFraction(
@@ -186,7 +198,9 @@ def make_pdf_plot(A_spec, Shima_T_fz, A_range, T_range):
     for multiplier, color in {.1: &#39;orange&#39;, 1: &#39;red&#39;, 10: &#39;brown&#39;}.items():
         prim.plot(
             T,
-            ff.ff2qi(formulae.freezing_temperature_spectrum.cdf(T, multiplier * surf_spec.median)) / qi_unit,
+            ff.ff2qi(
+                formulae.freezing_temperature_spectrum.cdf(T, multiplier * surf_spec.median)
+            ) / qi_unit,
             label=f&#39;singular CDF for {multiplier}x median surface&#39;,
             linewidth=2.5,
             color=color,
@@ -241,7 +255,7 @@ def make_pdf_plot(A_spec, Shima_T_fz, A_range, T_range):
 </summary>
 <pre><code class="python">def make_sampling_plot(data):
     ensemble_n = len(data) // 2
-    fig, axs = pyplot.subplots(nrows=ensemble_n, ncols=2)  # , constrained_layout=True)
+    _, axs = pyplot.subplots(nrows=ensemble_n, ncols=2)  # , constrained_layout=True)
     for i, v in enumerate(data):
         row = i % ensemble_n
         col = i // ensemble_n
@@ -277,11 +291,13 @@ def make_pdf_plot(A_spec, Shima_T_fz, A_range, T_range):
 
     xy2 = xy1.twinx()
     plotted = {singular: False for singular in (True, False)}
-    for i, v in enumerate(data):
+    for v in data:
         datum = v[&#39;products&#39;]
-        xy2.plot(datum[&#39;t&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit,  # marker=&#39;.&#39;,
-                 label=f&#34;Monte-Carlo ({labels[v[&#39;singular&#39;]]})&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
-                 color=colors[v[&#39;singular&#39;]])
+        xy2.plot(
+            datum[&#39;t&#39;], np.asarray(datum[&#39;qi&#39;]) / qi_unit,  # marker=&#39;.&#39;,
+            label=f&#34;Monte-Carlo ({labels[v[&#39;singular&#39;]]})&#34; if not plotted[v[&#39;singular&#39;]] else &#39;&#39;,
+            color=colors[v[&#39;singular&#39;]]
+        )
         plotted[v[&#39;singular&#39;]] = True
     xy2.set_ylabel(&#39;ice water content [g/m3]&#39;)
 
