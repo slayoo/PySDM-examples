@@ -57,7 +57,7 @@ def run(settings, backend):
 
 def main(plot: bool):
     settings = Settings()
-    settings._steps = [100, 3600] if &#39;CI&#39; not in os.environ else [1, 2]
+    settings.steps = [100, 3600] if &#39;CI&#39; not in os.environ else [1, 2]
 
     times = {}
     for backend in (ThrustRTC, Numba):
@@ -102,7 +102,7 @@ if __name__ == &#39;__main__&#39;:
 </summary>
 <pre><code class="python">def main(plot: bool):
     settings = Settings()
-    settings._steps = [100, 3600] if &#39;CI&#39; not in os.environ else [1, 2]
+    settings.steps = [100, 3600] if &#39;CI&#39; not in os.environ else [1, 2]
 
     times = {}
     for backend in (ThrustRTC, Numba):
