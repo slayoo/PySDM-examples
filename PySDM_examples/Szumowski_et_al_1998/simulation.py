@@ -1,21 +1,23 @@
+import numpy as np
 from PySDM.backends import CPU
 from PySDM.builder import Builder
-from PySDM.dynamics import Coalescence, Condensation, Displacement, EulerianAdvection, AmbientThermodynamics, Freezing
+from PySDM.dynamics import (
+    Coalescence, Condensation, Displacement, EulerianAdvection,
+    AmbientThermodynamics, Freezing
+)
 from PySDM.environments import Kinematic2D
-from PySDM.initialisation import spectral_sampling, spatial_sampling, spectro_glacial
+from PySDM.initialisation import spectral_sampling, spatial_sampling
 from PySDM import products as PySDM_products
 from PySDM_examples.Szumowski_et_al_1998.mpdata_2d import MPDATA_2D
 from PySDM_examples.utils import DummyController
-import numpy as np
 
 
 class Simulation:
-
-    def __init__(self, settings, storage, SpinUp, backend=CPU):
+    def __init__(self, settings, storage, SpinUp, backend_class=CPU):
         self.settings = settings
         self.storage = storage
         self.particulator = None
-        self.backend = backend
+        self.backend_class = backend_class
         self.SpinUp = SpinUp
 
     @property
@@ -23,14 +25,18 @@ class Simulation:
         return self.particulator.products
 
     def reinit(self, products=None):
-        builder = Builder(n_sd=self.settings.n_sd, backend=self.backend(formulae=self.settings.formulae))
+        backend = self.backend_class(formulae=self.settings.formulae)
+        builder = Builder(n_sd=self.settings.n_sd, backend=backend)
         environment = Kinematic2D(dt=self.settings.dt,
                                   grid=self.settings.grid,
                                   size=self.settings.size,
                                   rhod_of=self.settings.rhod_of_zZ)
         builder.set_environment(environment)
 
-        cloud_range = (self.settings.aerosol_radius_threshold, self.settings.drizzle_radius_threshold)
+        cloud_range = (
+            self.settings.aerosol_radius_threshold,
+            self.settings.drizzle_radius_threshold
+        )
         if products is not None:
             products = list(products)
         products = products or [
@@ -41,17 +47,25 @@ class Simulation:
                 radius_bins_edges=self.settings.r_bins_edges, normalise_by_dv=True),
             PySDM_products.TotalParticleConcentration(),
             PySDM_products.TotalParticleSpecificConcentration(),
-            PySDM_products.AerosolConcentration(radius_threshold=self.settings.aerosol_radius_threshold),
-            PySDM_products.CloudDropletConcentration(radius_range=cloud_range),
-            PySDM_products.WaterMixingRatio(name='qc', description_prefix='Cloud',
-                                            radius_range=cloud_range),
-            PySDM_products.WaterMixingRatio(name='qr', description_prefix='Rain',
-                                            radius_range=(self.settings.drizzle_radius_threshold, np.inf)),
-            PySDM_products.DrizzleConcentration(radius_threshold=self.settings.drizzle_radius_threshold),
-            PySDM_products.AerosolSpecificConcentration(radius_threshold=self.settings.aerosol_radius_threshold),
+            PySDM_products.AerosolConcentration(
+                radius_threshold=self.settings.aerosol_radius_threshold),
+            PySDM_products.CloudDropletConcentration(
+                radius_range=cloud_range),
+            PySDM_products.WaterMixingRatio(
+                name='qc', description_prefix='Cloud', radius_range=cloud_range),
+            PySDM_products.WaterMixingRatio(
+                name='qr', description_prefix='Rain',
+                radius_range=(self.settings.drizzle_radius_threshold, np.inf)
+            ),
+            PySDM_products.DrizzleConcentration(
+                radius_threshold=self.settings.drizzle_radius_threshold),
+            PySDM_products.AerosolSpecificConcentration(
+                radius_threshold=self.settings.aerosol_radius_threshold),
             PySDM_products.ParticleMeanRadius(),
             PySDM_products.SuperDropletCount(),
-            PySDM_products.RelativeHumidity(), PySDM_products.Pressure(), PySDM_products.Temperature(),
+            PySDM_products.RelativeHumidity(),
+            PySDM_products.Pressure(),
+            PySDM_products.Temperature(),
             PySDM_products.WaterVapourMixingRatio(),
             PySDM_products.DryAirDensity(),
             PySDM_products.DryAirPotentialTemperature(),
@@ -80,7 +94,9 @@ class Simulation:
             products.append(PySDM_products.RipeningRate())
         displacement = None
         if self.settings.processes["particle advection"]:
-            displacement = Displacement(enable_sedimentation=self.settings.processes["sedimentation"])
+            displacement = Displacement(
+                enable_sedimentation=self.settings.processes["sedimentation"]
+            )
         if self.settings.processes['fluid advection']:
             initial_profiles = {
                     'th': self.settings.initial_dry_potential_temperature_profile,
@@ -125,19 +141,21 @@ class Simulation:
         if self.settings.processes["freezing"]:
             builder.add_dynamic(Freezing())
             products.append(PySDM_products.IceWaterContent())
-            products.append(PySDM_products.FreezableSpecificConcentration(self.settings.T_bins_edges))
+            products.append(PySDM_products.FreezableSpecificConcentration(
+                self.settings.T_bins_edges))
             products.append(PySDM_products.ParticlesConcentration(specific=True))
 
         kw = {}
         if self.settings.processes["freezing"]:
-            kw['spectro_glacial_discretisation'] = spectro_glacial.Independent(
-                size_spectrum=self.settings.spectrum_per_mass_of_dry_air,
-                freezing_temperature_spectrum=self.settings.formulae.freezing_temperature_spectrum
-            )
-        else:
-            kw['spectral_discretisation'] = spectral_sampling.UniformRandom(
-                spectrum=self.settings.spectrum_per_mass_of_dry_air
-            )
+            raise NotImplementedError()
+            # kw['spectro_glacial_discretisation'] = spectro_glacial.Independent(
+            #     size_spectrum=self.settings.spectrum_per_mass_of_dry_air,
+            #     freezing_temperature_spectrum=self.settings.formulae.freezing_temperature_spectrum
+            # )
+        # else:
+        kw['spectral_discretisation'] = spectral_sampling.UniformRandom(
+            spectrum=self.settings.spectrum_per_mass_of_dry_air
+        )
 
         attributes = environment.init_attributes(
             spatial_discretisation=spatial_sampling.Pseudorandom(),
@@ -146,7 +164,7 @@ class Simulation:
         )
 
         if self.settings.processes["freezing"]:
-            attributes['spheroid mass'] = np.zeros(self.settings.n_sd),
+            attributes['spheroid mass'] = np.zeros(self.settings.n_sd)
 
         self.particulator = builder.build(attributes, products)
         if self.SpinUp is not None:
@@ -163,7 +181,7 @@ class Simulation:
                 self.particulator.run(step - self.particulator.n_steps)
 
                 self.store(step)
-                
+
                 if vtk_exporter is not None:
                     vtk_exporter.export_attributes(self.particulator)
                     vtk_exporter.export_products(self.particulator)

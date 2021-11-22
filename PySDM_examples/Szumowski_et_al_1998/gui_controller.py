@@ -1,9 +1,9 @@
-from PySDM_examples.utils.widgets import FloatProgress, Button, HBox, Checkbox
 from time import sleep
 import shutil
 from threading import Thread
 from tempfile import TemporaryDirectory
 from PySDM.exporters import VTKExporter
+from PySDM_examples.utils.widgets import FloatProgress, Button, HBox, Checkbox
 
 
 class GUIController:
@@ -45,7 +45,13 @@ class GUIController:
         self.vtk_exporter = None
 
     def box(self):
-        netcdf_box = Checkbox(description='netCDF output', disabled=True, value=True, indent=False, layout={'width': '125px'})
+        netcdf_box = Checkbox(
+            description='netCDF output',
+            disabled=True,
+            value=True,
+            indent=False,
+            layout={'width': '125px'}
+        )
         return HBox([self.progress, self.button, netcdf_box, self.checkbox, self.link])
 
     def set_percent(self, value):

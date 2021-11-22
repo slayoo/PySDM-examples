@@ -1,14 +1,9 @@
-"""
-Created at 08.08.2019
-"""
 import os
-
 import numpy as np
-
 from PySDM.physics.coalescence_kernels import Geometric, Hydrodynamic, Electric
+from PySDM.physics.terminal_velocity import gunn_and_kinzer
 from PySDM_examples.Berry_1967.settings import Settings
 from PySDM_examples.Berry_1967.spectrum_plotter import SpectrumPlotter
-from PySDM.physics.terminal_velocity import gunn_and_kinzer
 from PySDM_examples.Shima_et_al_2009.example import run
 
 
@@ -28,31 +23,31 @@ def main(plot: bool, save):
             for dt in dts:
                 setups[u_term_approx][dt] = {}
 
-                for kernel in setup_prop:
+                for kernel_type, steps in setup_prop.items():
                     s = Settings()
                     s.dt = 10 if dt == 'adaptive' else dt
                     s.adaptive = dt == 'adaptive'
-                    s.kernel = kernel()
-                    s._steps = setup_prop[kernel]
-                    setups[u_term_approx][dt][kernel] = s
+                    s.kernel = kernel_type()
+                    s._steps = steps
+                    setups[u_term_approx][dt][kernel_type] = s
 
         states = {}
-        for u_term_approx in setups:
+        for u_term_approx, setup in setups.items():
             states[u_term_approx] = {}
-            for dt in setups[u_term_approx]:
+            for dt in setup:
                 states[u_term_approx][dt] = {}
-                for kernel in setups[u_term_approx][dt]:
-                    states[u_term_approx][dt][kernel], _ = run(setups[u_term_approx][dt][kernel])
+                for kernel in setup[dt]:
+                    states[u_term_approx][dt][kernel], _ = run(setup[dt][kernel])
 
     if plot or save is not None:
-        for u_term_approx in setups:
-            for dt in setups[u_term_approx]:
-                for kernel in setups[u_term_approx][dt]:
-                    plotter = SpectrumPlotter(setups[u_term_approx][dt][kernel], legend=True)
+        for u_term_approx, setup in setups.items():
+            for dt in setup:
+                for kernel in setup[dt]:
+                    plotter = SpectrumPlotter(setup[dt][kernel], legend=True)
                     for step, vals in states[u_term_approx][dt][kernel].items():
-                        plotter.plot(vals, step * setups[u_term_approx][dt][kernel].dt)
+                        plotter.plot(vals, step * setup[dt][kernel].dt)
                     if save is not None:
-                        n_sd = setups[u_term_approx][dt][kernel].n_sd
+                        n_sd = setup[dt][kernel].n_sd
                         plotter.save(save + "/" +
                                      f"{n_sd}_{u_term_approx.__name__}_{dt}_{kernel.__name__}" +
                                      "." + plotter.format)

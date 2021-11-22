@@ -1,8 +1,8 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy.optimize import minimize
 from PySDM.physics import constants as const
 from PySDM.backends import CPU
-from matplotlib import pyplot as plt
-import numpy as np
-from scipy.optimize import minimize
 
 backend = CPU
 um = const.si.um
@@ -15,22 +15,22 @@ def full_params(params):
 def print_collection_efficiency_portrait(params):
     size = 2 * 5.236
     plt.figure(num=1, figsize=(size / 2, size))
-    radii = (8, 10, 14, 16, 20, 30, 40, 60, 80, 136)
-    radii = (r * const.si.um for r in radii)
     points = 200
     Y_c = np.zeros(points)
-    p = np.linspace(0, 1, points)
+    x_values = np.linspace(0, 1, points)
     pair = np.array([0., 0.])
     is_first_in_pair = np.array([True, False])
     idx = np.arange(len(is_first_in_pair))
-    for r in radii:
+    for r in (radius * const.si.um for radius in (8, 10, 14, 16, 20, 30, 40, 60, 80, 136)):
         pair[0] = r
-        for i in range(len(p)):
-            pair[1] = p[i] * r
-            backend.linear_collection_efficiency_body(params=full_params(params),
-                                                 output=Y_c[i:i + 1], radii=pair,
-                                                 is_first_in_pair=is_first_in_pair, idx=idx, length=2, unit=1 * um)
-        plt.plot(p, Y_c, label=f'{r / const.si.um}um')
+        for i, _ in enumerate(x_values):
+            pair[1] = x_values[i] * r
+            backend.linear_collection_efficiency_body(
+                params=full_params(params),
+                output=Y_c[i:i + 1], radii=pair,
+                is_first_in_pair=is_first_in_pair, idx=idx, length=2, unit=1 * um
+            )
+        plt.plot(x_values, Y_c, label=f'{r / const.si.um}um')
     xticks = np.arange(11) / 10
     yticks = np.arange(21) / 10
     plt.xticks(xticks, xticks)
@@ -57,13 +57,15 @@ def Y_c_portrait(params, ):
     is_first_in_pair = np.array([True, False])
     idx = np.arange(len(is_first_in_pair))
     pair = np.array([0., 0.])
-    for i in range(len(radii)):
+    for i, _ in enumerate(radii):
         pair[0] = radii[i]
-        for j in range(len(p)):
+        for j, __ in enumerate(p):
             pair[1] = p[j] * radii[i]
-            backend.linear_collection_efficiency_body(params=full_params(params),
-                                                 output=Y_c[i:i + 1, j], radii=pair,
-                                                 is_first_in_pair=is_first_in_pair, idx=idx,length=2, unit=1 * um)
+            backend.linear_collection_efficiency_body(
+                params=full_params(params),
+                output=Y_c[i:i + 1, j], radii=pair,
+                is_first_in_pair=is_first_in_pair, idx=idx,length=2, unit=1 * um
+            )
     return Y_c
 
 

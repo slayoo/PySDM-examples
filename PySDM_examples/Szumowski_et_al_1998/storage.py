@@ -1,7 +1,7 @@
 import os
 import tempfile
-import numpy as np
 from pathlib import Path
+import numpy as np
 
 
 class Storage:
@@ -45,7 +45,6 @@ class Storage:
     def load(self, name: str, step: int = None) -> np.ndarray:
         try:
             data = np.load(self._filepath(name, step))
-        except FileNotFoundError:
-            raise Storage.Exception()
+        except FileNotFoundError as err:
+            raise Storage.Exception() from err
         return data
-

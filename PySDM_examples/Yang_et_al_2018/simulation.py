@@ -10,11 +10,14 @@ import PySDM.products as PySDM_products
 class Simulation:
 
     def __init__(self, settings, backend=CPU):
-        dt_output = settings.total_time / settings.n_steps  # TODO #334 overwritten in jupyter example
+        dt_output = settings.total_time / settings.n_steps  # TODO #334 overwritten in notebook
         self.n_substeps = 1  # TODO #334 use condensation substeps
-        while (dt_output / self.n_substeps >= settings.dt_max):
+        while dt_output / self.n_substeps >= settings.dt_max:
             self.n_substeps += 1
-        self.formulae = Formulae(condensation_coordinate=settings.coord, saturation_vapour_pressure='AugustRocheMagnus')
+        self.formulae = Formulae(
+            condensation_coordinate=settings.coord,
+            saturation_vapour_pressure='AugustRocheMagnus'
+        )
         self.bins_edges = self.formulae.trivia.volume(settings.r_bins_edges)
         builder = Builder(backend=backend(formulae=self.formulae), n_sd=settings.n_sd)
         builder.set_environment(Parcel(
@@ -55,25 +58,26 @@ class Simulation:
         self.n_steps = settings.n_steps
 
     def save(self, output):
+        _sp = self.particulator
         cell_id = 0
-        output["r_bins_values"].append(self.particulator.products["Particles Wet Size Spectrum"].get())
-        volume = self.particulator.attributes['volume'].to_ndarray()
+        output["r_bins_values"].append(_sp.products["Particles Wet Size Spectrum"].get())
+        volume = _sp.attributes['volume'].to_ndarray()
         output["r"].append(self.formulae.trivia.radius(volume=volume))
-        output["S"].append(self.particulator.environment["RH"][cell_id] - 1)
-        output["qv"].append(self.particulator.environment["qv"][cell_id])
-        output["T"].append(self.particulator.environment["T"][cell_id])
-        output["z"].append(self.particulator.environment["z"][cell_id])
-        output["t"].append(self.particulator.environment["t"][cell_id])
-        output["dt_cond_max"].append(self.particulator.products["dt_cond_max"].get()[cell_id].copy())
-        output["dt_cond_min"].append(self.particulator.products["dt_cond_min"].get()[cell_id].copy())
-        output['ripening_rate'].append(self.particulator.products['ripening_rate'].get()[cell_id].copy())
+        output["S"].append(_sp.environment["RH"][cell_id] - 1)
+        output["qv"].append(_sp.environment["qv"][cell_id])
+        output["T"].append(_sp.environment["T"][cell_id])
+        output["z"].append(_sp.environment["z"][cell_id])
+        output["t"].append(_sp.environment["t"][cell_id])
+        output["dt_cond_max"].append(_sp.products["dt_cond_max"].get()[cell_id].copy())
+        output["dt_cond_min"].append(_sp.products["dt_cond_min"].get()[cell_id].copy())
+        output['ripening_rate'].append(_sp.products['ripening_rate'].get()[cell_id].copy())
 
     def run(self):
         output = {"r": [], "S": [], "z": [], "t": [], "qv": [], "T": [],
                   "r_bins_values": [], "dt_cond_max": [], "dt_cond_min": [], "ripening_rate": []}
 
         self.save(output)
-        for step in range(self.n_steps):
+        for _ in range(self.n_steps):
             self.particulator.run(self.n_substeps)
             self.save(output)
         return output

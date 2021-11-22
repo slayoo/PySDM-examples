@@ -1,11 +1,13 @@
 from PyMPDATA import Solver, Stepper, Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Extrapolated
-from PySDM.state import arakawa_c
+from PySDM.impl import arakawa_c
 import numpy as np
 
 
 class MPDATA_1D:
-    def __init__(self, nz, dt, advector_of_t, advectee_of_zZ_at_t0, g_factor_of_zZ, mpdata_settings):
+    def __init__(
+        self, nz, dt, advector_of_t, advectee_of_zZ_at_t0, g_factor_of_zZ, mpdata_settings
+    ):
         self.t = 0
         self.dt = dt
         self.advector_of_t = advector_of_t
@@ -34,7 +36,12 @@ class MPDATA_1D:
             halo=options.n_halo,
             boundary_conditions=bcs
         )
-        self.solver = Solver(stepper=stepper, advectee=self.advectee, advector=advector, g_factor=g_factor)
+        self.solver = Solver(
+            stepper=stepper,
+            advectee=self.advectee,
+            advector=advector,
+            g_factor=g_factor
+        )
 
     def __call__(self):
         self.t += .5 * self.dt

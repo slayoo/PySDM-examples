@@ -1,10 +1,11 @@
 import numpy as np
-from PySDM.physics import constants as const
-from atmos_cloud_sim_uj_utils import save_and_make_link
-from PySDM_examples.utils.widgets import VBox, Box, Play, Output, IntSlider, IntRangeSlider, jslink, \
-    HBox, Dropdown, Button, Layout, clear_output, display
-from PySDM_examples.Szumowski_et_al_1998.plots import _ImagePlot, _SpectrumPlot, _TimeseriesPlot, _TemperaturePlot
 from matplotlib import pyplot, rcParams
+from atmos_cloud_sim_uj_utils import save_and_make_link
+from PySDM.physics import constants as const
+from PySDM_examples.utils.widgets import VBox, Box, Play, Output, IntSlider, IntRangeSlider,\
+    jslink, HBox, Dropdown, Button, Layout, clear_output, display
+from PySDM_examples.Szumowski_et_al_1998.plots import _ImagePlot, _SpectrumPlot, _TimeseriesPlot,\
+    _TemperaturePlot
 
 
 class GUIViewer:
@@ -61,7 +62,8 @@ class GUIViewer:
             self.spectrumOutputs[key] = Output()
             with self.spectrumOutputs[key]:
                 self.spectrumPlots[key] = \
-                    _SpectrumPlot(r_bins, self.settings.spectrum_per_mass_of_dry_air) if key == 'size' else \
+                    _SpectrumPlot(r_bins, self.settings.spectrum_per_mass_of_dry_air) \
+                    if key == 'size' else \
                     _TemperaturePlot(self.settings.T_bins_edges, self.settings.formulae)
                 clear_output()
 
@@ -70,7 +72,9 @@ class GUIViewer:
             default_figsize = rcParams["figure.figsize"]
             fig_kw = {'figsize': (2.5 * default_figsize[0], default_figsize[1] / 2)}
             fig, ax = pyplot.subplots(1, 1, **fig_kw)
-            self.timeseriesPlot = _TimeseriesPlot(fig, ax, self.settings.output_steps * self.settings.dt)
+            self.timeseriesPlot = _TimeseriesPlot(
+                fig, ax, self.settings.output_steps * self.settings.dt
+            )
             clear_output()
 
         self.plots = {}
@@ -80,7 +84,10 @@ class GUIViewer:
                 self.outputs[key] = Output()
                 with self.outputs[key]:
                     fig, ax = pyplot.subplots(1, 1)
-                    self.plots[key] = _ImagePlot(fig, ax, self.settings.grid, self.settings.size, product, show=True, lines=True)
+                    self.plots[key] = _ImagePlot(fig, ax,
+                                                 self.settings.grid,
+                                                 self.settings.size,
+                                                 product, show=True, lines=True)
                     clear_output()
 
         self.plot_box = Box()
@@ -139,7 +146,7 @@ class GUIViewer:
     def handle_save_spe(self, _):
         display(save_and_make_link(self.spectrumPlots[self.spectrum_select.value].fig))
 
-    def replot(self, *args, **kwargs):
+    def replot(self, *_):
         selectedImage = self.product_select.value
         if not (selectedImage is None or selectedImage not in self.plots):
             self.update_image()
@@ -190,7 +197,10 @@ class GUIViewer:
                 conc = self.storage.load('n_part_mg', self.settings.output_steps[step])
                 conc = conc[xrange, yrange]
 
-                data = self.storage.load('Freezable specific concentration', self.settings.output_steps[step])
+                data = self.storage.load(
+                    'Freezable specific concentration',
+                    self.settings.output_steps[step]
+                )
                 data = data[xrange, yrange, :]
 
                 data = np.sum(np.sum(data, axis=0), axis=0) / np.sum(np.sum(conc, axis=0), axis=0)
@@ -202,7 +212,7 @@ class GUIViewer:
         else:
             raise NotImplementedError()
 
-    def replot_spectra(self, *args, **kwargs):
+    def replot_spectra(self, *_):
         self.update_spectra()
 
         selected = self.product_select.value
@@ -233,7 +243,7 @@ class GUIViewer:
 
         self.plots[selected].update(data, step)
 
-    def replot_image(self, *args, **kwargs):
+    def replot_image(self, *_):
         selected = self.product_select.value
         if selected is None or selected not in self.plots:
             return

@@ -52,12 +52,12 @@ class Settings:
         ).sample(n_sd)
 
         self.ENVIRONMENT_MOLE_FRACTIONS = {
-            "SO2": 0.2 * const.ppb,
-            "O3": 50 * const.ppb,
-            "H2O2": 0.5 * const.ppb,
-            "CO2": 360 * const.ppm,
-            "HNO3": 0.1 * const.ppb,
-            "NH3": 0.1 * const.ppb,
+            "SO2": 0.2 * const.PPB,
+            "O3": 50 * const.PPB,
+            "H2O2": 0.5 * const.PPB,
+            "CO2": 360 * const.PPM,
+            "HNO3": 0.1 * const.PPB,
+            "NH3": 0.1 * const.PPB,
         }
 
         self.starting_amounts = {
@@ -65,10 +65,15 @@ class Settings:
                 self.formulae.trivia.volume(self.r_dry) * self.DRY_RHO / self.dry_molar_mass
                 if k in ("N_mIII", "S_VI")
                 else np.zeros(self.n_sd)
-            for k in AQUEOUS_COMPOUNDS.keys()
+            for k in AQUEOUS_COMPOUNDS
         }
-        
-        self.dry_radius_bins_edges = np.logspace(np.log10(.01 * si.um), np.log10(1 * si.um), 51, endpoint=True) / 2
+
+        self.dry_radius_bins_edges = np.logspace(
+            np.log10(.01 * si.um),
+            np.log10(1 * si.um),
+            51,
+            endpoint=True
+        ) / 2
 
     @property
     def nt(self):

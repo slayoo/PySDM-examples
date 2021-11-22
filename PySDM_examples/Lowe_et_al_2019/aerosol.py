@@ -1,6 +1,6 @@
 from pystrict import strict
-from PySDM.physics import spectra, si, constants as const
 from chempy import Substance
+from PySDM.physics import spectra, si, constants as const
 
 compounds = ('palmitic', 'SOA1', 'SOA2', '(NH4)2SO4', 'NH4NO3', 'NaCl')
 
@@ -40,38 +40,45 @@ ionic_dissociation_phi = {
     'NaCl': 2
 }
 
+
 def volume_fractions(mass_fractions: dict):
-    volume_fractions = {
+    return {
         k: (mass_fractions[k] / densities[k]) / sum(
             mass_fractions[i] / densities[i] for i in compounds
         ) for k in compounds
     }
-    return volume_fractions
+
 
 def f_org_volume(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
     return sum(is_organic[k] * volfrac[k] for k in compounds)
 
+
 def kappa(mass_fractions: dict):
-    kappa = {}
+    result = {}
     for model in ('bulk', 'film'):
         volfrac = volume_fractions(mass_fractions)
         molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
 
         _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
-        volume_fractions_of_just_inorg = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
+        volume_fractions_of_just_inorg = {
+            k: _masked[k] / sum(list(_masked.values())) for k in compounds
+        }
 
         if model == 'film':
-            ns_per_vol = (1 - f_org_volume(mass_fractions))  * sum(
-                ionic_dissociation_phi[i] * volume_fractions_of_just_inorg[i] / molar_volumes[i] for i in compounds
+            ns_per_vol = (1 - f_org_volume(mass_fractions)) * sum(
+                ionic_dissociation_phi[i] * volume_fractions_of_just_inorg[i] / molar_volumes[i]
+                for i in compounds
             )
         elif model == 'bulk':
-            ns_per_vol = sum(ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i] for i in compounds)
+            ns_per_vol = sum(ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i]
+                             for i in compounds)
         else:
             raise AssertionError()
-        kappa[model] = ns_per_vol * const.Mv / const.rho_w
+        result[model] = ns_per_vol * const.Mv / const.rho_w
 
-    return kappa
+    return result
+
 
 class _Aerosol:
     pass
@@ -82,6 +89,7 @@ class AerosolMarine(_Aerosol):
     def __init__(self, Acc_Forg: float = 0.2, Acc_N2: float = 134):
         Aitken = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': .8, 'NH4NO3': 0, 'NaCl': 0}
         Accumulation = {'palmitic': Acc_Forg, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': 0, 'NaCl': (1-Acc_Forg)}
+
         self.aerosol_modes_per_cc = (
         {
             'f_org': f_org_volume(Aitken),
@@ -104,12 +112,28 @@ class AerosolMarine(_Aerosol):
     )
     color = 'dodgerblue'
 
+
 @strict
 class AerosolBoreal(_Aerosol):
     def __init__(self, Acc_Forg: float = 0.668, Acc_N2: float = 540):
         # note: SOA1 or SOA2 unclear from the paper
-        Aitken = {'palmitic': 0, 'SOA1': 0.668, 'SOA2': 0, '(NH4)2SO4': 0.166, 'NH4NO3': 0.166, 'NaCl': 0}
-        Accumulation = {'palmitic': 0, 'SOA1': 0, 'SOA2': Acc_Forg, '(NH4)2SO4': (1-Acc_Forg)/2, 'NH4NO3': (1-Acc_Forg)/2, 'NaCl': 0}
+        Aitken = {
+            'palmitic': 0, 
+            'SOA1': 0.668, 
+            'SOA2': 0, 
+            '(NH4)2SO4': 0.166, 
+            'NH4NO3': 0.166, 
+            'NaCl': 0
+        }
+        Accumulation = {
+            'palmitic': 0, 
+            'SOA1': 0, 
+            'SOA2': Acc_Forg, 
+            '(NH4)2SO4': (1-Acc_Forg)/2, 
+            'NH4NO3': (1-Acc_Forg)/2, 
+            'NaCl': 0
+        }
+
         self.aerosol_modes_per_cc = (
         {
             'f_org': f_org_volume(Aitken),
@@ -139,23 +163,23 @@ class AerosolNascent(_Aerosol):
         Ultrafine = {'palmitic': 0, 'SOA1': .52, 'SOA2': 0, '(NH4)2SO4': .48, 'NH4NO3': 0, 'NaCl': 0}
         Accumulation = {'palmitic': 0, 'SOA1': 0, 'SOA2': Acc_Forg, '(NH4)2SO4': (1-Acc_Forg), 'NH4NO3': 0, 'NaCl': 0}
         self.aerosol_modes_per_cc = (
-        {
-            'f_org': f_org_volume(Ultrafine),
-            'kappa': kappa(Ultrafine),
-            'spectrum': spectra.Lognormal(
-                norm_factor=2000 / si.cm ** 3,
-                m_mode=11.5 * si.nm,
-                s_geom=1.71
-            )
-        },
-        {
-            'f_org': f_org_volume(Accumulation),
-            'kappa': kappa(Accumulation),
-            'spectrum': spectra.Lognormal(
-                norm_factor=Acc_N2 / si.cm ** 3,
-                m_mode=100 * si.nm,
-                s_geom=1.70
-            ),
-        }
-    )
+            {
+                'f_org': f_org_volume(Ultrafine),
+                'kappa': kappa(Ultrafine),
+                'spectrum': spectra.Lognormal(
+                    norm_factor=2000 / si.cm ** 3,
+                    m_mode=11.5 * si.nm,
+                    s_geom=1.71
+                )
+            },
+            {
+                'f_org': f_org_volume(Accumulation),
+                'kappa': kappa(Accumulation),
+                'spectrum': spectra.Lognormal(
+                    norm_factor=Acc_N2 / si.cm ** 3,
+                    m_mode=100 * si.nm,
+                    s_geom=1.70
+                ),
+            }
+        )
     color = 'orangered'

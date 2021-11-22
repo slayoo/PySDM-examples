@@ -9,7 +9,11 @@ from pystrict import strict
 @strict
 class Settings:
 
-    def __init__(self, n_sd: int = 100, dt_output: float = 1 * si.second, dt_max: float = 1 * si.second):
+    def __init__(self,
+                 n_sd: int = 100,
+                 dt_output: float = 1 * si.second,
+                 dt_max: float = 1 * si.second
+     ):
         self.total_time = 3 * si.hours
         self.mass_of_dry_air = 1000 * si.kilogram  # TODO #335 doubled with jupyter si unit
 
@@ -31,9 +35,9 @@ class Settings:
         self.backend = CPU
         self.coord = 'VolumeLogarithm'
         self.adaptive = True
-        self.rtol_x = condensation.default_rtol_x
-        self.rtol_thd = condensation.default_rtol_thd
-        self.dt_cond_range = condensation.default_cond_range
+        self.rtol_x = condensation.DEFAULTS.rtol_x
+        self.rtol_thd = condensation.DEFAULTS.rtol_thd
+        self.dt_cond_range = condensation.DEFAULTS.cond_range
 
         self.T0 = 284.3 * si.kelvin
         self.q0 = 7.6 * si.grams / si.kilogram
@@ -45,5 +49,6 @@ class Settings:
         self.f0 = 1 / 1000 * si.hertz
 
     def w(self, t):
-        return .5 * (np.where(t < self.t0, 1, np.sign(-np.sin(2 * np.pi * self.f0 * (t - self.t0))))) \
-               * si.metre / si.second
+        return .5 * (
+            np.where(t < self.t0, 1, np.sign(-np.sin(2 * np.pi * self.f0 * (t - self.t0))))
+        ) * si.metre / si.second

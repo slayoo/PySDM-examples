@@ -3,7 +3,7 @@ from pystrict import strict
 from PySDM.initialisation import spectral_sampling as spec_sampling
 from PySDM.physics import si, Formulae, constants as const
 from PySDM_examples.Lowe_et_al_2019.aerosol import _Aerosol
-from PySDM.dynamics.condensation import default_rtol_x, default_rtol_thd
+from PySDM.dynamics.condensation import DEFAULTS
 
 @strict
 class Settings:
@@ -12,14 +12,14 @@ class Settings:
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  w: float = 0.32 * si.m / si.s,
-                 rtol_x: float = default_rtol_x,
-                 rtol_thd: float = default_rtol_thd
+                 rtol_x: float = DEFAULTS.rtol_x,
+                 rtol_thd: float = DEFAULTS.rtol_x
                  ):
         assert model in ('bulk', 'film')
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
         self.formulae = Formulae(
-            surface_tension='CompressedFilm_Ovadnevaite' if model == 'film' else 'Constant'
+            surface_tension='CompressedFilmOvadnevaite' if model == 'film' else 'Constant'
         )
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
@@ -43,8 +43,13 @@ class Settings:
         )
 
         self.mass_of_dry_air = 44
-        
-        self.wet_radius_bins_edges = np.logspace(np.log10(4 * si.um), np.log10(12 * si.um), 128+1, endpoint=True)
+
+        self.wet_radius_bins_edges = np.logspace(
+            np.log10(4 * si.um),
+            np.log10(12 * si.um),
+            128+1,
+            endpoint=True
+        )
 
     @property
     def rho0(self):
@@ -64,4 +69,3 @@ class Settings:
     @property
     def output_steps(self) -> np.ndarray:
         return np.arange(0, self.nt + 1, self.steps_per_output_interval)
-

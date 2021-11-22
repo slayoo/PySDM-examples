@@ -1,5 +1,4 @@
 import os
-
 from matplotlib import pyplot as plt
 from PySDM_examples.Shima_et_al_2009.settings import Settings
 from PySDM_examples.Shima_et_al_2009.example import run
@@ -44,9 +43,11 @@ def main(plot: bool = True, save: str = None):
             for step, vals in mean_output.items():
                 plotter.plot(vals, step * settings.dt)
 
-            plotter.ylabel = r'$\bf{dt: ' + str(dt) + '}$\ndm/dlnr [g/m^3/(unit dr/r)]' if j == 0 else None
+            plotter.ylabel = r'$\bf{dt: ' + str(dt) + '}$\ndm/dlnr [g/m^3/(unit dr/r)]' \
+                if j == 0 else None
             plotter.xlabel = 'particle radius [µm]\n' \
-                             + r'$\bf{n_{sd}: 2^{' + str(n_sd) + '}}$' if i == len(dts) - 1 else None
+                             + r'$\bf{n_{sd}: 2^{' + str(n_sd) + '}}$'\
+                if i == len(dts) - 1 else None
             plotter.title = f'norm. time: {norm_time:.2f}; ' + plotter.title
             plotter.finished = False
             plotter.finish()

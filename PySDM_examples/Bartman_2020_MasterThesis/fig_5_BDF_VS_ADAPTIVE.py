@@ -1,13 +1,12 @@
 import os
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.collections import LineCollection
+from PySDM.backends.impl_numba.test_helpers import bdf
+from PySDM.backends import CPU, GPU
 from PySDM_examples.Arabas_and_Shima_2017.simulation import Simulation
 from PySDM_examples.Arabas_and_Shima_2017.settings import setups
-from PySDM.backends.numba.test_helpers import bdf
-from PySDM.backends import CPU, GPU
 
 
 def data(n_output, rtols, schemes, setups_num):
@@ -53,7 +52,7 @@ def add_color_line(fig, ax, x, y, z):
     fig.colorbar(lc, ax=ax)
 
 
-def plot(data, rtols, schemes, setups_num, show_plot, path=None):
+def plot(plot_data, rtols, schemes, setups_num, show_plot, path=None):
     _rtol = '$r_{tol}$'
 
     plt.ioff()
@@ -62,10 +61,10 @@ def plot(data, rtols, schemes, setups_num, show_plot, path=None):
     for settings_idx in range(setups_num):
         BDF_S = None
         PySDM_S = None
-        for rtol_idx in range(len(rtols)):
+        for rtol_idx, _ in enumerate(rtols):
             ax = axs[settings_idx, rtol_idx]
             for scheme in schemes:
-                datum = data[scheme][rtols[rtol_idx]][settings_idx]
+                datum = plot_data[scheme][rtols[rtol_idx]][settings_idx]
                 S = datum['S']
                 z = datum['z']
                 dt = datum['dt_cond_min']

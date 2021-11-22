@@ -61,7 +61,7 @@ class Simulation:
 
     def save(self, output):
         cell_id = 0
-        output["r"].append(self.particulator.products['radius_m1'].get(unit=const.si.metre)[cell_id])
+        output["r"].append(self.particulator.products['radius_m1'].get(unit=const.si.m)[cell_id])
         output["dt_cond_min"].append(self.particulator.products['dt_cond_min'].get()[cell_id])
         output["z"].append(self.particulator.products["z"].get()[cell_id])
         output["S"].append(self.particulator.products["RH_env"].get()[cell_id]/100 - 1)
