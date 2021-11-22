@@ -2,7 +2,7 @@ class Freezer:
     def __init__(self, widgets):
         self.widgets = widgets
 
-    def observe(*args, **kwargs):
+    def observe(self, *_):
         pass
 
     @property

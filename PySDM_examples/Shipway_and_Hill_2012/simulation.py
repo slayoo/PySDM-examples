@@ -1,13 +1,14 @@
+import numpy as np
 from PySDM.environments.kinematic_1d import Kinematic1D
 from PySDM.backends import CPU
 from PySDM import Builder
-from PySDM.dynamics import EulerianAdvection, Condensation, AmbientThermodynamics, Displacement, Coalescence
+from PySDM.dynamics import (EulerianAdvection, Condensation, AmbientThermodynamics,
+                            Displacement, Coalescence)
 import PySDM.products as PySDM_products
-from PySDM.state.mesh import Mesh
+from PySDM.impl.mesh import Mesh
 from PySDM.initialisation import spectral_sampling, spatial_sampling
 from PySDM.physics.coalescence_kernels import Geometric
 from PySDM_examples.Shipway_and_Hill_2012.mpdata_1d import MPDATA_1D
-import numpy as np
 
 
 class Simulation:
@@ -17,12 +18,15 @@ class Simulation:
 
         builder = Builder(backend=backend(formulae=settings.formulae), n_sd=settings.n_sd)
         mesh = Mesh(grid=(settings.nz,), size=(settings.z_max,))
-        env = Kinematic1D(dt=settings.dt, mesh=mesh, thd_of_z=settings.thd, rhod_of_z=settings.rhod)
+        env = Kinematic1D(
+            dt=settings.dt, mesh=mesh, thd_of_z=settings.thd, rhod_of_z=settings.rhod)
 
-        mpdata = MPDATA_1D(nz=settings.nz, dt=settings.dt, mpdata_settings=settings.mpdata_settings,
-                           advector_of_t=lambda t: settings.rho_times_w(t) * settings.dt / settings.dz,
-                           advectee_of_zZ_at_t0=lambda zZ: settings.qv(zZ*settings.dz),
-                           g_factor_of_zZ=lambda zZ: settings.rhod(zZ*settings.dz))
+        mpdata = MPDATA_1D(
+            nz=settings.nz, dt=settings.dt, mpdata_settings=settings.mpdata_settings,
+            advector_of_t=lambda t: settings.rho_times_w(t) * settings.dt / settings.dz,
+            advectee_of_zZ_at_t0=lambda zZ: settings.qv(zZ*settings.dz),
+            g_factor_of_zZ=lambda zZ: settings.rhod(zZ*settings.dz)
+        )
 
         builder.set_environment(env)
         builder.add_dynamic(AmbientThermodynamics())
@@ -51,24 +55,31 @@ class Simulation:
             PySDM_products.Pressure(),
             PySDM_products.Temperature(),
             PySDM_products.WaterVapourMixingRatio(),
-            PySDM_products.WaterMixingRatio(name='ql', description_prefix='cloud', radius_range=settings.cloud_water_radius_range),
-            PySDM_products.WaterMixingRatio(name='qr', description_prefix='rain', radius_range=settings.rain_water_radius_range),
+            PySDM_products.WaterMixingRatio(name='ql', description_prefix='cloud',
+                                            radius_range=settings.cloud_water_radius_range),
+            PySDM_products.WaterMixingRatio(name='qr', description_prefix='rain',
+                                            radius_range=settings.rain_water_radius_range),
             PySDM_products.DryAirDensity(),
             PySDM_products.DryAirPotentialTemperature(),
             PySDM_products.ParticlesDrySizeSpectrum(radius_bins_edges=settings.r_bins_edges),
             PySDM_products.ParticlesWetSizeSpectrum(radius_bins_edges=settings.r_bins_edges),
-            PySDM_products.CloudDropletConcentration(radius_range=settings.cloud_water_radius_range),
-            PySDM_products.AerosolConcentration(radius_threshold=settings.cloud_water_radius_range[0]),
+            PySDM_products.CloudDropletConcentration(
+                radius_range=settings.cloud_water_radius_range),
+            PySDM_products.AerosolConcentration(
+                radius_threshold=settings.cloud_water_radius_range[0]),
             PySDM_products.ParticleMeanRadius(),
             PySDM_products.RipeningRate(),
             PySDM_products.ActivatingRate(),
             PySDM_products.DeactivatingRate(),
-            PySDM_products.CloudDropletEffectiveRadius(radius_range=settings.cloud_water_radius_range),
+            PySDM_products.CloudDropletEffectiveRadius(
+                radius_range=settings.cloud_water_radius_range),
             PySDM_products.PeakSupersaturation()
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
         if settings.precip:
-            displacement.upload_courant_field(courant_field=(np.zeros(settings.nz + 1),))  # TODO #424
+            displacement.upload_courant_field(
+                courant_field=(np.zeros(settings.nz + 1),)  # TODO #424
+            )
 
     def save(self, output, step):
         for k, v in self.particulator.products.items():
@@ -79,10 +90,22 @@ class Simulation:
         nt = self.nt if nt is None else nt
         mesh = self.particulator.mesh
 
-        output = {k: np.zeros((mesh.grid[-1], nt+1)) for k in self.particulator.products.keys()}
+        output = {
+            k: np.zeros((mesh.grid[-1], nt+1)) for k in self.particulator.products
+        }
         assert 't' not in output and 'z' not in output
-        output['t'] = np.linspace(0, self.nt * self.particulator.dt, self.nt + 1, endpoint=True)
-        output['z'] = np.linspace(mesh.dz/2, (mesh.grid[-1]-1/2)*mesh.dz, mesh.grid[-1], endpoint=True)
+        output['t'] = np.linspace(
+            0,
+            self.nt * self.particulator.dt,
+            self.nt + 1,
+            endpoint=True
+        )
+        output['z'] = np.linspace(
+            mesh.dz/2,
+            (mesh.grid[-1]-1/2) * mesh.dz,
+            mesh.grid[-1],
+            endpoint=True
+        )
 
         self.save(output, 0)
         for step in range(nt):

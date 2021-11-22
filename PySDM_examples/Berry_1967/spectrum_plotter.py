@@ -13,7 +13,8 @@ class SpectrumPlotter(SuperSpectrumPlotter):
         self.color = None
         self.smooth = True
 
-    def ticks(self):
+    @staticmethod
+    def ticks():
         xticks = [4, 6.25, 12.5, 25, 50, 100, 200]
         pyplot.xticks(xticks, xticks)
         pyplot.yticks([0.5 * i for i in range(5)], [0, None, 1, None, 2])

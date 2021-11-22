@@ -1,6 +1,7 @@
 import numba
 import scipy
-import numpy, numpy as np
+import numpy
+import numpy as np  # pylint: disable=reimported
 import PyMPDATA
 import PySDM
 from PySDM.physics import si, Formulae, constants as const
@@ -14,15 +15,15 @@ class Common:
         self.formulae = Formulae(condensation_coordinate='VolumeLogarithm', fastmath=fastmath)
         self.g = const.g_std
 
-        self.condensation_rtol_x = condensation.default_rtol_x
-        self.condensation_rtol_thd = condensation.default_rtol_thd
+        self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
+        self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
         self.condensation_adaptive = True
         self.condensation_substeps = -1
-        self.condensation_dt_cond_range = condensation.default_cond_range
-        self.condensation_schedule = condensation.default_schedule
+        self.condensation_dt_cond_range = condensation.DEFAULTS.cond_range
+        self.condensation_schedule = condensation.DEFAULTS.schedule
 
         self.coalescence_adaptive = True
-        self.coalescence_dt_coal_range = coalescence.default_dt_coal_range
+        self.coalescence_dt_coal_range = coalescence.DEFAULTS.dt_coal_range
         self.coalescence_optimized_random = True
         self.coalescence_substeps = 1
         self.kernel = Geometric(collection_efficiency=1)
@@ -65,11 +66,11 @@ class Common:
         self.mpdata_fct = True
         self.mpdata_tot = True
 
-        key_packages = (PySDM, PyMPDATA, numba, numpy, scipy)
+        key_packages = [PySDM, PyMPDATA, numba, numpy, scipy]
         try:
-            import ThrustRTC
+            import ThrustRTC  # pylint: disable=import-outside-toplevel
             key_packages.append(ThrustRTC)
-        except:
+        except:  # pylint: disable=bare-except
             pass
         self.versions = {}
         for pkg in key_packages:
@@ -78,6 +79,14 @@ class Common:
             except AttributeError:
                 pass
         self.versions = str(self.versions)
+
+        self.dt = None
+        self.simulation_time = None
+        self.grid = None
+        self.p0 = None
+        self.qv0 = None
+        self.th_std0 = None
+        self.size = None
 
     @property
     def n_steps(self) -> int:
@@ -105,4 +114,7 @@ class Common:
 
     @property
     def initial_dry_potential_temperature_profile(self):
-        return np.full(self.grid[-1], self.formulae.state_variable_triplet.th_dry(self.th_std0, self.qv0))
+        return np.full(
+            self.grid[-1],
+            self.formulae.state_variable_triplet.th_dry(self.th_std0, self.qv0)
+        )

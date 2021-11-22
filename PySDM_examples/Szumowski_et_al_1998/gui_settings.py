@@ -1,9 +1,7 @@
-from PySDM_examples.utils.widgets import IntSlider, FloatSlider, VBox, Checkbox, Accordion, Dropdown
-from PySDM import physics
-import numpy as np
-import numba
-import os
 import inspect
+import numpy as np
+from PySDM import physics
+from PySDM_examples.utils.widgets import IntSlider, FloatSlider, VBox, Checkbox, Accordion, Dropdown
 
 
 class GUISettings:
@@ -12,9 +10,12 @@ class GUISettings:
 
     def __init__(self, settings):
         self.__settings = settings
-        self.ui_dth0 = FloatSlider(description="$\\Delta\\theta_0$ [K]", value=0, min=-15, max=15)
-        self.ui_dqv0 = FloatSlider(description="$\\Delta q_{v0}$ [g/kg]", value=0, min=-6, max=6)
-        self.ui_kappa = FloatSlider(description="$\\kappa$ [1]", value=settings.kappa, min=0, max=1.5)
+        self.ui_dth0 = FloatSlider(
+            description="$\\Delta\\theta_0$ [K]", value=0, min=-15, max=15)
+        self.ui_dqv0 = FloatSlider(
+            description="$\\Delta q_{v0}$ [g/kg]", value=0, min=-6, max=6)
+        self.ui_kappa = FloatSlider(
+            description="$\\kappa$ [1]", value=settings.kappa, min=0, max=1.5)
         self.ui_nx = IntSlider(value=settings.grid[0], min=10, max=100, description="nx")
         self.ui_nz = IntSlider(value=settings.grid[1], min=10, max=100, description="nz")
         self.ui_dt = FloatSlider(value=settings.dt, min=.5, max=60, description="dt (Eulerian)")
@@ -39,8 +40,12 @@ class GUISettings:
         self.ui_coalescence_adaptive = Checkbox(
             value=settings.condensation_adaptive,
             description='coalescence adaptive time-step')
-        self.ui_processes = [Checkbox(value=settings.processes[key], description=key) for key in settings.processes.keys()]
-        self.ui_sdpg = IntSlider(value=settings.n_sd_per_gridbox, description="n_sd/gridbox", min=1, max=1000)
+        self.ui_processes = [
+            Checkbox(value=settings.processes[key], description=key)
+            for key in settings.processes.keys()
+        ]
+        self.ui_sdpg = IntSlider(value=settings.n_sd_per_gridbox,
+                                 description="n_sd/gridbox", min=1, max=1000)
         self.fct_description = "MPDATA: flux-corrected transport option"
         self.tot_description = "MPDATA: third-order terms option"
         self.iga_description = "MPDATA: infinite gauge option"
@@ -67,7 +72,8 @@ class GUISettings:
             )
         )
         self.ui_output_options = {
-            'interval': IntSlider(description='interval [s]', value=settings.output_interval, min=30, max=60*15),
+            'interval': IntSlider(description='interval [s]',
+                                  value=settings.output_interval, min=30, max=60*15),
             'aerosol_radius_threshold': FloatSlider(
                 description='aerosol/cloud threshold [um]',
                 value=settings.aerosol_radius_threshold / physics.si.um,

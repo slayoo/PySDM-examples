@@ -1,9 +1,9 @@
 import sys
+from atmos_cloud_sim_uj_utils import TemporaryFile
+from PySDM.exporters import NetCDFExporter
+from PySDM_examples.utils.widgets import display, Tab, VBox, HTML
 from PySDM_examples.Szumowski_et_al_1998.gui_controller import GUIController
 from PySDM_examples.Szumowski_et_al_1998.gui_viewer import GUIViewer
-from PySDM.exporters import NetCDFExporter
-from atmos_cloud_sim_uj_utils import TemporaryFile
-from PySDM_examples.utils.widgets import display, Tab, VBox, HTML
 
 
 def launch(settings, simulation, storage):
@@ -21,6 +21,13 @@ def launch(settings, simulation, storage):
     tabs.observe(controller.reinit, 'selected_index')
 
     # https://github.com/googlecolab/colabtools/issues/1302
+    hack = (
+        '<link'
+        ' rel="stylesheet"'
+        ' href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"'
+        '> '
+    )
     if 'google.colab' in sys.modules:
-        display(HTML('''<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> '''))
+        display(HTML(hack))
+
     display(tabs)

@@ -1,24 +1,25 @@
+# pylint: disable=wrong-import-position
 # https://bugs.python.org/issue37373
 import sys
 if sys.platform == 'win32' and sys.version_info[:2] >= (3, 7):
     import asyncio
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-import nbformat
-import pytest
-import pathlib
 import re
 import os
+import pathlib
+import nbformat
+import pytest
 from nbconvert.preprocessors import ExecutePreprocessor
 
 
 # https://stackoverflow.com/questions/7012921/recursive-grep-using-python
 def findfiles(path, regex):
-    regObj = re.compile(regex)
+    reg_obj = re.compile(regex)
     res = []
-    for root, dirs, fnames in os.walk(path):
+    for root, _, fnames in os.walk(path):
         for fname in fnames:
-            if regObj.match(fname):
+            if reg_obj.match(fname):
                 res.append(os.path.join(root, fname))
     return res
 
@@ -28,6 +29,7 @@ def notebook_filename(request):
     return request.param
 
 
+# pylint: disable=redefined-outer-name
 def test_run_notebooks(notebook_filename, tmp_path):
     with open(notebook_filename, encoding="utf8") as f:
         nb = nbformat.read(f, as_version=4)

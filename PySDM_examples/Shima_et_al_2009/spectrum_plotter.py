@@ -1,10 +1,11 @@
+from distutils.version import StrictVersion
 import numpy as np
+import matplotlib
 from matplotlib import pyplot
+from atmos_cloud_sim_uj_utils import show_plot
 from PySDM.physics.constants import si
 from PySDM_examples.Shima_et_al_2009.error_measure import error_measure
-from atmos_cloud_sim_uj_utils import show_plot
-from distutils.version import StrictVersion
-import matplotlib
+
 _matplotlib_version_3_3_3 = StrictVersion("3.3.0")
 _matplotlib_version_actual = StrictVersion(matplotlib.__version__)
 
@@ -18,7 +19,9 @@ class SpectrumColors:
     def __call__(self, value: float):
         bR, bG, bB = int(self.b[1:3], 16), int(self.b[3:5], 16), int(self.b[5:7], 16)
         eR, eG, eB = int(self.e[1:3], 16), int(self.e[3:5], 16), int(self.e[5:7], 16)
-        R, G, B = bR + int((eR - bR) * value), bG + int((eG - bG) * value), bB + int((eB - bB) * value)
+        R = bR + int((eR - bR) * value)
+        G = bG + int((eG - bG) * value)
+        B = bB + int((eB - bB) * value)
         result = f"#{hex(R)[2:4]}{hex(G)[2:4]}{hex(B)[2:4]}"
         return result
 
@@ -47,7 +50,10 @@ class SpectrumPlotter:
         if self.grid:
             self.ax.grid()
 
-        base_arg = {"base" + ("x" if _matplotlib_version_actual < _matplotlib_version_3_3_3 else ""): self.log_base}
+        base_arg = {
+            "base" + ("x" if _matplotlib_version_actual < _matplotlib_version_3_3_3 else ""):
+                self.log_base
+        }
         if self.title is not None:
             try:
                 self.ax.title(self.title)
@@ -97,7 +103,12 @@ class SpectrumPlotter:
         pdf_r_y = pdf_m_y * dm / dr * pdf_r_x
 
         x = pdf_r_x * si.metres / si.micrometres
-        y_true = pdf_r_y * self.settings.formulae.trivia.volume(radius=pdf_r_x) * settings.rho / settings.dv * si.kilograms / si.grams
+        y_true = (
+            pdf_r_y
+            * self.settings.formulae.trivia.volume(radius=pdf_r_x)
+            * settings.rho / settings.dv
+            * si.kilograms / si.grams
+        )
 
         self.ax.plot(x, y_true, color='black')
 
@@ -106,6 +117,7 @@ class SpectrumPlotter:
             error = error_measure(y, y_true, x)
             self.title = f'error measure: {error:.2f}' # TODO #327 relative error
             return error
+        return None
 
     def plot_data(self, settings, t, spectrum):
         if self.smooth:

@@ -1,17 +1,22 @@
 import numpy as np
-from PySDM.physics import si
-import PySDM.physics.constants as const
+from pystrict import strict
 from scipy.interpolate import interp1d
 from scipy.integrate import solve_ivp
 from PySDM.dynamics import condensation
 from PySDM.physics import Formulae, spectra
-from pystrict import strict
+from PySDM.physics import si
+import PySDM.physics.constants as const
 
 
 @strict
 class Settings:
-    def __init__(self, n_sd_per_gridbox: int, rho_times_w_1: float = 2*si.m/si.s, dt: float = 1*si.s,
-                 dz: float = 25*si.m, precip: bool = True):
+    def __init__(self,
+                 n_sd_per_gridbox: int,
+                 rho_times_w_1: float = 2*si.m/si.s,
+                 dt: float = 1*si.s,
+                 dz: float = 25*si.m,
+                 precip: bool = True
+     ):
         self.formulae = Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox
         self.kappa = .9  # TODO #424: not in the paper
@@ -32,7 +37,10 @@ class Settings:
         self.rho_times_w = lambda t: rho_times_w_1 * np.sin(np.pi * t/t_1) if t < t_1 else 0
 
         self._th = interp1d((0, 740, 3260), (297.9, 297.9, 312.66))
-        self.qv = interp1d((0, 740, 3260), (.015, .0138, .0024))  # TODO #424: is initial particle water included in initial qv? (q1 logic)
+
+        # TODO #424: is initial particle water included in initial qv? (q1 logic)
+        self.qv = interp1d((0, 740, 3260), (.015, .0138, .0024))
+
         self.thd = lambda z: self.formulae.state_variable_triplet.th_dry(self._th(z), self.qv(z))
 
         p0 = 975 * si.hPa  # TODO #424 not in the paper?
@@ -56,12 +64,17 @@ class Settings:
         self.rhod = interp1d(z_points, rhod_solution.y[0])
 
         self.mpdata_settings = {'n_iters': 3, 'iga': False, 'fct': False, 'tot': False}
-        self.condensation_rtol_x = condensation.default_rtol_x
-        self.condensation_rtol_thd = condensation.default_rtol_thd
+        self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
+        self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
         self.condensation_adaptive = True
         self.coalescence_adaptive = True
 
-        self.r_bins_edges = np.logspace(np.log10(0.001 * si.um), np.log10(100 * si.um), 101, endpoint=True)
+        self.r_bins_edges = np.logspace(
+            np.log10(0.001 * si.um),
+            np.log10(100 * si.um),
+            101,
+            endpoint=True
+        )
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
 
