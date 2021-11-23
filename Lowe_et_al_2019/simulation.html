@@ -96,12 +96,12 @@ class Simulation:
         builder.add_dynamic(Condensation())
 
         products = products or (
-            PySDM_products.ParcelDisplacement(),
-            PySDM_products.Time(),
-            PySDM_products.PeakSupersaturation(),
-            PySDM_products.CloudDropletConcentration(
+            PySDM_products.ParcelDisplacement(name=&#39;z&#39;),
+            PySDM_products.Time(name=&#39;t&#39;),
+            PySDM_products.PeakSupersaturation(unit=&#39;%&#39;, name=&#39;S_max&#39;),
+            PySDM_products.ParticleConcentration(name=&#39;n_c_cm3&#39;, unit=&#39;cm^-3&#39;,
                 radius_range=settings.cloud_radius_range),
-            PySDM_products.ParticlesWetSizeSpectrum(
+            PySDM_products.ParticleSizeSpectrumPerVolume(
                 radius_bins_edges=settings.wet_radius_bins_edges),
         )
 
@@ -118,7 +118,7 @@ class Simulation:
             output[k].append(value)
 
     def _save_spectrum(self, output):
-        value = self.particulator.products[&#39;Particles Wet Size Spectrum&#39;].get()
+        value = self.particulator.products[&#39;particle size spectrum per volume&#39;].get()
         output[&#39;spectrum&#39;] = value
 
     def run(self):
@@ -208,12 +208,12 @@ class Simulation:
         builder.add_dynamic(Condensation())
 
         products = products or (
-            PySDM_products.ParcelDisplacement(),
-            PySDM_products.Time(),
-            PySDM_products.PeakSupersaturation(),
-            PySDM_products.CloudDropletConcentration(
+            PySDM_products.ParcelDisplacement(name=&#39;z&#39;),
+            PySDM_products.Time(name=&#39;t&#39;),
+            PySDM_products.PeakSupersaturation(unit=&#39;%&#39;, name=&#39;S_max&#39;),
+            PySDM_products.ParticleConcentration(name=&#39;n_c_cm3&#39;, unit=&#39;cm^-3&#39;,
                 radius_range=settings.cloud_radius_range),
-            PySDM_products.ParticlesWetSizeSpectrum(
+            PySDM_products.ParticleSizeSpectrumPerVolume(
                 radius_bins_edges=settings.wet_radius_bins_edges),
         )
 
@@ -230,7 +230,7 @@ class Simulation:
             output[k].append(value)
 
     def _save_spectrum(self, output):
-        value = self.particulator.products[&#39;Particles Wet Size Spectrum&#39;].get()
+        value = self.particulator.products[&#39;particle size spectrum per volume&#39;].get()
         output[&#39;spectrum&#39;] = value
 
     def run(self):

@@ -208,7 +208,10 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
         &#39;volume&#39;: np.full(n_sd, droplet_volume)
     }
     np.testing.assert_almost_equal(attributes[&#39;n&#39;], multiplicity)
-    products = [IceWaterContent(specific=False), TotalUnfrozenImmersedSurfaceArea()]
+    products = (
+        IceWaterContent(name=&#39;qi&#39;),
+        TotalUnfrozenImmersedSurfaceArea(name=&#39;A_tot&#39;)
+    )
     particulator = builder.build(attributes=attributes, products=products)
 
     temperature = initial_temperature
@@ -271,7 +274,10 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
         &#39;volume&#39;: np.full(n_sd, droplet_volume)
     }
     np.testing.assert_almost_equal(attributes[&#39;n&#39;], multiplicity)
-    products = [IceWaterContent(specific=False), TotalUnfrozenImmersedSurfaceArea()]
+    products = (
+        IceWaterContent(name=&#39;qi&#39;),
+        TotalUnfrozenImmersedSurfaceArea(name=&#39;A_tot&#39;)
+    )
     particulator = builder.build(attributes=attributes, products=products)
 
     temperature = initial_temperature
