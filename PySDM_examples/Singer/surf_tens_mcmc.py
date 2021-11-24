@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 import os
 
 from PySDM.physics import si, Formulae, constants as const
-from PySDM.physics.surface_tension import compressed_film_Ovadnevaite
+from PySDM.physics.surface_tension import compressed_film_ovadnevaite
 
 os.environ['NUMBA_DISABLE_JIT'] = "1"
 
 # parameter transformation so the MCMC parameters range from [-inf, inf]
-# but the compressed film parameters are bounded appropriately [0,72.8] and [0,inf]
+# but the compressed film parameters are bounded appropriately
+# sgm_org = [0,72.8] and delta_min = [0,inf]
 def param_transform(mcmc_params):
     film_params = np.copy(mcmc_params)
     film_params[0] = const.sgm_w / (1 + np.exp(-1 * mcmc_params[0])) / si.mN * si.m 
@@ -18,9 +19,9 @@ def param_transform(mcmc_params):
 # evaluate the y-values of the model, given the current guess of parameter values
 def get_model(params, args): 
     T, v_wet, v_dry, f_org = args
-    compressed_film_Ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
-    compressed_film_Ovadnevaite.delta_min = param_transform(params)[1] * si.nm
-    formulae = Formulae(surface_tension='CompressedFilm_Ovadnevaite')
+    compressed_film_ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
+    compressed_film_ovadnevaite.delta_min = param_transform(params)[1] * si.nm
+    formulae = Formulae(surface_tension='CompressedFilmOvadnevaite')
     y = formulae.surface_tension.sigma(T, v_wet, v_dry, f_org)
     return y
 

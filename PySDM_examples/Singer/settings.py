@@ -3,7 +3,7 @@ from pystrict import strict
 from PySDM.initialisation import spectral_sampling as spec_sampling
 from PySDM.physics import si, Formulae, constants as const
 from PySDM_examples.Singer.aerosol import _Aerosol
-from PySDM.dynamics.condensation import default_rtol_x, default_rtol_thd
+from PySDM.dynamics.condensation import DEFAULTS
 
 @strict
 class Settings:
@@ -12,8 +12,8 @@ class Settings:
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  w: float = 0.32 * si.m / si.s,
-                 rtol_x: float = default_rtol_x,
-                 rtol_thd: float = default_rtol_thd
+                 rtol_x: float = DEFAULTS.rtol_x,
+                 rtol_thd: float = DEFAULTS.rtol_thd
                  ):
         assert model in ('bulk', 'film')
         self.model = model
