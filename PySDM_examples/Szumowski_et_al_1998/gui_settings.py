@@ -1,6 +1,7 @@
 import inspect
 import numpy as np
-from PySDM import physics
+from PySDM import Formulae, physics
+from PySDM import formulae
 from PySDM_examples.utils.widgets import IntSlider, FloatSlider, VBox, Checkbox, Accordion, Dropdown
 
 
@@ -59,15 +60,15 @@ class GUISettings:
         self.ui_formulae_options = [
             Dropdown(
                 description=k,
-                options=physics.formulae._choices(getattr(physics, k)).keys(),
+                options=formulae._choices(getattr(physics, k)).keys(),
                 value=v.default
             )
-            for k, v in inspect.signature(physics.Formulae.__init__).parameters.items()
+            for k, v in inspect.signature(Formulae.__init__).parameters.items()
             if k not in ('self', 'fastmath', 'seed')
         ]
         self.ui_formulae_options.append(
             Checkbox(
-                value=inspect.signature(physics.Formulae.__init__).parameters['fastmath'].default,
+                value=inspect.signature(Formulae.__init__).parameters['fastmath'].default,
                 description='fastmath'
             )
         )
@@ -127,8 +128,8 @@ class GUISettings:
         return self.ui_output_options['interval'].value
 
     @property
-    def formulae(self) -> physics.Formulae:
-        return physics.Formulae(
+    def formulae(self) -> Formulae:
+        return Formulae(
             **{widget.description: widget.value for widget in self.ui_formulae_options}
         )
 

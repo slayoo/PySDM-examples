@@ -6,7 +6,7 @@ from PySDM.dynamics import (
     AmbientThermodynamics, Freezing
 )
 from PySDM.environments import Kinematic2D
-from PySDM.initialisation import spectral_sampling, spatial_sampling
+from PySDM.initialisation.sampling import spectral_sampling, spatial_sampling
 from PySDM import products as PySDM_products
 from PySDM_examples.Szumowski_et_al_1998.mpdata_2d import MPDATA_2D
 from PySDM_examples.utils import DummyController
@@ -41,37 +41,51 @@ class Simulation:
             products = list(products)
         products = products or [
             # Note: consider better radius_bins_edges
-            PySDM_products.ParticlesWetSizeSpectrum(
-                radius_bins_edges=self.settings.r_bins_edges, normalise_by_dv=True),
-            PySDM_products.ParticlesDrySizeSpectrum(
-                radius_bins_edges=self.settings.r_bins_edges, normalise_by_dv=True),
+            PySDM_products.ParticleSizeSpectrumPerMass(
+                name='Particles Wet Size Spectrum',
+                unit='mg^-1 um^-1',
+                radius_bins_edges=self.settings.r_bins_edges
+            ),
+            PySDM_products.ParticleSizeSpectrumPerMass(
+                name='Particles Dry Size Spectrum',
+                unit='mg^-1 um^-1',
+                radius_bins_edges=self.settings.r_bins_edges,
+                dry=True
+            ),
             PySDM_products.TotalParticleConcentration(),
             PySDM_products.TotalParticleSpecificConcentration(),
-            PySDM_products.AerosolConcentration(
-                radius_threshold=self.settings.aerosol_radius_threshold),
-            PySDM_products.CloudDropletConcentration(
+            PySDM_products.ParticleConcentration(
+                radius_range=(0, self.settings.aerosol_radius_threshold)),
+            PySDM_products.ParticleConcentration(name='n_c_cm3', unit='cm^-3',
                 radius_range=cloud_range),
             PySDM_products.WaterMixingRatio(
-                name='qc', description_prefix='Cloud', radius_range=cloud_range),
+                name='qc',
+                radius_range=cloud_range),
             PySDM_products.WaterMixingRatio(
-                name='qr', description_prefix='Rain',
+                name='qr',
                 radius_range=(self.settings.drizzle_radius_threshold, np.inf)
             ),
-            PySDM_products.DrizzleConcentration(
-                radius_threshold=self.settings.drizzle_radius_threshold),
-            PySDM_products.AerosolSpecificConcentration(
-                radius_threshold=self.settings.aerosol_radius_threshold),
-            PySDM_products.ParticleMeanRadius(),
-            PySDM_products.SuperDropletCount(),
-            PySDM_products.RelativeHumidity(),
-            PySDM_products.Pressure(),
-            PySDM_products.Temperature(),
-            PySDM_products.WaterVapourMixingRatio(),
-            PySDM_products.DryAirDensity(),
-            PySDM_products.DryAirPotentialTemperature(),
+            PySDM_products.ParticleConcentration(
+                name='drizzle concentration',
+                radius_range=(self.settings.drizzle_radius_threshold, np.inf),
+                unit='cm^-3'
+            ),
+            PySDM_products.ParticleSpecificConcentration(
+                name='aerosol specific concentration',
+                radius_range=(0, self.settings.aerosol_radius_threshold),
+                unit='mg^-1'
+            ),
+            PySDM_products.MeanRadius(unit='um'),
+            PySDM_products.SuperDropletCountPerGridbox(),
+            PySDM_products.AmbientRelativeHumidity(name='RH_env', var='RH'),
+            PySDM_products.AmbientPressure(name='p_env', var='p'),
+            PySDM_products.AmbientTemperature(name='T_env', var='T'),
+            PySDM_products.AmbientWaterVapourMixingRatio(name='qv_env', var='qv'),
+            PySDM_products.AmbientDryAirDensity(name='rhod_env', var='rhod'),
+            PySDM_products.AmbientDryAirPotentialTemperature(name='thd_env', var='thd'),
             PySDM_products.CPUTime(),
             PySDM_products.WallTime(),
-            PySDM_products.CloudDropletEffectiveRadius(radius_range=cloud_range)
+            PySDM_products.EffectiveRadius(unit='um', radius_range=cloud_range)
         ]
 
         if self.settings.processes['fluid advection']:
@@ -86,9 +100,9 @@ class Simulation:
                 schedule=self.settings.condensation_schedule
             )
             builder.add_dynamic(condensation)
-            products.append(PySDM_products.CondensationTimestepMin())
-            products.append(PySDM_products.CondensationTimestepMax())
-            products.append(PySDM_products.PeakSupersaturation())
+            products.append(PySDM_products.CondensationTimestepMin(name='dt_cond_min'))
+            products.append(PySDM_products.CondensationTimestepMax(name='dt_cond_max'))
+            products.append(PySDM_products.PeakSupersaturation(unit='%', name='S_max'))
             products.append(PySDM_products.ActivatingRate())
             products.append(PySDM_products.DeactivatingRate())
             products.append(PySDM_products.RipeningRate())
@@ -125,7 +139,7 @@ class Simulation:
             builder.add_dynamic(EulerianAdvection(solver))
         if self.settings.processes["particle advection"]:
             builder.add_dynamic(displacement)
-            products.append(PySDM_products.SurfacePrecipitation())
+            products.append(PySDM_products.SurfacePrecipitation(name='surf_precip', unit='mm/day'))
         if self.settings.processes["coalescence"]:
             builder.add_dynamic(Coalescence(
                 kernel=self.settings.kernel,
@@ -134,16 +148,16 @@ class Simulation:
                 substeps=self.settings.coalescence_substeps,
                 optimized_random=self.settings.coalescence_optimized_random
             ))
-            products.append(PySDM_products.CoalescenceTimestepMean())
-            products.append(PySDM_products.CoalescenceTimestepMin())
-            products.append(PySDM_products.CollisionRate())
-            products.append(PySDM_products.CollisionRateDeficit())
+            products.append(PySDM_products.CoalescenceTimestepMean(name='dt_coal_avg'))
+            products.append(PySDM_products.CoalescenceTimestepMin(name='dt_coal_min'))
+            products.append(PySDM_products.CollisionRatePerGridbox())
+            products.append(PySDM_products.CollisionRateDeficitPerGridbox())
         if self.settings.processes["freezing"]:
             builder.add_dynamic(Freezing())
             products.append(PySDM_products.IceWaterContent())
             products.append(PySDM_products.FreezableSpecificConcentration(
                 self.settings.T_bins_edges))
-            products.append(PySDM_products.ParticlesConcentration(specific=True))
+            products.append(PySDM_products.ParticleSpecificConcentration())
 
         kw = {}
         if self.settings.processes["freezing"]:

@@ -3,13 +3,13 @@ from packaging import version
 from matplotlib import pylab
 import matplotlib
 import numpy as np
-from PySDM import Builder
+from PySDM import Builder, Formulae
 from PySDM.dynamics import Freezing
 from PySDM.environments import Box
-from PySDM.physics import constants as const, Formulae
+from PySDM.physics import constants as const
 from PySDM.physics.heterogeneous_ice_nucleation_rate import constant, abifm
-from PySDM.initialisation import spectral_sampling
-from PySDM.initialisation.multiplicities import discretise_n
+from PySDM.initialisation.sampling import spectral_sampling
+from PySDM.initialisation import discretise_multiplicities
 from PySDM.products import IceWaterContent, TotalUnfrozenImmersedSurfaceArea
 from PySDM.backends import CPU
 from PySDM.physics import si
@@ -175,12 +175,15 @@ def simulation(*, seed, n_sd, time_step, volume, spectrum, droplet_volume, multi
     else:
         _isa, _conc = spectral_sampling.ConstantMultiplicity(spectrum).sample(n_sd)
     attributes = {
-        'n': discretise_n(_conc * volume),
+        'n': discretise_multiplicities(_conc * volume),
         'immersed surface area': _isa,
         'volume': np.full(n_sd, droplet_volume)
     }
     np.testing.assert_almost_equal(attributes['n'], multiplicity)
-    products = [IceWaterContent(specific=False), TotalUnfrozenImmersedSurfaceArea()]
+    products = (
+        IceWaterContent(name='qi'),
+        TotalUnfrozenImmersedSurfaceArea(name='A_tot')
+    )
     particulator = builder.build(attributes=attributes, products=products)
 
     temperature = initial_temperature

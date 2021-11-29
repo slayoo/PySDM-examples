@@ -1,6 +1,7 @@
 from pystrict import strict
 from chempy import Substance
-from PySDM.physics import spectra, si, constants as const
+from PySDM.initialisation import spectra
+from PySDM.physics import si, constants as const
 
 compounds = ('palmitic', 'SOA1', 'SOA2', '(NH4)2SO4', 'NH4NO3', 'NaCl')
 

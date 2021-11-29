@@ -45,8 +45,8 @@ class GUIViewer:
     def reinit(self, products):
         self.products = products
         self.product_select.options = tuple(
-            (f"{val.description} [{val.unit}]", key)
-            for key, val in sorted(self.products.items(), key=lambda item: item[1].description)
+            (f"{val.name} [{val.unit}]", key)
+            for key, val in sorted(self.products.items(), key=lambda item: item[1].name)
             if len(val.shape) == 2
         )
         opts = [("dry/wet particle size spectra", 'size')]
@@ -241,7 +241,10 @@ class GUIViewer:
         except self.storage.Exception:
             data = None
 
-        self.plots[selected].update(data, step)
+        self.plots[selected].update(
+            data, step,
+            self.storage.data_range(selected) if data is not None else None
+        )
 
     def replot_image(self, *_):
         selected = self.product_select.value

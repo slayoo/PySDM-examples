@@ -17,6 +17,7 @@ class Storage:
             self.dir_path = Path(path).absolute()
         self.dtype = dtype
         self.grid = None
+        self._data_range = None
 
     def __del__(self):
         if hasattr(self, 'temp_dir'):
@@ -24,6 +25,7 @@ class Storage:
 
     def init(self, settings):
         self.grid = settings.grid
+        self._data_range = {}
 
     def _filepath(self, name: str, step: int = None):
         if step is None:
@@ -41,6 +43,16 @@ class Storage:
             np.save(self._filepath(name, step), data.astype(self.dtype))
         else:
             raise NotImplementedError()
+
+        if name not in self._data_range:
+            self._data_range[name] = (np.inf, -np.inf)
+        self._data_range[name] = (
+            min(np.amin(data), self._data_range[name][0]),
+            max(np.amax(data), self._data_range[name][1])
+        )
+
+    def data_range(self, name):
+        return self._data_range[name]
 
     def load(self, name: str, step: int = None) -> np.ndarray:
         try:
