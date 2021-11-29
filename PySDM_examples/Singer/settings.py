@@ -1,7 +1,8 @@
 import numpy as np
 from pystrict import strict
-from PySDM.initialisation import spectral_sampling as spec_sampling
-from PySDM.physics import si, Formulae, constants as const
+from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
+from PySDM import Formulae
+from PySDM.physics import si, constants as const
 from PySDM_examples.Singer.aerosol import _Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
 

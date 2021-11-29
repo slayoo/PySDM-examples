@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import minimize_scalar, minimize
 import matplotlib.pyplot as plt
 import os
 
@@ -18,9 +19,18 @@ def param_transform(mcmc_params):
     film_params[1] = np.exp(mcmc_params[1])
     return film_params
 
+def negSS(r_wet, args):
+    formulae, T, r_dry, kappa, f_org = args
+    v_dry = formulae.trivia.volume(r_dry)
+    v_wet = formulae.trivia.volume(r_wet)
+    sigma = formulae.surface_tension.sigma(T, v_wet, v_dry, f_org)
+    RH_eq = formulae.hygroscopicity.RH_eq(r_wet, T, kappa, r_dry**3, sigma)
+    SS = (RH_eq - 1)*100
+    return -1*SS
+
 # evaluate the y-values of the model, given the current guess of parameter values
 def get_model(params, args): 
-    T, v_wet, v_dry, OVF = args
+    T, r_dry, OVF = args
     c = AerosolBetaCary(OVF)
     f_org = c.aerosol_modes_per_cc['f_org']
     kappa = c.aerosol_modes_per_cc['kappa']['Ovad']
@@ -28,13 +38,14 @@ def get_model(params, args):
     compressed_film_ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
     compressed_film_ovadnevaite.delta_min = param_transform(params)[1] * si.nm
     formulae = Formulae(surface_tension='CompressedFilmOvadnevaite')
-    sig = formulae.surface_tension.sigma(T, v_wet, v_dry, f_org)
-    rd3 = (3 * v_dry) / (4 * np.pi)
-    rcrit = formulae.hygroscopicity.r_cr(kappa, rd3, T, sig)
-    kap_eff = (2 * rcrit**2) / (3 * rd3 * const.Rv * T * const.rho_w) * const.sgm_w
     
-    y = kap_eff
-    return y
+    Scrit, rcrit = np.zeros(len(r_dry)), np.zeros(len(r_dry))
+    for i, rd in enumerate(r_dry):
+        args = [formulae, T, r_dry[i], kappa[i], f_org[i]]
+        res = minimize_scalar(negSS, args=args)
+        Scrit[i], rcrit[i] = -1*res.fun, res.x
+    
+    return Scrit
 
 # obtain the chi2 value of the model y-values given current parameters 
 # vs. the measured y-values  
