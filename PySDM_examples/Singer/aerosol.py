@@ -39,14 +39,14 @@ def f_org_volume(mass_fractions: dict):
 
 def kappa(mass_fractions: dict):
     kappa = {}
-    for model in ('bulk', 'Ovad', 'Ruehl'):
+    for model in ('bulk', 'Ovad', 'Ruehl', 'SL'):
         volfrac = volume_fractions(mass_fractions)
         molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
 
         _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
         volume_fractions_of_just_inorg = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
 
-        if model == 'Ovad' or 'Ruehl':
+        if model == 'Ovad' or 'Ruehl' or 'SL':
             ns_per_vol = (1 - f_org_volume(mass_fractions))  * sum(
                 ionic_dissociation_phi[i] * volume_fractions_of_just_inorg[i] / molar_volumes[i] for i in compounds
             )
@@ -65,26 +65,26 @@ def nu_org(mass_fractions: dict):
     _masked = {k: (is_organic[k]) * volfrac[k] for k in compounds}
     volume_fractions_of_just_org = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
     
-    nu_org = sum(volume_fractions_of_just_org[i] * molar_volumes[i] for i in compounds)
-    return nu_org
+    _nu = sum(volume_fractions_of_just_org[i] * molar_volumes[i] for i in compounds)
+    return _nu
 
 class _Aerosol:
     pass
 
 @strict
 class AerosolBetaCary(_Aerosol):
-    def __init__(self, Forg: float = 0.2, N: float = 500):
+    def __init__(self, Forg: float = 0.8, N: float = 400):
         mode = {'(NH4)2SO4': (1-Forg), 'betacary': Forg}
         self.aerosol_modes_per_cc = (
-        {
-            'f_org': f_org_volume(mode),
-            'kappa': kappa(mode),
-            'nu_org': nu_org(mode),
-            'spectrum': spectra.Lognormal(
-                norm_factor = N / si.cm ** 3,
-                m_mode = 50.0 * si.nm,
-                s_geom = 1.75
-            )
-        }
-    )
+            {
+                'f_org': f_org_volume(mode),
+                'kappa': kappa(mode),
+                'nu_org': nu_org(mode),
+                'spectrum': spectra.Lognormal(
+                    norm_factor = N / si.cm ** 3,
+                    m_mode = 50.0 * si.nm,
+                    s_geom = 1.75
+                )
+            },
+        )
     color = 'dodgerblue'

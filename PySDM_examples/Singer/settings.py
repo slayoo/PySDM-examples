@@ -1,7 +1,7 @@
 import numpy as np
 from pystrict import strict
-from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM import Formulae
+from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si, constants as const
 from PySDM_examples.Singer.aerosol import _Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
@@ -12,19 +12,23 @@ class Settings:
                  aerosol: _Aerosol,
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
-                 w: float = 0.32 * si.m / si.s,
+                 w: float = 0.1 * si.m / si.s,
                  rtol_x: float = DEFAULTS.rtol_x,
-                 rtol_thd: float = DEFAULTS.rtol_thd
+                 rtol_thd: float = DEFAULTS.rtol_x
                  ):
-        assert model in ('bulk', 'film')
+        assert model in ('bulk', 'film', 'Ovad', 'Ruehl')
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
-        self.formulae = Formulae(
-            surface_tension='CompressedFilm_Ovadnevaite' if model == 'film' else 'Constant'
-        )
+        if model == "bulk":
+            surfstring = 'Constant'
+        elif model == "film" or model == "Ovad":
+            surfstring = 'CompressedFilmOvadnevaite'
+        elif model == "Ruehl":
+            surfstring = 'CompressedFilmRuehl'
+        self.formulae = Formulae(surface_tension=surfstring)
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        self.t_max = int(210 / w) * si.m
+        self.t_max = int(110 / w) * si.m
         self.output_interval = 10 * si.s
         self.dt = dt
         self.rtol_x = rtol_x
@@ -44,8 +48,13 @@ class Settings:
         )
 
         self.mass_of_dry_air = 44
-        
-        self.wet_radius_bins_edges = np.logspace(np.log10(4 * si.um), np.log10(12 * si.um), 128+1, endpoint=True)
+
+        self.wet_radius_bins_edges = np.logspace(
+            np.log10(4 * si.um),
+            np.log10(12 * si.um),
+            128+1,
+            endpoint=True
+        )
 
     @property
     def rho0(self):
@@ -65,4 +74,3 @@ class Settings:
     @property
     def output_steps(self) -> np.ndarray:
         return np.arange(0, self.nt + 1, self.steps_per_output_interval)
-

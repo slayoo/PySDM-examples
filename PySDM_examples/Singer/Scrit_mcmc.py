@@ -32,8 +32,8 @@ def negSS(r_wet, args):
 def get_model(params, args): 
     T, r_dry, OVF = args
     c = AerosolBetaCary(OVF)
-    f_org = c.aerosol_modes_per_cc['f_org']
-    kappa = c.aerosol_modes_per_cc['kappa']['Ovad']
+    f_org = c.aerosol_modes_per_cc[0]['f_org']
+    kappa = c.aerosol_modes_per_cc[0]['kappa']['Ovad']
     
     compressed_film_ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
     compressed_film_ovadnevaite.delta_min = param_transform(params)[1] * si.nm
