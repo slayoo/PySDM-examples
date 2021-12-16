@@ -289,7 +289,10 @@ class GUIViewer:
             data = self.storage.load(&#39;surf_precip&#39;)
         except self.storage.Exception:
             data = None
-        self.timeseriesPlot.update(data)
+        self.timeseriesPlot.update(
+            data,
+            self.storage.data_range(&#39;surf_precip&#39;) if data is not None else None
+        )
 
     def replot_timeseries(self):
         self.update_timeseries()
@@ -582,7 +585,10 @@ class GUIViewer:
             data = self.storage.load(&#39;surf_precip&#39;)
         except self.storage.Exception:
             data = None
-        self.timeseriesPlot.update(data)
+        self.timeseriesPlot.update(
+            data,
+            self.storage.data_range(&#39;surf_precip&#39;) if data is not None else None
+        )
 
     def replot_timeseries(self):
         self.update_timeseries()
@@ -963,7 +969,10 @@ class GUIViewer:
         data = self.storage.load(&#39;surf_precip&#39;)
     except self.storage.Exception:
         data = None
-    self.timeseriesPlot.update(data)</code></pre>
+    self.timeseriesPlot.update(
+        data,
+        self.storage.data_range(&#39;surf_precip&#39;) if data is not None else None
+    )</code></pre>
 </details>
 </dd>
 </dl>

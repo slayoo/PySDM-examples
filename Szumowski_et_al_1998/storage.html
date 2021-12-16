@@ -74,14 +74,14 @@ class Storage:
 
         if name not in self._data_range:
             self._data_range[name] = (np.inf, -np.inf)
-        justnans = np.isnan(data).all()
+        just_nans = np.isnan(data).all()
         self._data_range[name] = (
             min(
-                self._data_range[name][0] if justnans else np.nanmin(data),
+                self._data_range[name][0] if just_nans else np.nanmin(data),
                 self._data_range[name][0]
             ),
             max(
-                self._data_range[name][1] if justnans else np.nanmax(data),
+                self._data_range[name][1] if just_nans else np.nanmax(data),
                 self._data_range[name][1]
             )
         )
@@ -158,14 +158,14 @@ class Storage:
 
         if name not in self._data_range:
             self._data_range[name] = (np.inf, -np.inf)
-        justnans = np.isnan(data).all()
+        just_nans = np.isnan(data).all()
         self._data_range[name] = (
             min(
-                self._data_range[name][0] if justnans else np.nanmin(data),
+                self._data_range[name][0] if just_nans else np.nanmin(data),
                 self._data_range[name][0]
             ),
             max(
-                self._data_range[name][1] if justnans else np.nanmax(data),
+                self._data_range[name][1] if just_nans else np.nanmax(data),
                 self._data_range[name][1]
             )
         )
@@ -253,14 +253,14 @@ class Storage:
 
     if name not in self._data_range:
         self._data_range[name] = (np.inf, -np.inf)
-    justnans = np.isnan(data).all()
+    just_nans = np.isnan(data).all()
     self._data_range[name] = (
         min(
-            self._data_range[name][0] if justnans else np.nanmin(data),
+            self._data_range[name][0] if just_nans else np.nanmin(data),
             self._data_range[name][0]
         ),
         max(
-            self._data_range[name][1] if justnans else np.nanmax(data),
+            self._data_range[name][1] if just_nans else np.nanmax(data),
             self._data_range[name][1]
         )
     )</code></pre>
