@@ -28,7 +28,7 @@
 </summary>
 <pre><code class="python">from typing import Iterable
 from PySDM.physics import si
-from PySDM.backends.impl_numba.conf import JIT_FLAGS
+from PySDM import Formulae
 from PySDM_examples.Morrison_and_Grabowski_2007.strato_cumulus import StratoCumulus
 
 
@@ -40,11 +40,11 @@ class Settings(StratoCumulus):
 
     def __init__(
         self,
-        fastmath: bool = JIT_FLAGS[&#39;fastmath&#39;],
+        formulae=None,
         rhod_w_max: float = .6 * si.metres / si.seconds * (si.kilogram / si.metre ** 3)
     ):
         super().__init__(
-            fastmath,
+            formulae or Formulae(),
             rhod_w_max=rhod_w_max
         )
 
@@ -68,7 +68,7 @@ class Settings(StratoCumulus):
 <dl>
 <dt id="PySDM_examples.Arabas_et_al_2015.settings.Settings"><code class="flex name class">
 <span>class <span class="ident">Settings</span></span>
-<span>(</span><span>fastmath: bool = True, rhod_w_max: float = 0.6)</span>
+<span>(</span><span>formulae=None, rhod_w_max: float = 0.6)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -84,11 +84,11 @@ class Settings(StratoCumulus):
 
     def __init__(
         self,
-        fastmath: bool = JIT_FLAGS[&#39;fastmath&#39;],
+        formulae=None,
         rhod_w_max: float = .6 * si.metres / si.seconds * (si.kilogram / si.metre ** 3)
     ):
         super().__init__(
-            fastmath,
+            formulae or Formulae(),
             rhod_w_max=rhod_w_max
         )
 
