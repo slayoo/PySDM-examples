@@ -125,7 +125,7 @@ class GUISettings:
                 value=v.default
             )
             for k, v in inspect.signature(Formulae.__init__).parameters.items()
-            if k not in (&#39;self&#39;, &#39;fastmath&#39;, &#39;seed&#39;)
+            if k not in (&#39;self&#39;, &#39;fastmath&#39;, &#39;seed&#39;, &#39;constants&#39;)
         ]
         self.ui_formulae_options.append(
             Checkbox(
@@ -468,7 +468,7 @@ def set_visibility(widget, visible):
                 value=v.default
             )
             for k, v in inspect.signature(Formulae.__init__).parameters.items()
-            if k not in (&#39;self&#39;, &#39;fastmath&#39;, &#39;seed&#39;)
+            if k not in (&#39;self&#39;, &#39;fastmath&#39;, &#39;seed&#39;, &#39;constants&#39;)
         ]
         self.ui_formulae_options.append(
             Checkbox(

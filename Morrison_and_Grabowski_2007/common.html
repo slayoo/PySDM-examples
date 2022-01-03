@@ -33,7 +33,7 @@ import numpy as np  # pylint: disable=reimported
 import PyMPDATA
 import PySDM
 from PySDM import Formulae
-from PySDM.physics import si, constants as const
+from PySDM.physics import si
 from PySDM.dynamics import condensation, coalescence
 from PySDM.physics.coalescence_kernels import Geometric
 from PySDM.initialisation import spectra
@@ -42,7 +42,7 @@ from PySDM.initialisation import spectra
 class Common:
     def __init__(self, formulae: Formulae):
         self.formulae = formulae
-        self.g = const.g_std
+        const = formulae.constants
 
         self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
         self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
@@ -185,7 +185,7 @@ class Common:
 <pre><code class="python">class Common:
     def __init__(self, formulae: Formulae):
         self.formulae = formulae
-        self.g = const.g_std
+        const = formulae.constants
 
         self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
         self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
