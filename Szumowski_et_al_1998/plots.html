@@ -38,7 +38,7 @@ class _Plot:
 
 
 class _ImagePlot(_Plot):
-    line_args = {&#39;color&#39;: &#39;red&#39;, &#39;alpha&#39;: .75, &#39;linestyle&#39;: &#39;:&#39;, &#39;linewidth&#39;: 5}
+    line_args = {&#39;color&#39;: &#39;red&#39;, &#39;alpha&#39;: .666, &#39;linestyle&#39;: &#39;:&#39;, &#39;linewidth&#39;: 3}
 
     def __init__(self, fig, ax, grid, size, product, show=False, lines=False, cmap=&#39;YlGnBu&#39;):
         super().__init__(fig, ax)
@@ -98,10 +98,10 @@ class _ImagePlot(_Plot):
             )
 
     def update_lines(self, focus_x, focus_z):
-        self.lines[&#39;X&#39;][0].set_xdata(x=focus_x[0] * self.dx)
-        self.lines[&#39;Z&#39;][0].set_ydata(y=focus_z[0] * self.dz)
-        self.lines[&#39;X&#39;][1].set_xdata(x=focus_x[1] * self.dx)
-        self.lines[&#39;Z&#39;][1].set_ydata(y=focus_z[1] * self.dz)
+        self.lines[&#39;X&#39;][0].set_xdata(x=(focus_x[0]+.25) * self.dx)
+        self.lines[&#39;Z&#39;][0].set_ydata(y=(focus_z[0]+.25) * self.dz)
+        self.lines[&#39;X&#39;][1].set_xdata(x=(focus_x[1]-.25) * self.dx)
+        self.lines[&#39;Z&#39;][1].set_ydata(y=(focus_z[1]-.25) * self.dz)
 
 
 class _SpectrumPlot(_Plot):
