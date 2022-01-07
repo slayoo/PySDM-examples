@@ -21,7 +21,7 @@ jobs:
           pip3 install pdoc3
           pip install -e .
           pip install -r test-time-requirements.txt
-          pdoc --html PySDM_examples
+          python -We -m pdoc --html PySDM_examples
       - name: Deploy
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1

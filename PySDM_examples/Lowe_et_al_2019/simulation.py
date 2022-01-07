@@ -3,9 +3,8 @@ from PySDM.environments import Parcel
 from PySDM import Builder
 from PySDM.backends import CPU
 from PySDM.dynamics import AmbientThermodynamics, Condensation
-from PySDM.initialisation.multiplicities import discretise_n
-from PySDM.initialisation.r_wet_init import r_wet_init
-from PySDM.physics.spectra import Sum
+from PySDM.initialisation import discretise_multiplicities, equilibrate_wet_radii
+from PySDM.initialisation.spectra import Sum
 import PySDM.products as PySDM_products
 
 
@@ -16,8 +15,7 @@ class Simulation:
                      p0=settings.p0,
                      q0=settings.q0,
                      T0=settings.T0,
-                     w=settings.w,
-                     g=settings.g)
+                     w=settings.w)
         n_sd = settings.n_sd_per_mode * len(settings.aerosol.aerosol_modes_per_cc)
         builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
@@ -42,7 +40,7 @@ class Simulation:
         for attribute in attributes.values():
             assert attribute.shape[0] == n_sd
 
-        attributes['n'] = discretise_n(attributes['n'])
+        attributes['n'] = discretise_multiplicities(attributes['n'])
 
         dv = settings.mass_of_dry_air / settings.rho0
         np.testing.assert_approx_equal(
@@ -53,7 +51,7 @@ class Simulation:
             )).norm_factor,
             significant=5
         )
-        r_wet = r_wet_init(
+        r_wet = equilibrate_wet_radii(
             r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
             environment=env,
             kappa_times_dry_volume=attributes['kappa times dry volume'],
@@ -68,12 +66,12 @@ class Simulation:
         builder.add_dynamic(Condensation(rtol_x=settings.rtol_x, rtol_thd=settings.rtol_thd))
 
         products = products or (
-            PySDM_products.ParcelDisplacement(),
-            PySDM_products.Time(),
-            PySDM_products.PeakSupersaturation(),
-            PySDM_products.CloudDropletConcentration(
+            PySDM_products.ParcelDisplacement(name='z'),
+            PySDM_products.Time(name='t'),
+            PySDM_products.PeakSupersaturation(unit='%', name='S_max'),
+            PySDM_products.ParticleConcentration(name='n_c_cm3', unit='cm^-3',
                 radius_range=settings.cloud_radius_range),
-            PySDM_products.ParticlesWetSizeSpectrum(
+            PySDM_products.ParticleSizeSpectrumPerVolume(
                 radius_bins_edges=settings.wet_radius_bins_edges),
         )
 
@@ -90,7 +88,7 @@ class Simulation:
             output[k].append(value)
 
     def _save_spectrum(self, output):
-        value = self.particulator.products['Particles Wet Size Spectrum'].get()
+        value = self.particulator.products['particle size spectrum per volume'].get()
         output['spectrum'] = value
 
     def run(self):

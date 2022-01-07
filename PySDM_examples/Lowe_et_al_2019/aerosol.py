@@ -1,6 +1,8 @@
 from pystrict import strict
 from chempy import Substance
-from PySDM.physics import spectra, si, constants as const
+from PySDM.initialisation import spectra
+from PySDM.physics import si
+from PySDM.physics.constants_defaults import rho_w, Mv
 
 compounds = ('palmitic', 'SOA1', 'SOA2', '(NH4)2SO4', 'NH4NO3', 'NaCl')
 
@@ -75,17 +77,17 @@ def kappa(mass_fractions: dict):
                              for i in compounds)
         else:
             raise AssertionError()
-        result[model] = ns_per_vol * const.Mv / const.rho_w
+        result[model] = ns_per_vol * Mv / rho_w
 
     return result
 
 
-class _Aerosol:
+class Aerosol:
     pass
 
 
 @strict
-class AerosolMarine(_Aerosol):
+class AerosolMarine(Aerosol):
     def __init__(self, Acc_Forg: float = 0.2, Acc_N2: float = 134):
         Aitken = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': .8, 'NH4NO3': 0, 'NaCl': 0}
         Accumulation = {'palmitic': Acc_Forg, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': 0, 'NaCl': (1-Acc_Forg)}
@@ -114,7 +116,7 @@ class AerosolMarine(_Aerosol):
 
 
 @strict
-class AerosolBoreal(_Aerosol):
+class AerosolBoreal(Aerosol):
     def __init__(self, Acc_Forg: float = 0.668, Acc_N2: float = 540):
         # note: SOA1 or SOA2 unclear from the paper
         Aitken = {
@@ -158,7 +160,7 @@ class AerosolBoreal(_Aerosol):
 
 
 @strict
-class AerosolNascent(_Aerosol):
+class AerosolNascent(Aerosol):
     def __init__(self, Acc_Forg: float = 0.3, Acc_N2: float = 30):
         Ultrafine = {'palmitic': 0, 'SOA1': .52, 'SOA2': 0, '(NH4)2SO4': .48, 'NH4NO3': 0, 'NaCl': 0}
         Accumulation = {'palmitic': 0, 'SOA1': 0, 'SOA2': Acc_Forg, '(NH4)2SO4': (1-Acc_Forg), 'NH4NO3': 0, 'NaCl': 0}

@@ -1,7 +1,9 @@
 from typing import Optional
 import numpy as np
 from pystrict import strict
-from PySDM.physics import si, Formulae, coalescence_kernels, spectra
+from PySDM import Formulae
+from PySDM.initialisation import spectra
+from PySDM.physics import si, coalescence_kernels
 
 
 @strict

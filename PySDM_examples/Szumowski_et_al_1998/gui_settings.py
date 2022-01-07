@@ -1,7 +1,11 @@
 import inspect
 import numpy as np
-from PySDM import physics
-from PySDM_examples.utils.widgets import IntSlider, FloatSlider, VBox, Checkbox, Accordion, Dropdown
+from PySDM import Formulae, physics
+from PySDM import formulae
+from PySDM.physics import si
+from PySDM.initialisation.spectra import Lognormal
+from PySDM_examples.utils.widgets import IntSlider, FloatSlider, VBox, Checkbox, Accordion,\
+    Dropdown, RadioButtons, Layout
 
 
 class GUISettings:
@@ -10,12 +14,42 @@ class GUISettings:
 
     def __init__(self, settings):
         self.__settings = settings
+
         self.ui_dth0 = FloatSlider(
             description="$\\Delta\\theta_0$ [K]", value=0, min=-15, max=15)
         self.ui_dqv0 = FloatSlider(
             description="$\\Delta q_{v0}$ [g/kg]", value=0, min=-6, max=6)
+        self.ui_rhod_w_max = FloatSlider(
+            description="$\\rho_d w_{max}$", value=settings.rhod_w_max, min=.1, max=2, step=.1
+        )
         self.ui_kappa = FloatSlider(
             description="$\\kappa$ [1]", value=settings.kappa, min=0, max=1.5)
+
+        self.ui_freezing = {
+            'model': RadioButtons(
+                options=('singular', 'time-dependent'),
+                description='immersion frz',
+                layout={'width': 'max-content'}
+            ),
+            'INP surface': RadioButtons(
+                options=('as dry surface', 'lognormal(A, sgm_g)'),
+                description='INP surface'
+            ),
+            'lognormal_log10_A_um2': FloatSlider(
+                description='log10(A/$μm^2$)', min=-3, max=1, step=.5
+            ),
+            'lognormal_ln_sgm_g': FloatSlider(
+                description='ln(sgm_g)', min=.5, max=3, step=.5
+            ),
+            'ABIFM fit': Dropdown(
+                description='ABIFM fit', options=('Nonadecanol',)
+            ),
+            'INAS fit': Dropdown(
+                description='INAS fit', options=('Niemand et al. 2012',)
+            )
+        }
+        # TODO #599 cool rate product + sing/tdep diff prod
+
         self.ui_nx = IntSlider(value=settings.grid[0], min=10, max=100, description="nx")
         self.ui_nz = IntSlider(value=settings.grid[1], min=10, max=100, description="nz")
         self.ui_dt = FloatSlider(value=settings.dt, min=.5, max=60, description="dt (Eulerian)")
@@ -59,15 +93,15 @@ class GUISettings:
         self.ui_formulae_options = [
             Dropdown(
                 description=k,
-                options=physics.formulae._choices(getattr(physics, k)).keys(),
+                options=formulae._choices(getattr(physics, k)).keys(),
                 value=v.default
             )
-            for k, v in inspect.signature(physics.Formulae.__init__).parameters.items()
-            if k not in ('self', 'fastmath', 'seed')
+            for k, v in inspect.signature(Formulae.__init__).parameters.items()
+            if k not in ('self', 'fastmath', 'seed', 'constants')
         ]
         self.ui_formulae_options.append(
             Checkbox(
-                value=inspect.signature(physics.Formulae.__init__).parameters['fastmath'].default,
+                value=inspect.signature(Formulae.__init__).parameters['fastmath'].default,
                 description='fastmath'
             )
         )
@@ -86,6 +120,8 @@ class GUISettings:
 
         self.r_bins_edges = settings.r_bins_edges
         self.T_bins_edges = settings.T_bins_edges
+        self.terminal_velocity_radius_bin_edges = settings.terminal_velocity_radius_bin_edges
+
         self.size = settings.size
         self.condensation_substeps = settings.condensation_substeps
         self.condensation_dt_cond_range = settings.condensation_dt_cond_range
@@ -96,7 +132,7 @@ class GUISettings:
         self.coalescence_optimized_random = settings.coalescence_optimized_random
         self.coalescence_substeps = settings.coalescence_substeps
 
-        for attr in ('rhod_of_zZ', 'versions', 'n_spin_up', 'stream_function'):
+        for attr in ('rhod_of_zZ', 'versions', 'n_spin_up'):
             setattr(self, attr, getattr(settings, attr))
 
     @property
@@ -127,8 +163,8 @@ class GUISettings:
         return self.ui_output_options['interval'].value
 
     @property
-    def formulae(self) -> physics.Formulae:
-        return physics.Formulae(
+    def formulae(self) -> Formulae:
+        return Formulae(
             **{widget.description: widget.value for widget in self.ui_formulae_options}
         )
 
@@ -141,8 +177,16 @@ class GUISettings:
         return np.arange(0, self.n_steps + 1, self.steps_per_output_interval)
 
     @property
+    def rhod_w_max(self):
+        return self.ui_rhod_w_max.value
+
+    @property
     def kappa(self):
         return self.ui_kappa.value
+
+    @property
+    def freezing_singular(self):
+        return self.ui_freezing['model'].value == 'singular'
 
     @property
     def grid(self):
@@ -211,9 +255,32 @@ class GUISettings:
                 return widget.value
         raise Exception()
 
+    def stream_function(self, xX, zZ, _):
+        assert hasattr(self.__settings, 'rhod_w_max')
+        self.__settings.rhod_w_max = self.ui_rhod_w_max.value
+        return self.__settings.stream_function(xX, zZ, _)
+
+    @property
+    def freezing_inp_spec(self):
+        if self.ui_freezing['INP surface'].value == 'as dry surface':
+            return None
+        if self.ui_freezing['INP surface'].value == 'lognormal(A, sgm_g)':
+            return Lognormal(
+                norm_factor=1,
+                m_mode=10**(self.ui_freezing['lognormal_log10_A_um2'].value * si.um**2),
+                s_geom=np.exp(self.ui_freezing['lognormal_ln_sgm_g'].value)
+            )
+        raise NotImplementedError()
+
     def box(self):
         layout = Accordion(children=[
-            VBox([self.ui_dth0, self.ui_dqv0, self.ui_kappa]),
+            VBox([
+                self.ui_dth0,
+                self.ui_dqv0,
+                self.ui_kappa,
+                self.ui_rhod_w_max,
+                *self.ui_freezing.values()
+            ]),
             VBox([*self.ui_processes]),
             VBox([self.ui_nx, self.ui_nz, self.ui_sdpg, self.ui_dt, self.ui_simulation_time,
                   self.ui_condensation_rtol_x, self.ui_condensation_rtol_thd,
@@ -222,9 +289,25 @@ class GUISettings:
             VBox([*self.ui_formulae_options]),
             VBox([*self.ui_output_options.values()])
         ])
-        layout.set_title(0, 'environment')
+        layout.set_title(0, 'parameters')
         layout.set_title(1, 'processes')
         layout.set_title(2, 'discretisation')
-        layout.set_title(3, 'physics')
+        layout.set_title(3, 'formulae')
         layout.set_title(4, 'output')
+
+        layout.observe(self.hide_and_show, names="selected_index")
+        self.hide_and_show()
+
         return layout
+
+    def hide_and_show(self, _=None):
+        freezing_enabled = self.processes['freezing']
+        for widget in self.ui_freezing.values():
+            set_visibility(widget, freezing_enabled)
+
+
+def set_visibility(widget, visible):
+    if visible:
+        widget.layout = Layout()
+    else:
+        widget.layout = Layout(visibility='hidden')

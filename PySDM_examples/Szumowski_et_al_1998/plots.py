@@ -1,7 +1,5 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from PySDM import products
 from PySDM.physics import constants as const
 
 
@@ -12,7 +10,7 @@ class _Plot:
 
 
 class _ImagePlot(_Plot):
-    line_args = {'color': 'red', 'alpha': .75, 'linestyle': ':', 'linewidth': 5}
+    line_args = {'color': 'red', 'alpha': .666, 'linestyle': ':', 'linewidth': 3}
 
     def __init__(self, fig, ax, grid, size, product, show=False, lines=False, cmap='YlGnBu'):
         super().__init__(fig, ax)
@@ -34,38 +32,8 @@ class _ImagePlot(_Plot):
             self.lines['X'][1] = plt.plot([-1] * 2, zlim, **self.line_args)[0]
             self.lines['Z'][1] = plt.plot(xlim, [-1] * 2, **self.line_args)[0]
 
-        product_range, product_scale = {
-            products.WaterMixingRatio: ((0, 1), 'linear'),
-            products.TotalParticleSpecificConcentration: ((20, 50), 'linear'),
-            products.TotalParticleConcentration: ((20, 50), 'linear'),
-            products.SuperDropletCount: ((0, 10), 'linear'),
-            products.ParticlesVolumeSpectrum: ((20, 50), 'linear'),
-            products.AerosolConcentration: ((1e0, 1e2), 'linear'),
-            products.CloudDropletConcentration: ((1e0, 1e2), 'linear'),
-            products.DrizzleConcentration: ((1e-3, 1e1), 'log'),
-            products.ParticleMeanRadius: ((1, 25), 'linear'),
-            products.CloudDropletEffectiveRadius: ((0, 25), 'linear'),
-            products.AerosolSpecificConcentration: ((0, 3e2), 'linear'),
-            products.WaterVapourMixingRatio: ((5, 7.5), 'linear'),
-            products.Temperature: ((275, 305), 'linear'),
-            products.RelativeHumidity: ((75, 105), 'linear'),
-            products.Pressure: ((90000, 100000), 'linear'),
-            products.DryAirPotentialTemperature: ((275, 300), 'linear'),
-            products.DryAirDensity: ((0.95, 1.3), 'linear'),
-            products.PeakSupersaturation: ((-1, 1), 'linear'),
-            products.RipeningRate: ((1e-1, 1e1), 'log'),
-            products.ActivatingRate: ((1e-1, 1e1), 'log'),
-            products.DeactivatingRate: ((1e-1, 1e1), 'log'),
-            products.CollisionRateDeficit: ((0, 1e10), 'linear'),
-            products.CollisionRate: ((0, 1e10), 'linear'),
-            products.CondensationTimestepMin: ((.01, 10), 'log'),
-            products.CondensationTimestepMax: ((.01, 10), 'log'),
-            products.CoalescenceTimestepMin: ((.01, 10), 'log'),
-            products.IceWaterContent: ((.0001, .001), 'linear'),
-            products.ParticlesConcentration: ((0, 1e4), 'linear')
-        }[product.__class__]
-        data = np.full_like(self.nans, product_range[0])
-        label = f"{product.description} [{product.unit}]"
+        data = np.full_like(self.nans, np.nan)
+        label = f"{product.name} [{product.unit}]"
 
         self.ax.set_xlabel('X [m]')
         self.ax.set_ylabel('Z [m]')
@@ -74,14 +42,9 @@ class _ImagePlot(_Plot):
             self._transpose(data),
             origin='lower',
             extent=(*xlim, *zlim),
-            cmap=cmap,
-            norm=(
-                matplotlib.colors.LogNorm() if product_scale == 'log' and np.isfinite(data).all()
-                else None
-            )
+            cmap=cmap
         )
         plt.colorbar(self.im, ax=self.ax).set_label(label)
-        self.im.set_clim(vmin=product_range[0], vmax=product_range[1])
         if show:
             plt.show()
 
@@ -91,19 +54,26 @@ class _ImagePlot(_Plot):
             return data.T
         return None
 
-    def update(self, data,  step):
+    def update(self, data, step, data_range):
         data = self._transpose(data)
         if data is not None:
             self.im.set_data(data)
+            if data_range is not None:
+                self.im.set_clim(vmin=data_range[0], vmax=data_range[1])
+            nanmin = np.nan
+            nanmax = np.nan
+            if np.isfinite(data).any():
+                nanmin = np.nanmin(data)
+                nanmax = np.nanmax(data)
             self.ax.set_title(
-                f"min:{np.nanmin(data): .3g}    max:{np.nanmax(data): .3g}    t/dt_out:{step: >6}"
+                f"min:{nanmin: .3g}    max:{nanmax: .3g}    t/dt_out:{step: >6}"
             )
 
     def update_lines(self, focus_x, focus_z):
-        self.lines['X'][0].set_xdata(x=focus_x[0] * self.dx)
-        self.lines['Z'][0].set_ydata(y=focus_z[0] * self.dz)
-        self.lines['X'][1].set_xdata(x=focus_x[1] * self.dx)
-        self.lines['Z'][1].set_ydata(y=focus_z[1] * self.dz)
+        self.lines['X'][0].set_xdata(x=(focus_x[0]+.25) * self.dx)
+        self.lines['Z'][0].set_ydata(y=(focus_z[0]+.25) * self.dz)
+        self.lines['X'][1].set_xdata(x=(focus_x[1]-.25) * self.dx)
+        self.lines['Z'][1].set_ydata(y=(focus_z[1]-.25) * self.dz)
 
 
 class _SpectrumPlot(_Plot):
@@ -143,16 +113,17 @@ class _TimeseriesPlot(_Plot):
         self.ax.set_xlim(0, times[-1])
         self.ax.set_xlabel("time [s]")
         self.ax.set_ylabel("rainfall [mm/day]")
-        self.ax.set_ylim(0, 1e-1)
         self.ax.grid(True)
         self.ydata = np.full_like(times, np.nan, dtype=float)
         self.timeseries = self.ax.step(times, self.ydata, where='pre')[0]
         if show:
             plt.show()
 
-    def update(self, data):
+    def update(self, data, data_range):
         if data is not None:
             self.ydata[0:len(data)] = data[:]
+            if data_range[0] != data_range[1]:
+                self.ax.set_ylim(data_range[0], 1.1 * data_range[1])
         else:
             self.ydata[:] = np.nan
         self.timeseries.set_ydata(self.ydata)
@@ -178,3 +149,46 @@ class _TemperaturePlot(_Plot):
     def update(self, data, step):
         self.ax.set_title(f"t/dt_out:{step}")
         self.spec.set_ydata(data)
+
+
+class _TerminalVelocityPlot(_Plot):
+    def __init__(self, radius_bins, formulae, show=True):
+        self.formulae = formulae
+        super().__init__(*plt.subplots(1, 1))
+
+        self.ax.set_xlim(
+            np.amin(radius_bins) / const.si.um,
+            np.amax(radius_bins) / const.si.um
+        )
+        self.ax.set_xlabel("radius [μm]")
+        self.ax.set_ylabel("mean terminal velocity [m/s]")
+        self.ax.set_ylim(0, .1)
+        self.ax.grid(True)
+
+        self.radius_bins = radius_bins
+        # self.ax.plot(T_bins, self.formulae.freezing_temperature_spectrum.cdf(T_bins),
+        #              label=str(self.formulae.freezing_temperature_spectrum) + " (sampled at t=0)")
+        # nans = np.full_like(radius_bins[:-1], np.nan)
+        # self.spec = self.ax.fill_between(
+        #     (radius_bins[:-1] + np.diff(radius_bins)/2) / const.si.um,
+        #     nans,
+        #     nans,
+        #     marker='o'
+        # )[0]
+                                 # label='binned super-particle attributes',
+                                 # where='mid'
+                                 # )[0]
+        # self.ax.legend()
+
+        if show:
+            plt.show()
+
+    def update(self, data_min, data_max, step):
+        self.ax.set_title(f"t/dt_out:{step}")
+        self.ax.collections.clear()
+        self.ax.fill_between(
+             (self.radius_bins[:-1] + np.diff(self.radius_bins)/2) / const.si.um,
+            data_min, data_max,
+            color='gray'
+        )
+        # self.spec.set_ydata(data)

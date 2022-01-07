@@ -1,5 +1,5 @@
 import numpy as np
-from PySDM.physics import constants as const
+from PySDM.physics import constants_defaults as const
 from PySDM_examples.UIUC_2021.frozen_fraction import FrozenFraction
 
 TOTAL_PARTICLE_NUMBER =1
@@ -8,7 +8,8 @@ VOLUME = 1
 FF = FrozenFraction(
     volume=VOLUME,
     total_particle_number=TOTAL_PARTICLE_NUMBER,
-    droplet_volume=DROPLET_VOLUME
+    droplet_volume=DROPLET_VOLUME,
+    rho_w=const.rho_w
 )
 
 

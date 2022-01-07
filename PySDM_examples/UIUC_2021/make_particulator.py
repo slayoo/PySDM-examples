@@ -1,24 +1,23 @@
 import numpy as np
-from PySDM.builder import Builder
+from PySDM import Builder, Formulae
 from PySDM.backends import CPU
-from PySDM.physics import Formulae
 from PySDM.dynamics import Freezing
 from PySDM.environments import Box
-from PySDM.initialisation.spectral_sampling import ConstantMultiplicity
-from PySDM.initialisation.spectro_glacial import SpectroGlacialSampling
+from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
+from PySDM.initialisation.sampling.spectro_glacial_sampling import SpectroGlacialSampling
 from PySDM import products as PySDM_products
 
 
 A_VALUE_LARGER_THAN_ONE = 44
 
 
-def make_particulator(*, n_sd, dt, initial_temperature, singular, seed,
+def make_particulator(*, constants, n_sd, dt, initial_temperature, singular, seed,
                       shima_T_fz, ABIFM_spec, droplet_volume, total_particle_number, volume):
     attributes = {
         'volume': np.ones(n_sd) * droplet_volume
     }
 
-    formulae_ctor_args = {'seed': seed}
+    formulae_ctor_args = {'seed': seed, 'constants': constants}
     if singular:
         formulae_ctor_args['freezing_temperature_spectrum'] = shima_T_fz
     else:
@@ -51,9 +50,9 @@ def make_particulator(*, n_sd, dt, initial_temperature, singular, seed,
 
     return builder.build(
         attributes=attributes,
-        products=[
-            PySDM_products.Time(),
-            PySDM_products.Temperature(),
-            PySDM_products.IceWaterContent(specific=False)
-        ]
+        products=(
+            PySDM_products.Time(name='t'),
+            PySDM_products.AmbientTemperature(name='T'),
+            PySDM_products.SpecificIceWaterContent(name='qi')
+        )
     )

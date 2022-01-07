@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from PySDM.builder import Builder
 from PySDM.dynamics import Coalescence
 from PySDM.environments import Box
-from PySDM.initialisation.spectral_sampling import ConstantMultiplicity
+from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.products import WallTime
 from PySDM.backends import Numba, ThrustRTC
 from PySDM_examples.Shima_et_al_2009.settings import Settings
@@ -16,13 +16,13 @@ def run(settings, backend):
     sampling = ConstantMultiplicity(settings.spectrum)
     attributes['volume'], attributes['n'] = sampling.sample(settings.n_sd)
     builder.add_dynamic(Coalescence(settings.kernel))
-    particles = builder.build(attributes, products=[WallTime()])
+    particles = builder.build(attributes, products=(WallTime(),))
 
     states = {}
     last_wall_time = None
     for step in settings.output_steps:
         particles.run(step - particles.n_steps)
-        last_wall_time = particles.products['wall_time'].get()
+        last_wall_time = particles.products['wall time'].get()
 
     return states, last_wall_time
 

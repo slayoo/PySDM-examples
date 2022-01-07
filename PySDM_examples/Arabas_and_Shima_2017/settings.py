@@ -1,9 +1,8 @@
 import numpy as np
 from pystrict import strict
 from PySDM.physics.constants import si
-from PySDM.physics import constants as const
 from PySDM.dynamics import condensation
-from PySDM.physics.formulae import Formulae
+from PySDM import Formulae
 
 
 @strict
@@ -20,7 +19,7 @@ class Settings:
             saturation_vapour_pressure='AugustRocheMagnus',
             condensation_coordinate=coord
         )
-
+        const = self.formulae.constants
         self.p0 = 1000 * si.hectopascals
         self.RH0 = .98
         self.kappa = .2  # TODO #441

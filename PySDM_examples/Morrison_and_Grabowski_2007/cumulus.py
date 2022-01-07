@@ -2,15 +2,13 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 from PySDM.physics import si
-from PySDM.backends.impl_numba.conf import JIT_FLAGS
-from PySDM.physics import constants as const
 from PySDM_examples.Morrison_and_Grabowski_2007.common import Common
 from PySDM_examples.Szumowski_et_al_1998 import sounding
 
 
 class Cumulus(Common):
-    def __init__(self, fastmath: bool = JIT_FLAGS['fastmath']):
-        super().__init__(fastmath)
+    def __init__(self, formulae):
+        super().__init__(formulae)
         self.size = (9 * si.km, 2.7 * si.km)
         self.hx = 1.8 * si.km
         self.x0 = 3.6 * si.km
@@ -53,7 +51,7 @@ class Cumulus(Common):
         def drhod_dz(z, _):
             lv = self.formulae.latent_heat.lv(T_of_z(z))
             return self.formulae.hydrostatics.drho_dz(
-                const.g_std, p_of_z(z), T_of_z(z), q_of_z(z), lv)
+                self.formulae.constants.g_std, p_of_z(z), T_of_z(z), q_of_z(z), lv)
 
         theta_std0 = self.formulae.trivia.th_std(sounding.pressure[0], sounding.temperature[0])
         rhod0 = self.formulae.state_variable_triplet.rho_d(
@@ -70,19 +68,18 @@ class Cumulus(Common):
         assert rhod_solution.success
         return rhod_solution.y[0]
 
-    @staticmethod
-    def __z_of_p():
+    def __z_of_p(self):
         T_virt_of_p = interp1d(
             sounding.pressure,
             sounding.temperature * (
-                1 + sounding.mixing_ratio / const.eps
+                1 + sounding.mixing_ratio / self.formulae.constants.eps
             ) / (
                 1 + sounding.mixing_ratio
             )
         )
 
         def dz_dp(p, _):
-            return -const.Rd * T_virt_of_p(p) / const.g_std / p
+            return -self.formulae.constants.Rd * T_virt_of_p(p) / self.formulae.constants.g_std / p
 
         z_of_p = solve_ivp(
             fun=dz_dp,

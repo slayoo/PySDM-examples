@@ -1,6 +1,7 @@
 from PySDM.backends import CPU
-from PySDM.physics import si, spectra
-from PySDM.initialisation import spectral_sampling
+from PySDM.physics import si
+from PySDM.initialisation.sampling import spectral_sampling
+from PySDM.initialisation import spectra
 from PySDM.dynamics import condensation
 import numpy as np
 from pystrict import strict

@@ -3,9 +3,9 @@ from pystrict import strict
 from scipy.interpolate import interp1d
 from scipy.integrate import solve_ivp
 from PySDM.dynamics import condensation
-from PySDM.physics import Formulae, spectra
+from PySDM import Formulae
+from PySDM.initialisation import spectra
 from PySDM.physics import si
-import PySDM.physics.constants as const
 
 
 @strict
@@ -44,7 +44,7 @@ class Settings:
         self.thd = lambda z: self.formulae.state_variable_triplet.th_dry(self._th(z), self.qv(z))
 
         p0 = 975 * si.hPa  # TODO #424 not in the paper?
-        g = const.g_std
+        g = self.formulae.constants.g_std
         self.rhod0 = self.formulae.state_variable_triplet.rho_d(p0, self.qv(0), self._th(0))
 
         def drhod_dz(z, rhod):

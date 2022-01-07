@@ -21,6 +21,7 @@ setup(
                       'matplotlib',
                       'ipywidgets',
                       'pyvinecopulib',
+                      'seaborn',
                       'ghapi'],  # note: test-time-requirement?
     author='https://github.com/orgs/atmos-cloud-sim-uj/people',
     author_email='sylwester.arabas@uj.edu.pl',

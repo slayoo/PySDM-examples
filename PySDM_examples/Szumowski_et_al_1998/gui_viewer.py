@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from matplotlib import pyplot, rcParams
 from atmos_cloud_sim_uj_utils import save_and_make_link
@@ -5,7 +6,7 @@ from PySDM.physics import constants as const
 from PySDM_examples.utils.widgets import VBox, Box, Play, Output, IntSlider, IntRangeSlider,\
     jslink, HBox, Dropdown, Button, Layout, clear_output, display
 from PySDM_examples.Szumowski_et_al_1998.plots import _ImagePlot, _SpectrumPlot, _TimeseriesPlot,\
-    _TemperaturePlot
+    _TemperaturePlot, _TerminalVelocityPlot
 
 
 class GUIViewer:
@@ -45,26 +46,34 @@ class GUIViewer:
     def reinit(self, products):
         self.products = products
         self.product_select.options = tuple(
-            (f"{val.description} [{val.unit}]", key)
-            for key, val in sorted(self.products.items(), key=lambda item: item[1].description)
+            (f"{val.name} [{val.unit}]", key)
+            for key, val in sorted(self.products.items(), key=lambda item: item[1].name)
             if len(val.shape) == 2
         )
-        opts = [("dry/wet particle size spectra", 'size')]
-        if 'qi' in products:
+        opts = [
+            ("particle size spectra", 'size'),
+            ('terminal velocity', 'terminal velocity')
+        ]
+        if 'freezable specific concentration' in products:
             opts.append(("freezing temperature spectra", 'temperature'))
+        if 'immersed surface area' in products:
+            pass  # TODO #599
         self.spectrum_select.options = tuple(opts)
 
         r_bins = self.settings.r_bins_edges.copy()
         const.convert_to(r_bins, const.si.micrometres)
         self.spectrumOutputs = {}
         self.spectrumPlots = {}
-        for key in ('size', 'temperature'):
+        for key in ('size', 'terminal velocity', 'temperature'):
             self.spectrumOutputs[key] = Output()
             with self.spectrumOutputs[key]:
                 self.spectrumPlots[key] = \
                     _SpectrumPlot(r_bins, self.settings.spectrum_per_mass_of_dry_air) \
                     if key == 'size' else \
-                    _TemperaturePlot(self.settings.T_bins_edges, self.settings.formulae)
+                        _TemperaturePlot(self.settings.T_bins_edges, self.settings.formulae) \
+                        if key == 'temperature' else \
+                            _TerminalVelocityPlot(self.settings.terminal_velocity_radius_bin_edges,
+                                                  self.settings.formulae)
                 clear_output()
 
         self.timeseriesOutput = Output()
@@ -149,14 +158,14 @@ class GUIViewer:
     def replot(self, *_):
         selectedImage = self.product_select.value
         if not (selectedImage is None or selectedImage not in self.plots):
-            self.update_image()
+            self.replot_image()
             self.outputs[selectedImage].clear_output(wait=True)
             with self.outputs[selectedImage]:
                 display(self.plots[selectedImage].fig)
 
         selectedSpectrum = self.spectrum_select.value
         if not (selectedSpectrum is None or selectedSpectrum not in self.spectrumPlots):
-            self.update_spectra()
+            self.replot_spectra()
             self.spectrumOutputs[selectedSpectrum].clear_output(wait=True)
             with self.spectrumOutputs[selectedSpectrum]:
                 display(self.spectrumPlots[selectedSpectrum].fig)
@@ -178,6 +187,8 @@ class GUIViewer:
 
         if selected == 'size':
             for key in ('Particles Wet Size Spectrum', 'Particles Dry Size Spectrum'):
+                if xrange.start == xrange.stop or yrange.start == yrange.stop:
+                    continue
                 try:
                     data = self.storage.load(key, self.settings.output_steps[step])
                     data = data[xrange, yrange, :]
@@ -189,16 +200,39 @@ class GUIViewer:
                         plot.update_dry(data)
                 except self.storage.Exception:
                     pass
+        elif selected == 'terminal velocity':
+            try:
+                data = self.storage.load(
+                    'radius binned number averaged terminal velocity',
+                    self.settings.output_steps[step]
+                )
+
+                data = data[xrange, yrange, :]
+                data = np.where(data != 0, data, np.nan)
+                try:
+                    with warnings.catch_warnings(record=True) as _:
+                        warnings.simplefilter("ignore")
+                        data_min = np.nanmin(np.nanmin(data, axis=0), axis=0)
+                        data_max = np.nanmax(np.nanmax(data, axis=0), axis=0)
+                except RuntimeWarning:
+                    pass
+                plot.update(data_min, data_max, step)
+            except self.storage.Exception:
+                pass
         elif selected == 'temperature':
             try:
                 dT = abs(self.settings.T_bins_edges[1] - self.settings.T_bins_edges[0])
                 np.testing.assert_allclose(np.diff(self.settings.T_bins_edges), dT)
 
-                conc = self.storage.load('n_part_mg', self.settings.output_steps[step])
+                conc = self.storage.load(
+                    'particle specific concentration',
+                    self.settings.output_steps[step]
+                )
+                # TODO #705: assert unit == mg^-1
                 conc = conc[xrange, yrange]
 
                 data = self.storage.load(
-                    'Freezable specific concentration',
+                    'freezable specific concentration',
                     self.settings.output_steps[step]
                 )
                 data = data[xrange, yrange, :]
@@ -241,7 +275,10 @@ class GUIViewer:
         except self.storage.Exception:
             data = None
 
-        self.plots[selected].update(data, step)
+        self.plots[selected].update(
+            data, step,
+            self.storage.data_range(selected) if data is not None else None
+        )
 
     def replot_image(self, *_):
         selected = self.product_select.value
@@ -258,7 +295,10 @@ class GUIViewer:
             data = self.storage.load('surf_precip')
         except self.storage.Exception:
             data = None
-        self.timeseriesPlot.update(data)
+        self.timeseriesPlot.update(
+            data,
+            self.storage.data_range('surf_precip') if data is not None else None
+        )
 
     def replot_timeseries(self):
         self.update_timeseries()
