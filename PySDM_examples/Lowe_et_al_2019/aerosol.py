@@ -89,8 +89,22 @@ class Aerosol:
 @strict
 class AerosolMarine(Aerosol):
     def __init__(self, Acc_Forg: float = 0.2, Acc_N2: float = 134):
-        Aitken = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': .8, 'NH4NO3': 0, 'NaCl': 0}
-        Accumulation = {'palmitic': Acc_Forg, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': 0, 'NaCl': (1-Acc_Forg)}
+        Aitken = {
+            'palmitic': .2,
+            'SOA1': 0,
+            'SOA2': 0,
+            '(NH4)2SO4': .8,
+            'NH4NO3': 0,
+            'NaCl': 0
+        }
+        Accumulation = {
+            'palmitic': Acc_Forg,
+            'SOA1': 0,
+            'SOA2': 0,
+            '(NH4)2SO4': 0,
+            'NH4NO3': 0,
+            'NaCl': (1-Acc_Forg)
+        }
 
         self.aerosol_modes_per_cc = (
         {
@@ -120,19 +134,19 @@ class AerosolBoreal(Aerosol):
     def __init__(self, Acc_Forg: float = 0.668, Acc_N2: float = 540):
         # note: SOA1 or SOA2 unclear from the paper
         Aitken = {
-            'palmitic': 0, 
-            'SOA1': 0.668, 
-            'SOA2': 0, 
-            '(NH4)2SO4': 0.166, 
-            'NH4NO3': 0.166, 
+            'palmitic': 0,
+            'SOA1': 0.668,
+            'SOA2': 0,
+            '(NH4)2SO4': 0.166,
+            'NH4NO3': 0.166,
             'NaCl': 0
         }
         Accumulation = {
-            'palmitic': 0, 
-            'SOA1': 0, 
-            'SOA2': Acc_Forg, 
-            '(NH4)2SO4': (1-Acc_Forg)/2, 
-            'NH4NO3': (1-Acc_Forg)/2, 
+            'palmitic': 0,
+            'SOA1': 0,
+            'SOA2': Acc_Forg,
+            '(NH4)2SO4': (1-Acc_Forg)/2,
+            'NH4NO3': (1-Acc_Forg)/2,
             'NaCl': 0
         }
 
@@ -162,8 +176,22 @@ class AerosolBoreal(Aerosol):
 @strict
 class AerosolNascent(Aerosol):
     def __init__(self, Acc_Forg: float = 0.3, Acc_N2: float = 30):
-        Ultrafine = {'palmitic': 0, 'SOA1': .52, 'SOA2': 0, '(NH4)2SO4': .48, 'NH4NO3': 0, 'NaCl': 0}
-        Accumulation = {'palmitic': 0, 'SOA1': 0, 'SOA2': Acc_Forg, '(NH4)2SO4': (1-Acc_Forg), 'NH4NO3': 0, 'NaCl': 0}
+        Ultrafine = {
+            'palmitic': 0,
+            'SOA1': .52,
+            'SOA2': 0,
+            '(NH4)2SO4': .48,
+            'NH4NO3': 0,
+            'NaCl': 0
+        }
+        Accumulation = {
+            'palmitic': 0,
+            'SOA1': 0,
+            'SOA2': Acc_Forg,
+            '(NH4)2SO4': (1-Acc_Forg),
+            'NH4NO3': 0,
+            'NaCl': 0
+        }
         self.aerosol_modes_per_cc = (
             {
                 'f_org': f_org_volume(Ultrafine),

@@ -3,8 +3,8 @@ from pystrict import strict
 from PySDM import Formulae
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si
-from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
+from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
 
 @strict
 class Settings:
