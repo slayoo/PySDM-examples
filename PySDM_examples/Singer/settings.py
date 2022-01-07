@@ -2,7 +2,8 @@ import numpy as np
 from pystrict import strict
 from PySDM import Formulae
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
-from PySDM.physics import si, constants as const
+from PySDM.physics import si
+from PySDM.physics import constants_defaults as const
 from PySDM_examples.Singer.aerosol import _Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
 
@@ -19,13 +20,14 @@ class Settings:
         assert model in ('bulk', 'film', 'Ovad', 'Ruehl')
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
-        if model == "bulk":
-            surfstring = 'Constant'
-        elif model == "film" or model == "Ovad":
-            surfstring = 'CompressedFilmOvadnevaite'
-        elif model == "Ruehl":
-            surfstring = 'CompressedFilmRuehl'
-        self.formulae = Formulae(surface_tension=surfstring)
+        self.formulae = Formulae(
+            surface_tension='CompressedFilmOvadnevaite' if model == 'Ovad' else 'Constant',
+            constants={
+                'sgm_org': 34.77 * si.mN / si.m,
+                'delta_min': 1.73 * si.nm
+            }
+        )
+        const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
         self.t_max = int(110 / w) * si.m

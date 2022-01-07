@@ -15,6 +15,7 @@ from ipywidgets import (
     Layout,
     Output,
     Play,
+    RadioButtons,
     Select,
     Tab,
     VBox,

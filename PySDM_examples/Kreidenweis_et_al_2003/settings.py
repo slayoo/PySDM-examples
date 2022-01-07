@@ -5,15 +5,19 @@ from PySDM import Formulae
 from PySDM.physics.aqueous_chemistry.support import AQUEOUS_COMPOUNDS
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.initialisation import spectra
-from PySDM.physics import si, constants as const
+from PySDM.physics import si
+from PySDM.physics.constants import T0, PPB, PPM
 
 
 @strict
 class Settings:
     def __init__(self, dt: float, n_sd: int, n_substep: int,
                  spectral_sampling: spec_sampling.SpectralSampling = spec_sampling.Logarithmic):
-        self.formulae = Formulae(saturation_vapour_pressure='AugustRocheMagnus')
-
+        self.formulae = Formulae(
+            saturation_vapour_pressure='AugustRocheMagnus',
+            constants={'g_std': 10 * si.m / si.s**2}
+        )
+        const = self.formulae.constants
         self.DRY_RHO = 1800 * si.kg / (si.m ** 3)
         self.dry_molar_mass = Substance.from_formula("NH4HSO4").mass * si.gram / si.mole
 
@@ -24,14 +28,13 @@ class Settings:
         self.dt = dt
 
         self.w = .5 * si.m / si.s
-        self.g = 10 * si.m / si.s**2
 
         self.n_sd = n_sd
         self.n_substep = n_substep
 
         self.p0 = 950 * si.mbar
         self.T0 = 285.2 * si.K
-        pv0 = .95 * self.formulae.saturation_vapour_pressure.pvs_Celsius(self.T0 - const.T0)
+        pv0 = .95 * self.formulae.saturation_vapour_pressure.pvs_Celsius(self.T0 - T0)
         self.q0 = const.eps * pv0 / (self.p0 - pv0)
         self.kappa = .61
 
@@ -54,12 +57,12 @@ class Settings:
         ).sample(n_sd)
 
         self.ENVIRONMENT_MOLE_FRACTIONS = {
-            "SO2": 0.2 * const.PPB,
-            "O3": 50 * const.PPB,
-            "H2O2": 0.5 * const.PPB,
-            "CO2": 360 * const.PPM,
-            "HNO3": 0.1 * const.PPB,
-            "NH3": 0.1 * const.PPB,
+            "SO2": 0.2 * PPB,
+            "O3": 50 * PPB,
+            "H2O2": 0.5 * PPB,
+            "CO2": 360 * PPM,
+            "HNO3": 0.1 * PPB,
+            "NH3": 0.1 * PPB,
         }
 
         self.starting_amounts = {

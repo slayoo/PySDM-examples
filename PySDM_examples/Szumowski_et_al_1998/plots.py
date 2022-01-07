@@ -10,7 +10,7 @@ class _Plot:
 
 
 class _ImagePlot(_Plot):
-    line_args = {'color': 'red', 'alpha': .75, 'linestyle': ':', 'linewidth': 5}
+    line_args = {'color': 'red', 'alpha': .666, 'linestyle': ':', 'linewidth': 3}
 
     def __init__(self, fig, ax, grid, size, product, show=False, lines=False, cmap='YlGnBu'):
         super().__init__(fig, ax)
@@ -60,15 +60,20 @@ class _ImagePlot(_Plot):
             self.im.set_data(data)
             if data_range is not None:
                 self.im.set_clim(vmin=data_range[0], vmax=data_range[1])
+            nanmin = np.nan
+            nanmax = np.nan
+            if np.isfinite(data).any():
+                nanmin = np.nanmin(data)
+                nanmax = np.nanmax(data)
             self.ax.set_title(
-                f"min:{np.nanmin(data): .3g}    max:{np.nanmax(data): .3g}    t/dt_out:{step: >6}"
+                f"min:{nanmin: .3g}    max:{nanmax: .3g}    t/dt_out:{step: >6}"
             )
 
     def update_lines(self, focus_x, focus_z):
-        self.lines['X'][0].set_xdata(x=focus_x[0] * self.dx)
-        self.lines['Z'][0].set_ydata(y=focus_z[0] * self.dz)
-        self.lines['X'][1].set_xdata(x=focus_x[1] * self.dx)
-        self.lines['Z'][1].set_ydata(y=focus_z[1] * self.dz)
+        self.lines['X'][0].set_xdata(x=(focus_x[0]+.25) * self.dx)
+        self.lines['Z'][0].set_ydata(y=(focus_z[0]+.25) * self.dz)
+        self.lines['X'][1].set_xdata(x=(focus_x[1]-.25) * self.dx)
+        self.lines['Z'][1].set_ydata(y=(focus_z[1]-.25) * self.dz)
 
 
 class _SpectrumPlot(_Plot):
@@ -108,16 +113,17 @@ class _TimeseriesPlot(_Plot):
         self.ax.set_xlim(0, times[-1])
         self.ax.set_xlabel("time [s]")
         self.ax.set_ylabel("rainfall [mm/day]")
-        self.ax.set_ylim(0, 1e-1)
         self.ax.grid(True)
         self.ydata = np.full_like(times, np.nan, dtype=float)
         self.timeseries = self.ax.step(times, self.ydata, where='pre')[0]
         if show:
             plt.show()
 
-    def update(self, data):
+    def update(self, data, data_range):
         if data is not None:
             self.ydata[0:len(data)] = data[:]
+            if data_range[0] != data_range[1]:
+                self.ax.set_ylim(data_range[0], 1.1 * data_range[1])
         else:
             self.ydata[:] = np.nan
         self.timeseries.set_ydata(self.ydata)
@@ -143,3 +149,46 @@ class _TemperaturePlot(_Plot):
     def update(self, data, step):
         self.ax.set_title(f"t/dt_out:{step}")
         self.spec.set_ydata(data)
+
+
+class _TerminalVelocityPlot(_Plot):
+    def __init__(self, radius_bins, formulae, show=True):
+        self.formulae = formulae
+        super().__init__(*plt.subplots(1, 1))
+
+        self.ax.set_xlim(
+            np.amin(radius_bins) / const.si.um,
+            np.amax(radius_bins) / const.si.um
+        )
+        self.ax.set_xlabel("radius [μm]")
+        self.ax.set_ylabel("mean terminal velocity [m/s]")
+        self.ax.set_ylim(0, .1)
+        self.ax.grid(True)
+
+        self.radius_bins = radius_bins
+        # self.ax.plot(T_bins, self.formulae.freezing_temperature_spectrum.cdf(T_bins),
+        #              label=str(self.formulae.freezing_temperature_spectrum) + " (sampled at t=0)")
+        # nans = np.full_like(radius_bins[:-1], np.nan)
+        # self.spec = self.ax.fill_between(
+        #     (radius_bins[:-1] + np.diff(radius_bins)/2) / const.si.um,
+        #     nans,
+        #     nans,
+        #     marker='o'
+        # )[0]
+                                 # label='binned super-particle attributes',
+                                 # where='mid'
+                                 # )[0]
+        # self.ax.legend()
+
+        if show:
+            plt.show()
+
+    def update(self, data_min, data_max, step):
+        self.ax.set_title(f"t/dt_out:{step}")
+        self.ax.collections.clear()
+        self.ax.fill_between(
+             (self.radius_bins[:-1] + np.diff(self.radius_bins)/2) / const.si.um,
+            data_min, data_max,
+            color='gray'
+        )
+        # self.spec.set_ydata(data)

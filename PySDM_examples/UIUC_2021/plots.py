@@ -34,7 +34,7 @@ def make_temperature_plot(data):
     xy1.set_ylabel('temperature [K]')
     xy1.set_ylim(200, 300)
     datum = data[0]['products']
-    xy1.plot(datum['t'], datum['T_env'], marker='.', label='T', color='black')
+    xy1.plot(datum['t'], datum['T'], marker='.', label='T', color='black')
 
     xy2 = xy1.twinx()
     plotted = {singular: False for singular in (True, False)}
@@ -64,7 +64,7 @@ def make_freezing_spec_plot(
         datum = v['products']
         color = colors[v['singular']]
         prim.plot(
-            datum['T_env'], np.asarray(datum['qi']) / qi_unit, marker='.', linewidth=.333,
+            datum['T'], np.asarray(datum['qi']) / qi_unit, marker='.', linewidth=.333,
             label=f"Monte-Carlo: {labels[v['singular']]}" if not plotted[v['singular']] else '',
             color=color
         )
@@ -73,7 +73,8 @@ def make_freezing_spec_plot(
     ff = FrozenFraction(
         volume=volume,
         droplet_volume=droplet_volume,
-        total_particle_number=total_particle_number
+        total_particle_number=total_particle_number,
+        rho_w=formulae.constants.rho_w
     )
     twin = prim.secondary_yaxis('right', functions=(
         lambda x: ff.qi2ff(x * qi_unit),
@@ -81,7 +82,7 @@ def make_freezing_spec_plot(
     ))
     twin.set_ylabel('frozen fraction')
 
-    T = np.linspace(max(datum['T_env']), min(datum['T_env']))
+    T = np.linspace(max(datum['T']), min(datum['T']))
     for multiplier, color in {.1: 'orange', 1: 'red', 10: 'brown'}.items():
         prim.plot(
             T,

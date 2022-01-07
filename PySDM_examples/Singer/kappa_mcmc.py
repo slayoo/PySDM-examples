@@ -4,11 +4,10 @@ import os
 from scipy.optimize import minimize_scalar, minimize
 
 from PySDM import Formulae
-from PySDM.physics import si, constants as const
+from PySDM.physics import si
+from PySDM.physics import constants_defaults as const
 from PySDM.physics.surface_tension import compressed_film_ovadnevaite
 from PySDM_examples.Singer.aerosol import AerosolBetaCary
-
-os.environ['NUMBA_DISABLE_JIT'] = "1"
 
 # parameter transformation so the MCMC parameters range from [-inf, inf]
 # but the compressed film parameters are bounded appropriately
@@ -35,9 +34,13 @@ def get_model(params, args):
     f_org = c.aerosol_modes_per_cc[0]['f_org']
     kappa = c.aerosol_modes_per_cc[0]['kappa']['Ovad']
     
-    compressed_film_ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
-    compressed_film_ovadnevaite.delta_min = param_transform(params)[1] * si.nm
-    formulae = Formulae(surface_tension='CompressedFilmOvadnevaite')
+    formulae = Formulae(
+        surface_tension='CompressedFilmOvadnevaite',
+        constants = {
+            'sgm_org': param_transform(params)[0] * si.mN / si.m,
+            'delta_min': param_transform(params)[1] * si.nm
+        }
+    )
     
     Scrit, rcrit = np.zeros(len(r_dry)), np.zeros(len(r_dry))
     for i, rd in enumerate(r_dry):
@@ -48,24 +51,6 @@ def get_model(params, args):
     kap_eff = (2 * rcrit**2) / (3 * r_dry**3 * const.Rv * T * const.rho_w) * const.sgm_w
     
     return kap_eff
-
-# # evaluate the y-values of the model, given the current guess of parameter values
-# def get_model(params, args): 
-#     T, v_wet, v_dry, OVF = args
-#     c = AerosolBetaCary(OVF)
-#     f_org = c.aerosol_modes_per_cc['f_org']
-#     kappa = c.aerosol_modes_per_cc['kappa']['Ovad']
-    
-#     compressed_film_ovadnevaite.sgm_org = param_transform(params)[0] * si.mN / si.m
-#     compressed_film_ovadnevaite.delta_min = param_transform(params)[1] * si.nm
-#     formulae = Formulae(surface_tension='CompressedFilmOvadnevaite')
-#     sig = formulae.surface_tension.sigma(T, v_wet, v_dry, f_org)
-#     rd3 = (3 * v_dry) / (4 * np.pi)
-#     rcrit = formulae.hygroscopicity.r_cr(kappa, rd3, T, sig)
-#     kap_eff = (2 * rcrit**2) / (3 * rd3 * const.Rv * T * const.rho_w) * const.sgm_w
-    
-#     y = kap_eff
-#     return y
 
 # obtain the chi2 value of the model y-values given current parameters 
 # vs. the measured y-values  

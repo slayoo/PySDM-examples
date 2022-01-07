@@ -1,13 +1,14 @@
 from atmos_cloud_sim_uj_utils import TemporaryFile
 from PySDM.exporters import NetCDFExporter
 from PySDM.physics import si
+from PySDM import Formulae
 from PySDM_examples.Arabas_et_al_2015 import Settings, SpinUp
 from PySDM_examples.Szumowski_et_al_1998 import Simulation, Storage
 from PySDM_examples.utils import DummyController
 
 
 def main():
-    settings = Settings()
+    settings = Settings(Formulae())
 
     settings.n_sd_per_gridbox = 25
     settings.grid = (25, 25)

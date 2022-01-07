@@ -4,6 +4,7 @@ from scipy.io import netcdf
 from atmos_cloud_sim_uj_utils import TemporaryFile
 from PySDM.exporters import NetCDFExporter, VTKExporter
 from PySDM.backends import CPU
+from PySDM import Formulae
 from PySDM_examples.Szumowski_et_al_1998.storage import Storage
 from PySDM_examples.Szumowski_et_al_1998.gui_settings import GUISettings
 from PySDM_examples.Szumowski_et_al_1998.simulation import Simulation
@@ -14,7 +15,7 @@ from PySDM_examples.utils.widgets import IntSlider
 
 def test_Arabas_et_al_2015_export():
     # Arrange
-    settings = GUISettings(Settings())
+    settings = GUISettings(Settings(Formulae()))
     settings.ui_nz.value += 1
     settings.ui_simulation_time = IntSlider(value=10)
     settings.ui_dt = IntSlider(value=10)

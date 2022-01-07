@@ -11,13 +11,13 @@ from PySDM import products as PySDM_products
 A_VALUE_LARGER_THAN_ONE = 44
 
 
-def make_particulator(*, n_sd, dt, initial_temperature, singular, seed,
+def make_particulator(*, constants, n_sd, dt, initial_temperature, singular, seed,
                       shima_T_fz, ABIFM_spec, droplet_volume, total_particle_number, volume):
     attributes = {
         'volume': np.ones(n_sd) * droplet_volume
     }
 
-    formulae_ctor_args = {'seed': seed}
+    formulae_ctor_args = {'seed': seed, 'constants': constants}
     if singular:
         formulae_ctor_args['freezing_temperature_spectrum'] = shima_T_fz
     else:
@@ -50,9 +50,9 @@ def make_particulator(*, n_sd, dt, initial_temperature, singular, seed,
 
     return builder.build(
         attributes=attributes,
-        products=[
+        products=(
             PySDM_products.Time(name='t'),
-            PySDM_products.AmbientTemperature(name='T_env'),
+            PySDM_products.AmbientTemperature(name='T'),
             PySDM_products.SpecificIceWaterContent(name='qi')
-        ]
+        )
     )

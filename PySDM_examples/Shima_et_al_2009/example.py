@@ -5,7 +5,7 @@ from PySDM.builder import Builder
 from PySDM.environments import Box
 from PySDM.dynamics import Coalescence
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
-from PySDM.products import ParticlesVolumeSpectrum, WallTime
+from PySDM.products import ParticleVolumeVersusRadiusLogarithmSpectrum, WallTime
 from PySDM_examples.Shima_et_al_2009.settings import Settings
 from PySDM_examples.Shima_et_al_2009.spectrum_plotter import SpectrumPlotter
 
@@ -18,7 +18,8 @@ def run(settings, backend=CPU, observers=()):
     attributes['volume'], attributes['n'] = sampling.sample(settings.n_sd)
     coalescence = Coalescence(settings.kernel, adaptive=settings.adaptive)
     builder.add_dynamic(coalescence)
-    products = (ParticlesVolumeSpectrum(settings.radius_bins_edges, name='dv/dlnr'), WallTime())
+    products = (ParticleVolumeVersusRadiusLogarithmSpectrum(
+        settings.radius_bins_edges, name='dv/dlnr'), WallTime())
     particulator = builder.build(attributes, products)
     if hasattr(settings, 'u_term') and 'terminal velocity' in particulator.attributes:
         particulator.attributes['terminal velocity'].approximation = settings.u_term(particulator)

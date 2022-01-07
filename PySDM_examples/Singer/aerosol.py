@@ -1,6 +1,7 @@
 from pystrict import strict
 from PySDM.initialisation import spectra
-from PySDM.physics import si, constants as const
+from PySDM.physics import si
+from PySDM.physics import constants_defaults as const
 from chempy import Substance
 
 compounds = ('(NH4)2SO4', 'betacary')

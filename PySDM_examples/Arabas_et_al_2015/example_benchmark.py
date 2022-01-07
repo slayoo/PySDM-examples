@@ -1,6 +1,7 @@
 import importlib
 from matplotlib import pyplot as plt
 from PySDM.products import WallTime
+from PySDM import Formulae
 import PySDM.backends.impl_numba.conf
 from PySDM.backends import CPU, GPU
 from PySDM_examples.Arabas_et_al_2015 import Settings
@@ -21,7 +22,7 @@ def reload_cpu_backend():
 
 
 def main():
-    settings = Settings()
+    settings = Settings(Formulae())
 
     settings.grid = (25, 25)
     settings.simulation_time = settings.dt * 100
