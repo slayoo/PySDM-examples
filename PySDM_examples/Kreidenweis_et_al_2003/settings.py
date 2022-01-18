@@ -2,7 +2,7 @@ from chempy import Substance
 import numpy as np
 from pystrict import strict
 from PySDM import Formulae
-from PySDM.physics.aqueous_chemistry.support import AQUEOUS_COMPOUNDS
+from PySDM.dynamics.impl.chemistry_utils import AQUEOUS_COMPOUNDS
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.initialisation import spectra
 from PySDM.physics import si

@@ -81,6 +81,15 @@ def kappa(mass_fractions: dict):
 
     return result
 
+def nu_org(mass_fractions: dict):
+    volfrac = volume_fractions(mass_fractions)
+    molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
+
+    _masked = {k: (is_organic[k]) * volfrac[k] for k in compounds}
+    volume_fractions_of_just_org = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
+
+    _nu = sum(volume_fractions_of_just_org[i] * molar_volumes[i] for i in compounds)
+    return _nu
 
 class Aerosol:
     pass
@@ -110,6 +119,7 @@ class AerosolMarine(Aerosol):
         {
             'f_org': f_org_volume(Aitken),
             'kappa': kappa(Aitken),
+            'nu_org': nu_org(Aitken),
             'spectrum': spectra.Lognormal(
                 norm_factor=226 / si.cm ** 3,
                 m_mode=19.6 * si.nm,
@@ -119,6 +129,7 @@ class AerosolMarine(Aerosol):
         {
             'f_org': f_org_volume(Accumulation),
             'kappa': kappa(Accumulation),
+            'nu_org': nu_org(Accumulation),
             'spectrum': spectra.Lognormal(
                 norm_factor=Acc_N2 / si.cm ** 3,
                 m_mode=69.5 * si.nm,
@@ -154,6 +165,7 @@ class AerosolBoreal(Aerosol):
         {
             'f_org': f_org_volume(Aitken),
             'kappa': kappa(Aitken),
+            'nu_org': nu_org(Aitken),
             'spectrum': spectra.Lognormal(
                 norm_factor=1100 / si.cm ** 3,
                 m_mode=22.7 * si.nm,
@@ -163,6 +175,7 @@ class AerosolBoreal(Aerosol):
         {
             'f_org': f_org_volume(Accumulation),
             'kappa': kappa(Accumulation),
+            'nu_org': nu_org(Accumulation),
             'spectrum': spectra.Lognormal(
                 norm_factor=Acc_N2 / si.cm ** 3,
                 m_mode=82.2 * si.nm,
@@ -196,6 +209,7 @@ class AerosolNascent(Aerosol):
             {
                 'f_org': f_org_volume(Ultrafine),
                 'kappa': kappa(Ultrafine),
+                'nu_org': nu_org(Ultrafine),
                 'spectrum': spectra.Lognormal(
                     norm_factor=2000 / si.cm ** 3,
                     m_mode=11.5 * si.nm,
@@ -205,6 +219,7 @@ class AerosolNascent(Aerosol):
             {
                 'f_org': f_org_volume(Accumulation),
                 'kappa': kappa(Accumulation),
+                'nu_org': nu_org(Accumulation),
                 'spectrum': spectra.Lognormal(
                     norm_factor=Acc_N2 / si.cm ** 3,
                     m_mode=100 * si.nm,
