@@ -3,5 +3,5 @@ nbconvert
 jsonschema==3.2.0  # https://github.com/jupyter/nbformat/issues/232
 Jinja2<3.0.0  # https://github.com/jupyter/nbconvert/issues/1568
 
-PySDM @ git+https://github.com/slayoo/PySDM@5d53014#egg=PySDM
+PySDM @ git+https://github.com/atmos-cloud-sim-uj/PySDM@33af1ca#egg=PySDM
 PyMPDATA @ git+https://github.com/slayoo/PyMPDATA@262f732#egg=PyMPDATA
