@@ -48,7 +48,7 @@ class Settings:
                 np.inf
         )
 
-        self.mass_of_dry_air = 44
+        self.mass_of_dry_air = 44e10
 
         self.wet_radius_bins_edges = np.logspace(
             np.log10(4 * si.um),
