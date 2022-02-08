@@ -29,7 +29,8 @@ class Settings:
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        self.t_max = int(210 / w) * si.m
+        #self.t_max = int(210 / w) * si.m
+        self.t_max = int(10) * si.m
         self.output_interval = 10 * si.s
         self.dt = dt
         self.rtol_x = rtol_x
