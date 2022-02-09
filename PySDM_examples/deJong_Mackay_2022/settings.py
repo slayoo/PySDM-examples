@@ -25,10 +25,14 @@ class Settings:
         self._steps = [0, 60]
         self.kernel = Geometric()
         self.coal_eff = Berry1967()
-        self.fragmentation = Gaussian(mu=10 * si.micrometres, scale=5 * si.micrometres) #ExponFrag(scale=1e-6) #AlwaysN(n=1)
+        self.fragmentation = Gaussian(mu=10 * si.um, scale=5 * si.um)
         self.break_eff = ConstEb(1.0) # no "bouncing"
         self.spectrum = Exponential(norm_factor=self.norm_factor, scale=self.X0)
-        self.radius_bins_edges = np.logspace(np.log10(1 * si.um), np.log10(100 * si.um), num=128, endpoint=True)
+        self.radius_bins_edges = np.logspace(
+            np.log10(1 * si.um),
+            np.log10(100 * si.um),
+            num=128, endpoint=True
+        )
         self.radius_range = [0 * si.um, 1e6 * si.um]
 
     @property
