@@ -1,5 +1,3 @@
-import numpy as np
-
 from PySDM.backends import CPU
 from PySDM.builder import Builder
 from PySDM.environments import Box
@@ -35,4 +33,3 @@ def make_core(settings):
         CollisionRateDeficitPerGridbox(name='crd')
     )
     return builder.build(attributes, products)
- 
