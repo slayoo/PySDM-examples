@@ -72,6 +72,7 @@ class Simulation:
                 radius_range=settings.cloud_radius_range),
             PySDM_products.ParticleSizeSpectrumPerVolume(
                 radius_bins_edges=settings.wet_radius_bins_edges),
+            PySDM_products.ActivableFraction()
         )
 
         self.particulator = builder.build(attributes=attributes, products=products)
@@ -79,7 +80,7 @@ class Simulation:
 
     def _save_scalars(self, output):
         for k, v in self.particulator.products.items():
-            if len(v.shape) > 1:
+            if len(v.shape) > 1 or k == "activable fraction":
                 continue
             value = v.get()
             if isinstance(value, np.ndarray) and value.size == 1:
@@ -96,4 +97,5 @@ class Simulation:
             self.particulator.run(step - self.particulator.n_steps)
             self._save_scalars(output)
         self._save_spectrum(output)
+        output["Activated Fraction"] = self.particulator.products["activable fraction"].get(S_max=np.nanmax(output["S_max"]))
         return output

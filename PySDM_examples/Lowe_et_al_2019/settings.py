@@ -8,7 +8,7 @@ from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
 
 @strict
 class Settings:
-    def __init__(self, dt: float, n_sd_per_mode: int,
+    def __init__(self, dz: float, n_sd_per_mode: int,
                  aerosol: Aerosol,
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
@@ -23,20 +23,22 @@ class Settings:
             surface_tension='CompressedFilmOvadnevaite' if model == 'film' else 'Constant',
             constants={
                 'sgm_org': 40 * si.mN / si.m,
-                'delta_min': 0.1 * si.nm
-            }
+                'delta_min': 0.2 * si.nm
+            }, 
+            diffusion_kinetics='LoweEtAl2019'
         )
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        #self.t_max = int(210 / w) * si.m
-        self.t_max = int(10) * si.m
-        self.output_interval = 10 * si.s
-        self.dt = dt
         self.rtol_x = rtol_x
         self.rtol_thd = rtol_thd
-
+        
+        max_altitude = 210 * si.m
         self.w = w
+        self.t_max = max_altitude / self.w
+        self.dt = self.t_max / (max_altitude / dz)
+        self.output_interval = 2 * self.dt
+        
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 980 * si.mbar
@@ -49,7 +51,7 @@ class Settings:
                 np.inf
         )
 
-        self.mass_of_dry_air = 44e10
+        self.mass_of_dry_air = 44
 
         self.wet_radius_bins_edges = np.logspace(
             np.log10(4 * si.um),
