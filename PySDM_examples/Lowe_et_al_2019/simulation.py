@@ -28,7 +28,6 @@ class Simulation:
         }
         for mode in settings.aerosol.aerosol_modes_per_cc:
             r_dry, n_in_dv = settings.spectral_sampling(
-                #size_range=(20e-9,500e-9),
                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode)
             n_in_dv /= (settings.rho0 / settings.mass_of_dry_air)
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
@@ -62,7 +61,7 @@ class Simulation:
             del attributes['dry volume organic']
 
         builder.add_dynamic(AmbientThermodynamics())
-        builder.add_dynamic(Condensation(rtol_x=settings.rtol_x, rtol_thd=settings.rtol_thd))
+        builder.add_dynamic(Condensation())
 
         products = products or (
             PySDM_products.ParcelDisplacement(name='z'),

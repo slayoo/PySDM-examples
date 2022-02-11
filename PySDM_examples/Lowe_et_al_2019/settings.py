@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import constants as sci
 from pystrict import strict
 from PySDM import Formulae
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
@@ -13,8 +14,11 @@ class Settings:
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  w: float = 0.32 * si.m / si.s,
-                 rtol_x: float = DEFAULTS.rtol_x,
-                 rtol_thd: float = DEFAULTS.rtol_x
+                 delta_min: float = 0.1, # 0.2 in the paper, but 0.1 matches the paper plot fig 1c and 1d
+                 MAC: float = 1,
+                 HAC: float = 1,
+                 c_pd: float = 1005 * si.joule / si.kilogram / si.kelvin,
+                 g_std: float = sci.g * si.metre / si.second ** 2
                  ):
         assert model in ('bulk', 'film')
         self.model = model
@@ -23,21 +27,24 @@ class Settings:
             surface_tension='CompressedFilmOvadnevaite' if model == 'film' else 'Constant',
             constants={
                 'sgm_org': 40 * si.mN / si.m,
-                'delta_min': 0.2 * si.nm
+                'delta_min': delta_min * si.nm,
+                'MAC': MAC,
+                'HAC': HAC,
+                'c_pd': c_pd,
+                'g_std': g_std
             }, 
-            diffusion_kinetics='LoweEtAl2019'
+            diffusion_kinetics='LoweEtAl2019',
+            saturation_vapour_pressure='Lowe1977'
         )
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        self.rtol_x = rtol_x
-        self.rtol_thd = rtol_thd
         
         max_altitude = 210 * si.m
         self.w = w
         self.t_max = max_altitude / self.w
         self.dt = self.t_max / (max_altitude / dz)
-        self.output_interval = 2 * self.dt
+        self.output_interval = 1 * self.dt
         
         self.g = 9.81 * si.m / si.s**2
 
