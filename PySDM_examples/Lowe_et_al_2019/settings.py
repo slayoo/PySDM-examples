@@ -34,16 +34,18 @@ class Settings:
                 'g_std': g_std
             }, 
             diffusion_kinetics='LoweEtAl2019',
-            saturation_vapour_pressure='Lowe1977'
+            diffusion_thermics='LoweEtAl2019',
+            latent_heat='Lowe2019',
+            # saturation_vapour_pressure='Lowe1977',
         )
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
         
-        max_altitude = 210 * si.m
+        max_altitude = 190 * si.m
         self.w = w
         self.t_max = max_altitude / self.w
-        self.dt = self.t_max / (max_altitude / dz)
+        self.dt = dz / self.w
         self.output_interval = 1 * self.dt
         
         self.g = 9.81 * si.m / si.s**2
