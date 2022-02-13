@@ -43,11 +43,6 @@ def f_org_volume(mass_fractions: dict):
 def kappa(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
     molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
-
-    _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
-    volume_fractions_of_just_inorg = {
-        k: _masked[k] / sum(list(_masked.values())) for k in compounds
-    }
     ns_per_vol = sum(ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i]
                         for i in compounds)
     result = ns_per_vol * Mv / rho_w
@@ -60,10 +55,11 @@ def nu_org(mass_fractions: dict):
     molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
 
     _masked = {k: (is_organic[k]) * volfrac[k] for k in compounds}
-    if sum(list(_masked.values())) == 0:
+    _tot_org = sum(list(_masked.values()))
+    if _tot_org == 0:
         volume_fractions_of_just_org = {k:0.0 for k in compounds}
     else:
-        volume_fractions_of_just_org = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
+        volume_fractions_of_just_org = {k:_masked[k] / _tot_org for k in compounds}
 
     _nu = sum(volume_fractions_of_just_org[i] * molar_volumes[i] for i in compounds)
     return _nu

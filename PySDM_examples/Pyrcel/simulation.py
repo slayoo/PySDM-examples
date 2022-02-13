@@ -43,14 +43,15 @@ class Simulation:
         attributes['n'] = discretise_multiplicities(attributes['n'])
 
         dv = settings.mass_of_dry_air / settings.rho0
-        # np.testing.assert_approx_equal(
-        #     np.sum(attributes['n']) / dv,
-        #     Sum(tuple(
-        #         settings.aerosol.aerosol_modes_per_cc[i]['spectrum']
-        #         for i in range(len(settings.aerosol.aerosol_modes_per_cc))
-        #     )).norm_factor,
-        #     significant=5
-        # )
+        np.testing.assert_approx_equal(
+            np.sum(attributes['n']) / dv,
+            Sum(tuple(
+                settings.aerosol.aerosol_modes_per_cc[i]['spectrum']
+                for i in range(len(settings.aerosol.aerosol_modes_per_cc))
+            )).norm_factor,
+            #significant=5
+            significant=2
+        )
         r_wet = equilibrate_wet_radii(
             r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
             environment=env,
