@@ -19,13 +19,13 @@ class Settings:
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        
+
         self.w = 1.0 * si.m / si.s
         self.dt = dt * si.s
         max_altitude = 250 * si.m
         self.t_max = max_altitude / self.w
         self.output_interval = 1 * self.dt
-        
+
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 775 * si.mbar
