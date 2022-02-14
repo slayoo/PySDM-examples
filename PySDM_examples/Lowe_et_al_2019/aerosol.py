@@ -56,18 +56,28 @@ def f_org_volume(mass_fractions: dict):
     return sum(is_organic[k] * volfrac[k] for k in compounds)
 
 
+def volfrac_just_xxx(volfrac: dict, just_org=True):
+    if just_org:
+        _masked = {k: (is_organic[k]) * volfrac[k] for k in compounds}
+    else:
+        _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
+
+    _denom = sum(list(_masked.values()))
+    if _denom == 0.0:
+        x = {k:0.0 for k in compounds}
+    else:
+        x = {k:_masked[k] / _denom for k in compounds}
+    return x
+
+
 def kappa(mass_fractions: dict):
     result = {}
     for model in ('bulk', 'film'):
         volfrac = volume_fractions(mass_fractions)
         molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
 
-        _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
-        volume_fractions_of_just_inorg = {
-            k: _masked[k] / sum(list(_masked.values())) for k in compounds
-        }
-
         if model == 'film':
+            volume_fractions_of_just_inorg = volfrac_just_xxx(volfrac, just_org=False)
             ns_per_vol = (1 - f_org_volume(mass_fractions)) * sum(
                 ionic_dissociation_phi[i] * volume_fractions_of_just_inorg[i] / molar_volumes[i]
                 for i in compounds
@@ -84,10 +94,7 @@ def kappa(mass_fractions: dict):
 def nu_org(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
     molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
-
-    _masked = {k: (is_organic[k]) * volfrac[k] for k in compounds}
-    volume_fractions_of_just_org = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
-
+    volume_fractions_of_just_org = volfrac_just_xxx(volfrac, just_org=True)
     _nu = sum(volume_fractions_of_just_org[i] * molar_volumes[i] for i in compounds)
     return _nu
 
