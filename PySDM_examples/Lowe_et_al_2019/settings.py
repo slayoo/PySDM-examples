@@ -4,7 +4,6 @@ from pystrict import strict
 from PySDM import Formulae
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si
-from PySDM.dynamics.condensation import DEFAULTS
 from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
 
 @strict
@@ -14,7 +13,8 @@ class Settings:
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  w: float = 0.32 * si.m / si.s,
-                 delta_min: float = 0.1, # 0.2 in the paper, but 0.1 matches the paper plot fig 1c and 1d
+                 # 0.2 in the paper, but 0.1 matches the paper plot fig 1c and 1d
+                 delta_min: float = 0.1,
                  MAC: float = 1,
                  HAC: float = 1,
                  c_pd: float = 1005 * si.joule / si.kilogram / si.kelvin,
@@ -32,22 +32,22 @@ class Settings:
                 'HAC': HAC,
                 'c_pd': c_pd,
                 'g_std': g_std
-            }, 
+            },
             diffusion_kinetics='LoweEtAl2019',
             diffusion_thermics='LoweEtAl2019',
             latent_heat='Lowe2019',
-            # saturation_vapour_pressure='Lowe1977',
+            saturation_vapour_pressure='Lowe1977',
         )
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        
+
         max_altitude = 190 * si.m
         self.w = w
         self.t_max = max_altitude / self.w
         self.dt = dz / self.w
         self.output_interval = 1 * self.dt
-        
+
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 980 * si.mbar

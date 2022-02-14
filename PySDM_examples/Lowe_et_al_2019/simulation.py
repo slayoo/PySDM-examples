@@ -3,7 +3,7 @@ from PySDM.environments import Parcel
 from PySDM import Builder
 from PySDM.backends import CPU
 from PySDM.dynamics import AmbientThermodynamics, Condensation
-from PySDM.initialisation import discretise_multiplicities, equilibrate_wet_radii
+from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.initialisation.spectra import Sum
 import PySDM.products as PySDM_products
 
@@ -96,5 +96,6 @@ class Simulation:
             self.particulator.run(step - self.particulator.n_steps)
             self._save_scalars(output)
         self._save_spectrum(output)
-        output["Activated Fraction"] = self.particulator.products["activable fraction"].get(S_max=np.nanmax(output["S_max"]))
+        output["Activated Fraction"] = self.particulator.products["activable fraction"].get(
+            S_max=np.nanmax(output["S_max"]))
         return output
