@@ -57,12 +57,12 @@ def f_org_volume(mass_fractions: dict):
 
 
 def volfrac_just_xxx(volfrac: dict, just_org=True):
-    if just_org == True:
+    if just_org:
         _masked = {k: (is_organic[k]) * volfrac[k] for k in compounds}
-    if just_org == False:
+    else:
         _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
 
-    _denom = sum(list(_masked.values()))    
+    _denom = sum(list(_masked.values()))
     if _denom == 0.0:
         x = {k:0.0 for k in compounds}
     else:
