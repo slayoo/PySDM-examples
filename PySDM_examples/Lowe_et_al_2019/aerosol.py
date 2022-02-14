@@ -105,8 +105,7 @@ class Aerosol:
 @strict
 class AerosolMarine(Aerosol):
     Aitken = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': .8, 'NH4NO3': 0, 'NaCl': 0}
-    #Accumulation = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': .8, 'NaCl': 0}
-    Accumulation = {'palmitic': 0.9, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': 0.1, 'NaCl': 0}
+    Accumulation = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': .8, 'NaCl': 0}
 
     def __init__(self):
         self.aerosol_modes_per_cc = (
