@@ -7,7 +7,7 @@ import PySDM
 from PySDM import Formulae
 from PySDM.physics import si
 from PySDM.dynamics import condensation, collisions
-from PySDM.dynamics.collisions.kernels import Geometric
+from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.initialisation import spectra
 
 

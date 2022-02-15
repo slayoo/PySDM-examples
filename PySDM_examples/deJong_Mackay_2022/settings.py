@@ -2,7 +2,7 @@ from pystrict import strict
 import numpy as np
 from PySDM.physics.constants import si
 from PySDM.initialisation.spectra import Gamma
-from PySDM.dynamics.collisions.kernels import Geometric
+from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.dynamics.collisions.coalescence_efficiencies import Berry1967
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
 from PySDM.dynamics.collisions.breakup_fragmentations import Gaussian
