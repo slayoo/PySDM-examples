@@ -104,15 +104,29 @@ class Aerosol:
 
 @strict
 class AerosolMarine(Aerosol):
-    Aitken = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': .8, 'NH4NO3': 0, 'NaCl': 0}
-    Accumulation = {'palmitic': .2, 'SOA1': 0, 'SOA2': 0, '(NH4)2SO4': 0, 'NH4NO3': .8, 'NaCl': 0}
+    def __init__(self, Acc_Forg: float = 0.2, Acc_N2: float = 134):
+        Aitken = {
+            'palmitic': .2,
+            'SOA1': 0,
+            'SOA2': 0,
+            '(NH4)2SO4': .8,
+            'NH4NO3': 0,
+            'NaCl': 0
+        }
+        Accumulation = {
+            'palmitic': Acc_Forg,
+            'SOA1': 0,
+            'SOA2': 0,
+            '(NH4)2SO4': 0,
+            'NH4NO3': 0,
+            'NaCl': (1-Acc_Forg)
+        }
 
-    def __init__(self):
         self.aerosol_modes_per_cc = (
         {
-            'f_org': f_org_volume(self.Aitken),
-            'kappa': kappa(self.Aitken),
-            'nu_org': nu_org(self.Aitken),
+            'f_org': f_org_volume(Aitken),
+            'kappa': kappa(Aitken),
+            'nu_org': nu_org(Aitken),
             'spectrum': spectra.Lognormal(
                 norm_factor=226 / si.cm ** 3,
                 m_mode=19.6 * si.nm,
@@ -120,11 +134,11 @@ class AerosolMarine(Aerosol):
             )
         },
         {
-            'f_org': f_org_volume(self.Accumulation),
-            'kappa': kappa(self.Accumulation),
-            'nu_org': nu_org(self.Accumulation),
+            'f_org': f_org_volume(Accumulation),
+            'kappa': kappa(Accumulation),
+            'nu_org': nu_org(Accumulation),
             'spectrum': spectra.Lognormal(
-                norm_factor=134 / si.cm ** 3,
+                norm_factor=Acc_N2 / si.cm ** 3,
                 m_mode=69.5 * si.nm,
                 s_geom=1.7
             ),
@@ -135,30 +149,30 @@ class AerosolMarine(Aerosol):
 
 @strict
 class AerosolBoreal(Aerosol):
-    # note: SOA1 or SOA2 unclear from the paper
-    Aitken = {
-        'palmitic': 0,
-        'SOA1': 0.668,
-        'SOA2': 0,
-        '(NH4)2SO4': 0.166,
-        'NH4NO3': 0.166,
-        'NaCl': 0
-    }
-    Accumulation = {
-        'palmitic': 0,
-        'SOA1': 0,
-        'SOA2': 0.668,
-        '(NH4)2SO4': 0.166,
-        'NH4NO3': 0.166,
-        'NaCl': 0
-    }
+    def __init__(self, Acc_Forg: float = 0.668, Acc_N2: float = 540):
+        # note: SOA1 or SOA2 unclear from the paper
+        Aitken = {
+            'palmitic': 0,
+            'SOA1': 0.668,
+            'SOA2': 0,
+            '(NH4)2SO4': 0.166,
+            'NH4NO3': 0.166,
+            'NaCl': 0
+        }
+        Accumulation = {
+            'palmitic': 0,
+            'SOA1': 0,
+            'SOA2': Acc_Forg,
+            '(NH4)2SO4': (1-Acc_Forg)/2,
+            'NH4NO3': (1-Acc_Forg)/2,
+            'NaCl': 0
+        }
 
-    def __init__(self):
         self.aerosol_modes_per_cc = (
         {
-            'f_org': f_org_volume(self.Aitken),
-            'kappa': kappa(self.Aitken),
-            'nu_org': nu_org(self.Aitken),
+            'f_org': f_org_volume(Aitken),
+            'kappa': kappa(Aitken),
+            'nu_org': nu_org(Aitken),
             'spectrum': spectra.Lognormal(
                 norm_factor=1100 / si.cm ** 3,
                 m_mode=22.7 * si.nm,
@@ -166,11 +180,11 @@ class AerosolBoreal(Aerosol):
             )
         },
         {
-            'f_org': f_org_volume(self.Accumulation),
-            'kappa': kappa(self.Accumulation),
-            'nu_org': nu_org(self.Accumulation),
+            'f_org': f_org_volume(Accumulation),
+            'kappa': kappa(Accumulation),
+            'nu_org': nu_org(Accumulation),
             'spectrum': spectra.Lognormal(
-                norm_factor=540 / si.cm ** 3,
+                norm_factor=Acc_N2 / si.cm ** 3,
                 m_mode=82.2 * si.nm,
                 s_geom=1.62
             )
@@ -181,15 +195,28 @@ class AerosolBoreal(Aerosol):
 
 @strict
 class AerosolNascent(Aerosol):
-    Ultrafine = {'palmitic': 0, 'SOA1': .52, 'SOA2': 0, '(NH4)2SO4': .48, 'NH4NO3': 0, 'NaCl': 0}
-    Accumulation = {'palmitic': 0, 'SOA1': 0, 'SOA2': .3, '(NH4)2SO4': .7, 'NH4NO3': 0, 'NaCl': 0}
-
-    def __init__(self):
+    def __init__(self, Acc_Forg: float = 0.3, Acc_N2: float = 30):
+        Ultrafine = {
+            'palmitic': 0,
+            'SOA1': .52,
+            'SOA2': 0,
+            '(NH4)2SO4': .48,
+            'NH4NO3': 0,
+            'NaCl': 0
+        }
+        Accumulation = {
+            'palmitic': 0,
+            'SOA1': 0,
+            'SOA2': Acc_Forg,
+            '(NH4)2SO4': (1-Acc_Forg),
+            'NH4NO3': 0,
+            'NaCl': 0
+        }
         self.aerosol_modes_per_cc = (
             {
-                'f_org': f_org_volume(self.Ultrafine),
-                'kappa': kappa(self.Ultrafine),
-                'nu_org': nu_org(self.Ultrafine),
+                'f_org': f_org_volume(Ultrafine),
+                'kappa': kappa(Ultrafine),
+                'nu_org': nu_org(Ultrafine),
                 'spectrum': spectra.Lognormal(
                     norm_factor=2000 / si.cm ** 3,
                     m_mode=11.5 * si.nm,
@@ -197,11 +224,11 @@ class AerosolNascent(Aerosol):
                 )
             },
             {
-                'f_org': f_org_volume(self.Accumulation),
-                'kappa': kappa(self.Accumulation),
-                'nu_org': nu_org(self.Accumulation),
+                'f_org': f_org_volume(Accumulation),
+                'kappa': kappa(Accumulation),
+                'nu_org': nu_org(Accumulation),
                 'spectrum': spectra.Lognormal(
-                    norm_factor=30 / si.cm ** 3,
+                    norm_factor=Acc_N2 / si.cm ** 3,
                     m_mode=100 * si.nm,
                     s_geom=1.70
                 ),

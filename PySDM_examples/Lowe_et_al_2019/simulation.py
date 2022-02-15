@@ -3,12 +3,13 @@ from PySDM.environments import Parcel
 from PySDM import Builder
 from PySDM.backends import CPU
 from PySDM.dynamics import AmbientThermodynamics, Condensation
-from PySDM.initialisation import discretise_multiplicities, equilibrate_wet_radii
+from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.initialisation.spectra import Sum
 import PySDM.products as PySDM_products
+from PySDM_examples.utils import BasicSimulation
 
 
-class Simulation:
+class Simulation(BasicSimulation):
     def __init__(self, settings, products=None):
         env = Parcel(dt=settings.dt,
                      mass_of_dry_air=settings.mass_of_dry_air,
@@ -29,9 +30,10 @@ class Simulation:
         for mode in settings.aerosol.aerosol_modes_per_cc:
             r_dry, n_in_dv = settings.spectral_sampling(
                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode)
-            n_in_dv /= (settings.rho0 / settings.mass_of_dry_air)
+            V = settings.mass_of_dry_air / settings.rho0
+            N = n_in_dv * V
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
-            attributes['n'] = np.append(attributes['n'], n_in_dv)
+            attributes['n'] = np.append(attributes['n'], N)
             attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
             attributes['dry volume organic'] = np.append(
                 attributes['dry volume organic'], mode['f_org'] * v_dry)
@@ -40,11 +42,9 @@ class Simulation:
         for attribute in attributes.values():
             assert attribute.shape[0] == n_sd
 
-        attributes['n'] = discretise_multiplicities(attributes['n'])
-
         dv = settings.mass_of_dry_air / settings.rho0
         np.testing.assert_approx_equal(
-            np.sum(attributes['n']) / dv,
+            np.sum(attributes['n']) / V,
             Sum(tuple(
                 settings.aerosol.aerosol_modes_per_cc[i]['spectrum']
                 for i in range(len(settings.aerosol.aerosol_modes_per_cc))
@@ -73,6 +73,7 @@ class Simulation:
                 radius_range=settings.cloud_radius_range),
             PySDM_products.ParticleSizeSpectrumPerVolume(
                 radius_bins_edges=settings.wet_radius_bins_edges),
+            PySDM_products.ActivableFraction()
         )
 
         self.particulator = builder.build(attributes=attributes, products=products)
@@ -80,7 +81,7 @@ class Simulation:
 
     def _save_scalars(self, output):
         for k, v in self.particulator.products.items():
-            if len(v.shape) > 1:
+            if len(v.shape) > 1 or k == "activable fraction":
                 continue
             value = v.get()
             if isinstance(value, np.ndarray) and value.size == 1:
@@ -97,4 +98,6 @@ class Simulation:
             self.particulator.run(step - self.particulator.n_steps)
             self._save_scalars(output)
         self._save_spectrum(output)
+        output["Activated Fraction"] = self.particulator.products["activable fraction"].get(
+            S_max=np.nanmax(output["S_max"]))
         return output
