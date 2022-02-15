@@ -28,12 +28,12 @@ class Simulation(BasicSimulation):
             'n': np.ndarray(0)
         }
         for mode in settings.aerosol.aerosol_modes_per_cc:
-            r_dry, N = settings.spectral_sampling(
+            r_dry, n_in_dv = settings.spectral_sampling(
                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode)
-            dv = (settings.rho0 / settings.mass_of_dry_air)
-            n_in_dv = N / dv
+            V = settings.mass_of_dry_air / settings.rho0
+            N = n_in_dv * V
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
-            attributes['n'] = np.append(attributes['n'], n_in_dv)
+            attributes['n'] = np.append(attributes['n'], N)
             attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
             attributes['dry volume organic'] = np.append(
                 attributes['dry volume organic'], mode['f_org'] * v_dry)
@@ -43,7 +43,7 @@ class Simulation(BasicSimulation):
             assert attribute.shape[0] == n_sd
 
         np.testing.assert_approx_equal(
-            np.sum(attributes['n']) * dv,
+            np.sum(attributes['n']) / V,
             Sum(tuple(
                 settings.aerosol.aerosol_modes_per_cc[i]['spectrum']
                 for i in range(len(settings.aerosol.aerosol_modes_per_cc))
