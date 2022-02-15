@@ -3,12 +3,13 @@ from PySDM.environments import Parcel
 from PySDM import Builder
 from PySDM.backends import CPU
 from PySDM.dynamics import AmbientThermodynamics, Condensation
-from PySDM.initialisation import discretise_multiplicities, equilibrate_wet_radii
+from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.initialisation.spectra import Sum
 import PySDM.products as PySDM_products
+from PySDM_examples.utils import BasicSimulation
 
 
-class Simulation:
+class Simulation(BasicSimulation):
     def __init__(self, settings, products=None):
         env = Parcel(dt=settings.dt,
                      mass_of_dry_air=settings.mass_of_dry_air,
@@ -27,9 +28,10 @@ class Simulation:
             'n': np.ndarray(0)
         }
         for mode in settings.aerosol.aerosol_modes_per_cc:
-            r_dry, n_in_dv = settings.spectral_sampling(
+            r_dry, N = settings.spectral_sampling(
                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode)
-            n_in_dv /= (settings.rho0 / settings.mass_of_dry_air)
+            dv = (settings.rho0 / settings.mass_of_dry_air)
+            n_in_dv = N / dv
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
             attributes['n'] = np.append(attributes['n'], n_in_dv)
             attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
@@ -40,17 +42,14 @@ class Simulation:
         for attribute in attributes.values():
             assert attribute.shape[0] == n_sd
 
-        attributes['n'] = discretise_multiplicities(attributes['n'])
-
-        dv = settings.mass_of_dry_air / settings.rho0
         np.testing.assert_approx_equal(
-            np.sum(attributes['n']) / dv,
+            np.sum(attributes['n']) * dv,
             Sum(tuple(
                 settings.aerosol.aerosol_modes_per_cc[i]['spectrum']
                 for i in range(len(settings.aerosol.aerosol_modes_per_cc))
             )).norm_factor,
             #significant=5
-            significant=2
+            significant=4
         )
         r_wet = equilibrate_wet_radii(
             r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
@@ -77,23 +76,5 @@ class Simulation:
         self.particulator = builder.build(attributes=attributes, products=products)
         self.settings = settings
 
-    def _save_scalars(self, output):
-        for k, v in self.particulator.products.items():
-            if len(v.shape) > 1:
-                continue
-            value = v.get()
-            if isinstance(value, np.ndarray) and value.size == 1:
-                value = value[0]
-            output[k].append(value)
-
-    def _save_spectrum(self, output):
-        value = self.particulator.products['particle size spectrum per volume'].get()
-        output['spectrum'] = value
-
     def run(self):
-        output = {k: [] for k in self.particulator.products}
-        for step in self.settings.output_steps:
-            self.particulator.run(step - self.particulator.n_steps)
-            self._save_scalars(output)
-        self._save_spectrum(output)
-        return output
+        return super()._run(self.settings.nt, self.settings.steps_per_output_interval)

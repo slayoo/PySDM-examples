@@ -9,7 +9,7 @@ from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
 @strict
 class Settings:
     def __init__(self,
-                 dt: float,
+                 dz: float,
                  n_sd_per_mode: int,
                  aerosol: Aerosol,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
@@ -20,10 +20,10 @@ class Settings:
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
 
-        self.w = 1.0 * si.m / si.s
-        self.dt = dt * si.s
         max_altitude = 250 * si.m
+        self.w = 1.0 * si.m / si.s
         self.t_max = max_altitude / self.w
+        self.dt = dz / self.w
         self.output_interval = 1 * self.dt
 
         self.g = 9.81 * si.m / si.s**2
@@ -54,10 +54,11 @@ class Settings:
         return rhod0 * (1 + self.q0)
 
     @property
-    def nt(self):
+    def nt(self) -> int:
         nt = self.t_max / self.dt
-        assert nt == int(nt)
-        return int(nt)
+        nt_int = round(nt)
+        np.testing.assert_almost_equal(nt, nt_int)
+        return nt_int
 
     @property
     def steps_per_output_interval(self) -> int:
