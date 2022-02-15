@@ -76,8 +76,9 @@ class Simulation(BasicSimulation):
             PySDM_products.ActivableFraction()
         )
 
-        self.particulator = builder.build(attributes=attributes, products=products)
+        particulator = builder.build(attributes=attributes, products=products)
         self.settings = settings
+        super().__init__(particulator=particulator)
 
     def _save_scalars(self, output):
         for k, v in self.particulator.products.items():
