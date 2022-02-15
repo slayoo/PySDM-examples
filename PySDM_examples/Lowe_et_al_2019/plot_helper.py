@@ -1,14 +1,16 @@
 import numpy as np
-import os
 from matplotlib import pyplot
 import matplotlib
+from atmos_cloud_sim_uj_utils import show_plot
 
 def plot_profiles(subplot_list, updraft_list, forg_list, output, save=False):
-    fig,axes = pyplot.subplots(len(subplot_list),len(updraft_list), sharex=False, sharey=True, figsize=(3*len(updraft_list),4*len(subplot_list)))
+    _, axes = pyplot.subplots(len(subplot_list),len(updraft_list),
+                               sharex=False, sharey=True,
+                               figsize=(3*len(updraft_list),4*len(subplot_list)))
 
     for k,subplot in enumerate(subplot_list):
         for i,w in enumerate(updraft_list):
-            for j,Forg in enumerate(forg_list):
+            for _,Forg in enumerate(forg_list):
                 key = subplot+f"_w{w:.2f}_f{Forg:.2f}_"
                 var = 'n_c_cm3'
                 z = np.array(output[key+"film"]['z'])
@@ -35,9 +37,9 @@ def plot_profiles(subplot_list, updraft_list, forg_list, output, save=False):
                     ax.set_xlabel("CDNC [cm$^{-3}$]")
     if save:
         show_plot("fig3_parcel_profiles.pdf")
-        
+
 def plot_contours(subplot_list, updraft_list, forg_list, output, actfrac=False, save=False):
-    fig, axes = pyplot.subplots(2,2, sharex=True, sharey=True, figsize=(14,10))
+    _, axes = pyplot.subplots(2,2, sharex=True, sharey=True, figsize=(14,10))
 
     for subplot in subplot_list:
         dCDNC = np.zeros((len(updraft_list), len(forg_list)))
@@ -60,27 +62,31 @@ def plot_contours(subplot_list, updraft_list, forg_list, output, actfrac=False, 
         if subplot == "a":
             ax = axes[0,0]
             ax.set_title("MA Accum. mode conc. N$_2 = 30$ cm$^{-3}$", fontsize=13, loc="right")
-            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25], colors=["#1fa8f2","#4287f5"], 
-                           linestyles=[":","--"], linewidths=4)
-            p = ax.contourf(forg_list, updraft_list, dCDNC, cmap="Blues", levels=np.linspace(0,90,11))
+            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25],
+                       colors=["#1fa8f2","#4287f5"], linestyles=[":","--"], linewidths=4)
+            p = ax.contourf(forg_list, updraft_list, dCDNC,
+                            cmap="Blues", levels=np.linspace(0,90,11))
         if subplot == "b":
             ax = axes[0,1]
             ax.set_title("MA Accum. mode conc. N$_2 = 135$ cm$^{-3}$", fontsize=13, loc="right")
-            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25], colors=["#1fa8f2","#4287f5"], 
-                           linestyles=[":","--"], linewidths=4)
-            p = ax.contourf(forg_list, updraft_list, dCDNC, cmap="Blues", levels=np.linspace(0,90,11))
+            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25],
+                       colors=["#1fa8f2","#4287f5"], linestyles=[":","--"], linewidths=4)
+            p = ax.contourf(forg_list, updraft_list, dCDNC,
+                            cmap="Blues", levels=np.linspace(0,90,11))
         if subplot == "c":
             ax = axes[1,0]
             ax.set_title("HYY Accum. mode conc. N$_2 = 160$ cm$^{-3}$", fontsize=13, loc="right")
-            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25], colors=["#04c753","#157d3f"], 
-                           linestyles=[":","--"], linewidths=4)
-            p = ax.contourf(forg_list, updraft_list, dCDNC, cmap="Greens", levels=np.linspace(0,75,11))
+            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25],
+                       colors=["#04c753","#157d3f"], linestyles=[":","--"], linewidths=4)
+            p = ax.contourf(forg_list, updraft_list, dCDNC,
+                            cmap="Greens", levels=np.linspace(0,75,11))
         if subplot == "d":
             ax = axes[1,1]
             ax.set_title("HYY Accum. mode conc. N$_2 = 540$ cm$^{-3}$", fontsize=13, loc="right")
-            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25], colors=["#04c753","#157d3f"], 
-                           linestyles=[":","--"], linewidths=4)
-            p = ax.contourf(forg_list, updraft_list, dCDNC, cmap="Greens", levels=np.linspace(0,75,11))
+            ax.contour(forg_list, updraft_list, dCDNC, levels=[10,25],
+                       colors=["#04c753","#157d3f"], linestyles=[":","--"], linewidths=4)
+            p = ax.contourf(forg_list, updraft_list, dCDNC,
+                            cmap="Greens", levels=np.linspace(0,75,11))
 
         ax.set_title(subplot,weight="bold",loc="left")
         if subplot in ("c", "d"):

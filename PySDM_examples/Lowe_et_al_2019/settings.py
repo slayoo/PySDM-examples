@@ -13,8 +13,7 @@ class Settings:
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  w: float = 0.32 * si.m / si.s,
-                 # 0.2 in the paper, but 0.1 matches the paper plot fig 1c and 1d
-                 delta_min: float = 0.1,
+                 delta_min: float = 0.1, # 0.2 in paper, but 0.1 matches plot fig 1c/d
                  MAC: float = 1,
                  HAC: float = 1,
                  c_pd: float = 1005 * si.joule / si.kilogram / si.kelvin,
@@ -76,10 +75,11 @@ class Settings:
         return rhod0 * (1 + self.q0)
 
     @property
-    def nt(self):
+    def nt(self) -> int:
         nt = self.t_max / self.dt
-        assert nt == int(nt)
-        return int(nt)
+        nt_int = round(nt)
+        np.testing.assert_almost_equal(nt, nt_int)
+        return nt_int
 
     @property
     def steps_per_output_interval(self) -> int:
