@@ -42,7 +42,6 @@ class Simulation(BasicSimulation):
         for attribute in attributes.values():
             assert attribute.shape[0] == n_sd
 
-        dv = settings.mass_of_dry_air / settings.rho0
         np.testing.assert_approx_equal(
             np.sum(attributes['n']) / V,
             Sum(tuple(
