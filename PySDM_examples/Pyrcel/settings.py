@@ -10,7 +10,7 @@ from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
 class Settings:
     def __init__(self,
                  dz: float,
-                 n_sd_per_mode: int,
+                 n_sd_per_mode: tuple,
                  aerosol: Aerosol,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  ):

@@ -17,7 +17,7 @@ class Simulation(BasicSimulation):
                      q0=settings.q0,
                      T0=settings.T0,
                      w=settings.w)
-        n_sd = settings.n_sd_per_mode * len(settings.aerosol.aerosol_modes_per_cc)
+        n_sd = sum(settings.n_sd_per_mode)
         builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
 
@@ -27,9 +27,9 @@ class Simulation(BasicSimulation):
             'kappa times dry volume':np.empty(0),
             'n': np.ndarray(0)
         }
-        for mode in settings.aerosol.aerosol_modes_per_cc:
+        for i,mode in enumerate(settings.aerosol.aerosol_modes_per_cc):
             r_dry, n_in_dv = settings.spectral_sampling(
-                spectrum=mode['spectrum']).sample(settings.n_sd_per_mode)
+                spectrum=mode['spectrum']).sample(settings.n_sd_per_mode[i])
             V = settings.mass_of_dry_air / settings.rho0
             N = n_in_dv * V
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
