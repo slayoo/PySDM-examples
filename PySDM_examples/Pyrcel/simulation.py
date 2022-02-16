@@ -73,8 +73,9 @@ class Simulation(BasicSimulation):
                 radius_bins_edges=settings.wet_radius_bins_edges),
         )
 
-        self.particulator = builder.build(attributes=attributes, products=products)
+        particulator = builder.build(attributes=attributes, products=products)
         self.settings = settings
+        super().__init__(particulator=particulator)
 
     def run(self):
         return super()._run(self.settings.nt, self.settings.steps_per_output_interval)
