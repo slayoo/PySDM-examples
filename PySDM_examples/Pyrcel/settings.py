@@ -46,6 +46,13 @@ class Settings:
             128+1,
             endpoint=True
         )
+        
+        self.dry_radius_bins_edges = np.logspace(
+            np.log10(1e-3 * si.um),
+            np.log10(1e1 * si.um),
+            256+1,
+            endpoint=True
+        )
 
     @property
     def rho0(self):
