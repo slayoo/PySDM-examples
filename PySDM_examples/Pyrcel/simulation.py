@@ -30,7 +30,6 @@ class Simulation(BasicSimulation):
         for i,mode in enumerate(settings.aerosol.aerosol_modes_per_cc):
             r_dry, n_in_dv = settings.spectral_sampling(
                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode[i])
-            print(i, r_dry, n_in_dv)
             V = settings.mass_of_dry_air / settings.rho0
             N = n_in_dv * V
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
@@ -75,7 +74,7 @@ class Simulation(BasicSimulation):
                 radius_bins_edges=settings.wet_radius_bins_edges),
             PySDM_products.ParticleSizeSpectrumPerVolume(
                 name='dry size spectrum',
-                radius_bins_edges=settings.dry_radius_bins_edges),
+                radius_bins_edges=settings.dry_radius_bins_edges, dry=True),
         )
 
         particulator = builder.build(attributes=attributes, products=products)
