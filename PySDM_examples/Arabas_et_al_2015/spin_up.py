@@ -1,4 +1,4 @@
-from PySDM.dynamics import Displacement, Coalescence, Freezing
+from PySDM.dynamics import Displacement, Collision, Freezing
 
 
 class SpinUp:
@@ -7,13 +7,13 @@ class SpinUp:
         self.spin_up_steps = spin_up_steps
         particulator.observers.append(self)
         self.particulator = particulator
-        self.set(Coalescence, 'enable', False)
+        self.set(Collision, 'enable', False)
         self.set(Displacement, 'enable_sedimentation', False)
         self.set(Freezing, 'enable', False)
 
     def notify(self):
         if self.particulator.n_steps == self.spin_up_steps:
-            self.set(Coalescence, 'enable', True)
+            self.set(Collision, 'enable', True)
             self.set(Displacement, 'enable_sedimentation', True)
             self.set(Freezing, 'enable', True)
 
