@@ -4,7 +4,7 @@ from pystrict import strict
 from PySDM import Formulae
 from PySDM.initialisation import spectra
 from PySDM.physics import si
-from PySDM.dynamics.collisions import kernels
+from PySDM.dynamics.collisions import collision_kernels
 
 
 @strict
@@ -26,7 +26,7 @@ class Settings:
         self.adaptive = False
         self.seed = 44
         self._steps = steps
-        self.kernel = kernels.Geometric(collection_efficiency=1)
+        self.kernel = collision_kernels.Geometric(collection_efficiency=1)
         self.spectrum = spectra.Exponential(norm_factor=self.norm_factor, scale=self.X0)
 
         # Note 220 instead of 200 for smoothing

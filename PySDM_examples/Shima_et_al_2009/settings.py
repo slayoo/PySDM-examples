@@ -2,7 +2,7 @@ from typing import Optional
 import numpy as np
 from pystrict import strict
 from PySDM import Formulae
-from PySDM.dynamics.collisions.kernels import Golovin
+from PySDM.dynamics.collisions.collision_kernels import Golovin
 from PySDM.initialisation import spectra
 from PySDM.physics import si
 

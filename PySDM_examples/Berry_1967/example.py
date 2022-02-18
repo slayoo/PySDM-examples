@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from PySDM.dynamics.collisions.kernels import Geometric, Hydrodynamic, Electric
+from PySDM.dynamics.collisions.collision_kernels import Geometric, Hydrodynamic, Electric
 from PySDM.dynamics.terminal_velocity import gunn_and_kinzer
 from PySDM_examples.Berry_1967.settings import Settings
 from PySDM_examples.Berry_1967.spectrum_plotter import SpectrumPlotter
