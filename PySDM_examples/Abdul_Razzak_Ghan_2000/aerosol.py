@@ -54,16 +54,10 @@ def kappa(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
     molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}     
     volume_fractions_of_just_soluble = volfrac_just_soluble(volfrac)
-    print("vol frac")
-    print(volfrac)
-    print("molar volumes")
-    print(molar_volumes)
-    print('fractions of just soluble')
-    print(volume_fractions_of_just_soluble)
-    ns_per_vol = (1 - f_soluble_volume(mass_fractions)) * sum(
+    
+    ns_per_vol = f_soluble_volume(mass_fractions) * sum(
         ionic_dissociation_phi[i] * volume_fractions_of_just_soluble[i] / molar_volumes[i]
         for i in compounds)
- 
 
     return ns_per_vol * Mv / rho_w
 
@@ -89,20 +83,51 @@ class AerosolFigure1(Aerosol):
         {
             'kappa': kappa(mode1),
             'spectrum': spectra.Lognormal(
-                        norm_factor = 100.0 / si.cm ** 3, 
-                        m_mode = 50.0 * si.nm,  
-                        s_geom = 2.0)
+                norm_factor = 100.0 / si.cm ** 3, 
+                m_mode = 50.0 * si.nm,  
+                s_geom = 2.0
+            ),
             
         },
         {
             'kappa': kappa(mode2),
             'spectrum': spectra.Lognormal(
-                norm_factor=mode2N / si.cm ** 3,
-                m_mode=50.0 * si.nm,
-                s_geom=2.0
+                norm_factor = mode2N / si.cm ** 3,
+                m_mode = 50.0 * si.nm,
+                s_geom = 2.0
             ),
         }
     )
 
+@strict
+class AerosolFigure2(Aerosol):
+    def __init__(self, mode2N: float = 100):
+        mode1 = {
+            '(NH4)2SO4': 1.0,
+            'insoluble': 0,
+        }
+        mode2 = {
+            '(NH4)2SO4': 0.1,
+            'insoluble': 0.9,
+        }
 
+        self.aerosol_modes_per_cc = (
+        {
+            'kappa': kappa(mode1),
+            'spectrum': spectra.Lognormal(
+                norm_factor = 100.0 / si.cm ** 3, 
+                m_mode = 50.0 * si.nm,  
+                s_geom = 2.0
+            ),
+            
+        },
+        {
+            'kappa': kappa(mode2),
+            'spectrum': spectra.Lognormal(
+                norm_factor = mode2N / si.cm ** 3,
+                m_mode = 50.0 * si.nm,
+                s_geom = 2.0
+            ),
+        }
+    )
 
