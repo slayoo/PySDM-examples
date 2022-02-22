@@ -3,8 +3,10 @@ from matplotlib import pyplot
 import matplotlib
 from PySDM.physics import si
 from PySDM_examples.UIUC_2021.frozen_fraction import FrozenFraction
+from .curved_text import CurvedText
 
-labels = {True: 'singular (Niemand et al. 2012)', False: 'time-dependent (ABIFM, illite)'}
+
+labels = {True: 'singular/INAS', False: 'time-dependent/ABIFM'}
 colors = {True: 'black', False: 'teal'}
 qi_unit = si.g / si.m ** 3
 
@@ -61,6 +63,8 @@ def make_freezing_spec_plot(
 
     prim = pyplot.gca()
     for v in data:
+        if not v['singular']:
+            continue
         datum = v['products']
         color = colors[v['singular']]
         prim.plot(
@@ -84,20 +88,31 @@ def make_freezing_spec_plot(
 
     T = np.linspace(max(datum['T']), min(datum['T']))
     for multiplier, color in {.1: 'orange', 1: 'red', 10: 'brown'}.items():
+        qi = ff.ff2qi(
+                formulae.freezing_temperature_spectrum.cdf(T, multiplier * surf_spec.median)
+            ) / qi_unit
         prim.plot(
             T,
-            ff.ff2qi(
-                formulae.freezing_temperature_spectrum.cdf(T, multiplier * surf_spec.median)
-            ) / qi_unit,
-            label=f'singular CDF for {multiplier}x median surface',
+            qi,
+            label='' if multiplier != 1 else f'singular CDF for median surface',
             linewidth=2.5,
             color=color,
             linestyle='--'
         )
+        if multiplier != 1:
+            _ = CurvedText(
+                x=T.squeeze(),
+                y=qi.squeeze(),
+                text=f'              {multiplier}x median A',
+                va='bottom',
+                color=color,
+                axes=prim,
+            )
     prim.set_title(f"$σ_g$=exp({np.log(surf_spec.s_geom):.3g})")
-    prim.set_ylabel('ice water content [$g/m^3$]')
+    # prim.set_ylabel('ice water content [$g/m^3$]')
+    prim.set_yticks([])
     prim.set_xlim(T[0], T[-1])
-    prim.legend(bbox_to_anchor=(1.2, -.2))
+    prim.legend(bbox_to_anchor=(1.02, -.2))
     prim.grid()
 
 
