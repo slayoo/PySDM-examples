@@ -23,11 +23,10 @@ class Simulation(BasicSimulation):
 
         attributes = {
             'dry volume':np.empty(0),
-            'dry volume organic':np.empty(0),
             'kappa times dry volume':np.empty(0),
             'n': np.ndarray(0)
         }
-        for i,mode in enumerate(settings.aerosol.aerosol_modes_per_cc):
+        for i,mode in enumerate(settings.aerosol.aerosol_modes):
             r_dry, n_in_dv = settings.spectral_sampling(
                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode[i])
             V = settings.mass_of_dry_air / settings.rho0
@@ -35,8 +34,6 @@ class Simulation(BasicSimulation):
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
             attributes['n'] = np.append(attributes['n'], N)
             attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
-            attributes['dry volume organic'] = np.append(
-                attributes['dry volume organic'], mode['f_org'] * v_dry)
             attributes['kappa times dry volume'] = np.append(
                 attributes['kappa times dry volume'], v_dry * mode['kappa'])
         for attribute in attributes.values():
@@ -45,8 +42,8 @@ class Simulation(BasicSimulation):
         np.testing.assert_approx_equal(
             np.sum(attributes['n']) / V,
             Sum(tuple(
-                settings.aerosol.aerosol_modes_per_cc[i]['spectrum']
-                for i in range(len(settings.aerosol.aerosol_modes_per_cc))
+                settings.aerosol.aerosol_modes[i]['spectrum']
+                for i in range(len(settings.aerosol.aerosol_modes))
             )).norm_factor,
             #significant=5
             significant=4
@@ -55,10 +52,8 @@ class Simulation(BasicSimulation):
             r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
             environment=env,
             kappa_times_dry_volume=attributes['kappa times dry volume'],
-            f_org=attributes['dry volume organic'] / attributes['dry volume']
         )
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
-        del attributes['dry volume organic']
 
         builder.add_dynamic(AmbientThermodynamics())
         builder.add_dynamic(Condensation())
