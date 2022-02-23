@@ -122,7 +122,7 @@ class AerosolMarine(Aerosol):
             'NaCl': (1-Acc_Forg)
         }
 
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
         {
             'f_org': f_org_volume(Aitken),
             'kappa': kappa(Aitken),
@@ -168,7 +168,7 @@ class AerosolBoreal(Aerosol):
             'NaCl': 0
         }
 
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
         {
             'f_org': f_org_volume(Aitken),
             'kappa': kappa(Aitken),
@@ -212,7 +212,7 @@ class AerosolNascent(Aerosol):
             'NH4NO3': 0,
             'NaCl': 0
         }
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
             {
                 'f_org': f_org_volume(Ultrafine),
                 'kappa': kappa(Ultrafine),
