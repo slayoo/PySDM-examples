@@ -62,6 +62,12 @@ Please use the [PySDM issue-tracking](https://github.com/atmos-cloud-sim-uj/PySD
     [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Yang_et_al_2018/fig_2.ipynb)
     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Yang_et_al_2018/fig_2.ipynb)
 
+- [Pyrcel documentation example](https://pyrcel.readthedocs.io/en/latest/examples/basic_run.html) (externally mixed polydisperse size spectrum activation test case)
+  - supersaturation, temperature, wet radii evolution and dry spectra plots:
+    [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Pyrcel/example_basic_run.ipynb)
+    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=PySDM_examples/Pyrcel/example_basic_run.ipynb)
+    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Pyrcel/example_basic_run.ipynb)
+
 - [Lowe et al. 2019](https://doi.org/10.1038/s41467-019-12982-0) (externally mixed polydisperse size spectrum with surface-active organics case):
   - Fig. 1: 
     [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Lowe_et_al_2019/fig_1.ipynb)
