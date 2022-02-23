@@ -70,6 +70,9 @@ class Simulation(BasicSimulation):
             PySDM_products.ParticleSizeSpectrumPerVolume(
                 name='dry size spectrum',
                 radius_bins_edges=settings.dry_radius_bins_edges, dry=True),
+            PySDM_products.ParticleVolumeVersusRadiusLogarithmSpectrum(
+                name='dV/dlnR',
+                radius_bins_edges=settings.dry_radius_bins_edges, dry=True),
         )
 
         particulator = builder.build(attributes=attributes, products=products)
