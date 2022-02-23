@@ -1,76 +1,59 @@
+from typing import Dict
 import numpy as np
 from pystrict import strict
 from PySDM import Formulae
-from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
-from PySDM.physics import si
-from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
+from PySDM.initialisation.impl.spectrum import Spectrum
 
 
 @strict
 class Settings:
-    def __init__(self,
-                 dz: float,
-                 n_sd_per_mode: tuple,
-                 aerosol: Aerosol,
-                 spectral_sampling: type(spec_sampling.SpectralSampling),
-                 ):
+    def __init__(
+            self,
+            dz: float,
+            n_sd_per_mode: tuple,
+            aerosol_modes_by_kappa: Dict[float, Spectrum],
+            vertical_velocity: float,
+            initial_temperature: float,
+            initial_pressure: float,
+            initial_relative_humidity: float,
+            displacement: float,
+            formulae: Formulae
+    ):
+        self.formulae = formulae
         self.n_sd_per_mode = n_sd_per_mode
-        self.formulae = Formulae()
+        self.aerosol_modes_by_kappa = aerosol_modes_by_kappa
+
         const = self.formulae.constants
-        self.aerosol = aerosol
-        self.spectral_sampling = spectral_sampling
-
-        max_altitude = 250 * si.m
-        self.w = 1.0 * si.m / si.s
-        self.t_max = max_altitude / self.w
-        self.dt = dz / self.w
-        self.output_interval = 1 * self.dt
-
-        self.g = 9.81 * si.m / si.s**2
-
-        self.p0 = 775 * si.mbar
-        self.T0 = 274 * si.K
-        pv0 = .98 * self.formulae.saturation_vapour_pressure.pvs_Celsius(self.T0 - const.T0)
-        self.q0 = const.eps * pv0 / (self.p0 - pv0)
-
-        self.cloud_radius_range = (
-                .5 * si.micrometre,
-                np.inf
+        self.vertical_velocity = vertical_velocity
+        self.initial_pressure = initial_pressure
+        self.initial_temperature = initial_temperature
+        pv0 = initial_relative_humidity * formulae.saturation_vapour_pressure.pvs_Celsius(
+            initial_temperature - const.T0
         )
-
-        self.mass_of_dry_air = 44
-
-        self.wet_radius_bins_edges = np.logspace(
-            np.log10(4 * si.um),
-            np.log10(12 * si.um),
-            128+1,
-            endpoint=True
-        )
-
-        self.dry_radius_bins_edges = np.logspace(
-            np.log10(1e-3 * si.um),
-            np.log10(5e0 * si.um),
-            128+1,
-            endpoint=False
-        )
-
+        self.initial_vapour_mixing_ratio = const.eps * pv0 / (initial_pressure - pv0)
+        self.t_max = displacement / vertical_velocity
+        self.timestep = dz / vertical_velocity
+        self.output_interval = self.timestep
 
     @property
-    def rho0(self):
+    def initial_air_density(self):
         const = self.formulae.constants
-        rhod0 = self.formulae.trivia.p_d(self.p0, self.q0) / self.T0 / const.Rd
-        return rhod0 * (1 + self.q0)
+        dry_air_density = self.formulae.trivia.p_d(
+            self.initial_pressure,
+            self.initial_vapour_mixing_ratio
+        ) / self.initial_temperature / const.Rd
+        return dry_air_density * (1 + self.initial_vapour_mixing_ratio)
 
     @property
     def nt(self) -> int:
-        nt = self.t_max / self.dt
+        nt = self.t_max / self.timestep
         nt_int = round(nt)
         np.testing.assert_almost_equal(nt, nt_int)
         return nt_int
 
     @property
     def steps_per_output_interval(self) -> int:
-        return int(self.output_interval / self.dt)
+        return int(self.output_interval / self.timestep)
 
     @property
     def output_steps(self) -> np.ndarray:

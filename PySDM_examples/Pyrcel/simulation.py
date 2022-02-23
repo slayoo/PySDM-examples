@@ -1,53 +1,40 @@
 import numpy as np
-from PySDM.environments import Parcel
 from PySDM import Builder
 from PySDM.backends import CPU
+from PySDM.environments import Parcel
 from PySDM.dynamics import AmbientThermodynamics, Condensation
 from PySDM.initialisation import equilibrate_wet_radii
-from PySDM.initialisation.spectra import Sum
-import PySDM.products as PySDM_products
+from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
+from PySDM.physics import si
 from PySDM_examples.utils import BasicSimulation
 
 
 class Simulation(BasicSimulation):
     def __init__(self, settings, products=None):
-        env = Parcel(dt=settings.dt,
-                     mass_of_dry_air=settings.mass_of_dry_air,
-                     p0=settings.p0,
-                     q0=settings.q0,
-                     T0=settings.T0,
-                     w=settings.w)
+        env = Parcel(
+            dt=settings.timestep,
+            p0=settings.initial_pressure,
+            q0=settings.initial_vapour_mixing_ratio,
+            T0=settings.initial_temperature,
+            w=settings.vertical_velocity,
+            mass_of_dry_air=44 * si.kg
+        )
         n_sd = sum(settings.n_sd_per_mode)
         builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
+        builder.add_dynamic(AmbientThermodynamics())
+        builder.add_dynamic(Condensation())
 
-        attributes = {
-            'dry volume':np.empty(0),
-            'kappa times dry volume':np.empty(0),
-            'n': np.ndarray(0)
-        }
-        for i,mode in enumerate(settings.aerosol.aerosol_modes):
-            r_dry, n_in_dv = settings.spectral_sampling(
-                spectrum=mode['spectrum']).sample(settings.n_sd_per_mode[i])
-            V = settings.mass_of_dry_air / settings.rho0
-            N = n_in_dv * V
+        volume = env.mass_of_dry_air / settings.initial_air_density
+        attributes = {k: np.empty(0) for k in ('dry volume', 'kappa times dry volume', 'n')}
+        for i, (kappa, spectrum) in enumerate(settings.aerosol_modes_by_kappa.items()):
+            sampling = ConstantMultiplicity(spectrum)
+            r_dry, n_per_volume = sampling.sample(settings.n_sd_per_mode[i])
             v_dry = settings.formulae.trivia.volume(radius=r_dry)
-            attributes['n'] = np.append(attributes['n'], N)
+            attributes['n'] = np.append(attributes['n'], n_per_volume * volume)
             attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
             attributes['kappa times dry volume'] = np.append(
-                attributes['kappa times dry volume'], v_dry * mode['kappa'])
-        for attribute in attributes.values():
-            assert attribute.shape[0] == n_sd
-
-        np.testing.assert_approx_equal(
-            np.sum(attributes['n']) / V,
-            Sum(tuple(
-                settings.aerosol.aerosol_modes[i]['spectrum']
-                for i in range(len(settings.aerosol.aerosol_modes))
-            )).norm_factor,
-            #significant=5
-            significant=4
-        )
+                attributes['kappa times dry volume'], v_dry * kappa)
         r_wet = equilibrate_wet_radii(
             r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
             environment=env,
@@ -55,29 +42,32 @@ class Simulation(BasicSimulation):
         )
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
 
-        builder.add_dynamic(AmbientThermodynamics())
-        builder.add_dynamic(Condensation())
+        super().__init__(particulator=builder.build(attributes=attributes, products=products))
 
-        products = products or (
-            PySDM_products.ParcelDisplacement(name='z'),
-            PySDM_products.Time(name='t'),
-            PySDM_products.PeakSupersaturation(unit='%', name='S_max'),
-            PySDM_products.ParticleConcentration(name='n_c_cm3', unit='cm^-3',
-                radius_range=settings.cloud_radius_range),
-            PySDM_products.ParticleSizeSpectrumPerVolume(
-                name='wet size spectrum',
-                radius_bins_edges=settings.wet_radius_bins_edges),
-            PySDM_products.ParticleSizeSpectrumPerVolume(
-                name='dry size spectrum',
-                radius_bins_edges=settings.dry_radius_bins_edges, dry=True),
-            PySDM_products.ParticleVolumeVersusRadiusLogarithmSpectrum(
-                name='dV/dlnR',
-                radius_bins_edges=settings.dry_radius_bins_edges, dry=True),
+        self.output_attributes = {'volume': tuple([] for _ in range(self.particulator.n_sd))}
+        self.settings = settings
+
+        self.__sanity_checks(attributes, volume)
+
+    def __sanity_checks(self, attributes, volume):
+        for attribute in attributes.values():
+            assert attribute.shape[0] == self.particulator.n_sd
+        np.testing.assert_approx_equal(
+            np.sum(attributes['n']) / volume,
+            np.sum(mode.norm_factor for mode in self.settings.aerosol_modes_by_kappa.values()),
+            significant=4
         )
 
-        particulator = builder.build(attributes=attributes, products=products)
-        self.settings = settings
-        super().__init__(particulator=particulator)
+    def _save(self, output):
+        for key, attr in self.output_attributes.items():
+            attr_data = self.particulator.attributes[key].to_ndarray()
+            for drop_id in range(self.particulator.n_sd):
+                attr[drop_id].append(attr_data[drop_id])
+        super()._save(output)
 
     def run(self):
-        return super()._run(self.settings.nt, self.settings.steps_per_output_interval)
+        output_products = super()._run(self.settings.nt, self.settings.steps_per_output_interval)
+        return {
+            'products': output_products,
+            'attributes': self.output_attributes
+        }
