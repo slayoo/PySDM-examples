@@ -79,7 +79,7 @@ class AerosolFigure1(Aerosol):
             'insoluble': 0,
         }
 
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
         {
             'kappa': kappa(mode1),
             'spectrum': spectra.Lognormal(
@@ -111,7 +111,7 @@ class AerosolFigure2(Aerosol):
             'insoluble': 0.9,
         }
 
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
         {
             'kappa': kappa(mode1),
             'spectrum': spectra.Lognormal(
