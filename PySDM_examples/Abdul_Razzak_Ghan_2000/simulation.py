@@ -27,7 +27,7 @@ class Simulation(BasicSimulation):
         n_sd = settings.n_sd_per_mode * len(settings.aerosol.aerosol_modes)
         builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
-        
+
         builder.add_dynamic(AmbientThermodynamics())
         builder.add_dynamic(Condensation())
         builder.add_dynamic(Magick())
@@ -43,27 +43,9 @@ class Simulation(BasicSimulation):
                 name = "Particle Size Spectrum Per Mass", 
                 radius_bins_edges=settings.wet_radius_bins_edges, unit= "1/um/mg"),
         )
-
-        # attributes = {
-        #     'volume':np.empty(n_sd),
-        #     'n': np.ndarray(n_sd),
-        #     'dry volume':np.empty(n_sd),
-        #     'kappa times dry volume':np.empty(n_sd),
-        # }
-#         for i, mode in enumerate(settings.aerosol.aerosol_modes):
-#             r_dry, concentration = settings.spectral_sampling(
-#                 spectrum=mode['spectrum']).sample(settings.n_sd_per_mode)
-#             v_dry = settings.formulae.trivia.volume(radius=r_dry)
-#             specific_concentration = concentration / settings.formulae.constants.rho_STP
-#             chunk = slice(i * settings.n_sd_per_mode, (i+1) * settings.n_sd_per_mode)
-#             attributes['n'][chunk] = specific_concentration * env.mass_of_dry_air
-#             attributes['dry volume'][chunk] = v_dry
-#             attributes['kappa times dry volume'][chunk] = mode['kappa']*v_dry
-#             r_wet = equilibrate_wet_radii(r_dry, env, mode['kappa']*v_dry)
-#             attributes['volume'][chunk] = builder.formulae.trivia.volume(radius=r_wet)
         
         volume = env.mass_of_dry_air / settings.rho0
-        attributes = {k: np.empty(0) for k in ('dry volume', 'kappa times dry volume', 'n', 'critical volume', 'critical supersaturation')}
+        attributes = {k: np.empty(0) for k in ('dry volume', 'kappa times dry volume', 'n')}
         for i, mode in enumerate(settings.aerosol.aerosol_modes):
             kappa, spectrum = mode["kappa"], mode["spectrum"]
             sampling = ConstantMultiplicity(spectrum)
@@ -90,14 +72,14 @@ class Simulation(BasicSimulation):
                                  'n': tuple([] for _ in range(self.particulator.n_sd)),}
         self.settings = settings
 
-        #self.__sanity_checks(attributes, volume)
+        self.__sanity_checks(attributes, volume)
 
     def __sanity_checks(self, attributes, volume):
         for attribute in attributes.values():
             assert attribute.shape[0] == self.particulator.n_sd
         np.testing.assert_approx_equal(
             np.sum(attributes['n']) / volume,
-            np.sum(mode.norm_factor for mode in self.settings.aerosol_modes_by_kappa.values()),
+            np.sum(mode['spectrum'].norm_factor for mode in self.settings.aerosol.aerosol_modes),
             significant=4
         )
 

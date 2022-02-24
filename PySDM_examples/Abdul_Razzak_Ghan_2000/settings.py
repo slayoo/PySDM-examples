@@ -25,12 +25,12 @@ class Settings:
 
         self.dt = 1.0 * si.s
         self.t_max = nsteps * self.dt
-        self.output_interval = self.dt
+        self.output_interval = self.dt * 100
 
         self.w = 0.5 * si.m / si.s
         self.g = 9.81 * si.m / si.s**2
 
-        self.p0 = 1000 * si.mbar
+        self.p0 = 1000 * si.hPa
         self.T0 = T0 * si.K
         self.q0 = 20 * si.g / si.kg
 
