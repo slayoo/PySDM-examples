@@ -121,7 +121,8 @@ class AerosolMarine(Aerosol):
             'NH4NO3': 0,
             'NaCl': (1-Acc_Forg)
         }
-        self.aerosol_modes_per_cc = (
+
+        self.aerosol_modes = (
         {
             'f_org': f_org_volume(Aitken),
             'kappa': kappa(Aitken),
@@ -151,22 +152,23 @@ class AerosolBoreal(Aerosol):
     def __init__(self, Acc_Forg: float = 0.668, Acc_N2: float = 540):
         # note: SOA1 or SOA2 unclear from the paper
         Aitken = {
-            'palmitic': 0, 
-            'SOA1': 0.668, 
-            'SOA2': 0, 
-            '(NH4)2SO4': 0.166, 
-            'NH4NO3': 0.166, 
+            'palmitic': 0,
+            'SOA1': 0.668,
+            'SOA2': 0,
+            '(NH4)2SO4': 0.166,
+            'NH4NO3': 0.166,
             'NaCl': 0
         }
         Accumulation = {
-            'palmitic': 0, 
-            'SOA1': 0, 
-            'SOA2': Acc_Forg, 
-            '(NH4)2SO4': (1-Acc_Forg)/2, 
-            'NH4NO3': (1-Acc_Forg)/2, 
+            'palmitic': 0,
+            'SOA1': 0,
+            'SOA2': Acc_Forg,
+            '(NH4)2SO4': (1-Acc_Forg)/2,
+            'NH4NO3': (1-Acc_Forg)/2,
             'NaCl': 0
         }
-        self.aerosol_modes_per_cc = (
+
+        self.aerosol_modes = (
         {
             'f_org': f_org_volume(Aitken),
             'kappa': kappa(Aitken),
@@ -210,7 +212,7 @@ class AerosolNascent(Aerosol):
             'NH4NO3': 0,
             'NaCl': 0
         }
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
             {
                 'f_org': f_org_volume(Ultrafine),
                 'kappa': kappa(Ultrafine),

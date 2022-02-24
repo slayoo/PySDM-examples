@@ -1,20 +1,23 @@
 import numpy as np
+from scipy import constants as sci
 from pystrict import strict
 from PySDM import Formulae
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si
 from PySDM_examples.Lowe_et_al_2019.aerosol import Aerosol
-from PySDM.dynamics.condensation import DEFAULTS
 
 @strict
 class Settings:
-    def __init__(self, dt: float, n_sd_per_mode: int,
+    def __init__(self, dz: float, n_sd_per_mode: int,
                  aerosol: Aerosol,
                  model: str,
                  spectral_sampling: type(spec_sampling.SpectralSampling),
                  w: float = 0.32 * si.m / si.s,
-                 rtol_x: float = DEFAULTS.rtol_x,
-                 rtol_thd: float = DEFAULTS.rtol_x
+                 delta_min: float = 0.1, # 0.2 in paper, but 0.1 matches plot fig 1c/d
+                 MAC: float = 1,
+                 HAC: float = 1,
+                 c_pd: float = 1005 * si.joule / si.kilogram / si.kelvin,
+                 g_std: float = sci.g * si.metre / si.second ** 2
                  ):
         assert model in ('bulk', 'film')
         self.model = model
@@ -23,19 +26,27 @@ class Settings:
             surface_tension='CompressedFilmOvadnevaite' if model == 'film' else 'Constant',
             constants={
                 'sgm_org': 40 * si.mN / si.m,
-                'delta_min': 0.1 * si.nm
-            }
+                'delta_min': delta_min * si.nm,
+                'MAC': MAC,
+                'HAC': HAC,
+                'c_pd': c_pd,
+                'g_std': g_std
+            },
+            diffusion_kinetics='LoweEtAl2019',
+            diffusion_thermics='LoweEtAl2019',
+            latent_heat='Lowe2019',
+            saturation_vapour_pressure='Lowe1977',
         )
         const = self.formulae.constants
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        self.t_max = int(210 / w) * si.m
-        self.output_interval = 10 * si.s
-        self.dt = dt
-        self.rtol_x = rtol_x
-        self.rtol_thd = rtol_thd
 
+        max_altitude = 190 * si.m
         self.w = w
+        self.t_max = max_altitude / self.w
+        self.dt = dz / self.w
+        self.output_interval = 1 * self.dt
+
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 980 * si.mbar
@@ -64,10 +75,11 @@ class Settings:
         return rhod0 * (1 + self.q0)
 
     @property
-    def nt(self):
+    def nt(self) -> int:
         nt = self.t_max / self.dt
-        assert nt == int(nt)
-        return int(nt)
+        nt_int = round(nt)
+        np.testing.assert_almost_equal(nt, nt_int)
+        return nt_int
 
     @property
     def steps_per_output_interval(self) -> int:
