@@ -35,8 +35,8 @@ class Settings:
         self.q0 = 20 * si.g / si.kg
 
         self.cloud_radius_range = (
-                .5 * si.micrometre,
-                np.inf
+                .5 * si.um,
+                25 * si.um
         )
 
         self.mass_of_dry_air = 1e3 * si.kg
