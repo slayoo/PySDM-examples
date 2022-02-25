@@ -25,14 +25,18 @@ class Settings:
 
         self.dt = 1.0 * si.s
         self.t_max = nsteps * self.dt
-        self.output_interval = self.dt * 100
+        self.output_interval = self.dt * 10
 
         self.w = 0.5 * si.m / si.s
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 1000 * si.hPa
         self.T0 = T0 * si.K
-        self.q0 = 20 * si.g / si.kg
+        RH0 = 1.0
+        pv0 = RH0 * self.formulae.saturation_vapour_pressure.pvs_Celsius(
+            self.T0 - const.T0
+        )
+        self.q0 = const.eps * pv0 / (self.p0 - pv0)
 
         self.cloud_radius_range = (
                 .5 * si.um,

@@ -18,6 +18,7 @@ class Magick:
 
 class Simulation(BasicSimulation):
     def __init__(self, settings, products=None):
+        print(settings.p0, settings.T0, settings.q0)
         env = Parcel(dt=settings.dt,
                      mass_of_dry_air=settings.mass_of_dry_air,
                      p0=settings.p0,
