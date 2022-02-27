@@ -6,8 +6,8 @@ from PySDM.dynamics import AmbientThermodynamics, Condensation
 from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.physics import si
-from PySDM_examples.utils import BasicSimulation
 from PySDM.backends.impl_numba.test_helpers import bdf
+from PySDM_examples.utils import BasicSimulation
 
 
 class Simulation(BasicSimulation):
