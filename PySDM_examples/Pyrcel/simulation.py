@@ -7,10 +7,11 @@ from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.physics import si
 from PySDM_examples.utils import BasicSimulation
+from PySDM.backends.impl_numba.test_helpers import bdf
 
 
 class Simulation(BasicSimulation):
-    def __init__(self, settings, products=None):
+    def __init__(self, settings, products=None, scipy_solver=True):
         env = Parcel(
             dt=settings.timestep,
             p0=settings.initial_pressure,
@@ -43,6 +44,8 @@ class Simulation(BasicSimulation):
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
 
         super().__init__(particulator=builder.build(attributes=attributes, products=products))
+        if scipy_solver:
+            bdf.patch_particulator(self.particulator)
 
         self.output_attributes = {'volume': tuple([] for _ in range(self.particulator.n_sd))}
         self.settings = settings
