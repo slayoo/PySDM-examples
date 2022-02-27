@@ -57,7 +57,7 @@ class Simulation(BasicSimulation):
             assert attribute.shape[0] == self.particulator.n_sd
         np.testing.assert_approx_equal(
             sum(attributes['n']) / volume,
-            np.sum(mode.norm_factor for mode in self.settings.aerosol_modes_by_kappa.values()),
+            sum(mode.norm_factor for mode in self.settings.aerosol_modes_by_kappa.values()),
             significant=4
         )
 
