@@ -3,10 +3,7 @@ from PySDM.builder import Builder
 from PySDM.environments import Box
 from PySDM.dynamics import Collision
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
-from PySDM.products.size_spectral import ParticleSizeSpectrumPerVolume
-from PySDM.products.size_spectral import TotalParticleConcentration
-from PySDM.products.collision.collision_rates import CollisionRatePerGridbox, \
-    CollisionRateDeficitPerGridbox
+import PySDM.products.size_spectral.arbitrary_moment as am
 
 def make_core(settings, coal_eff):
     backend = CPU
@@ -26,12 +23,12 @@ def make_core(settings, coal_eff):
         adaptive=settings.adaptive
     )
     builder.add_dynamic(collision)
+    M0 = am.make_arbitrary_moment_product(rank=0, attr='volume', attr_unit='m^3')
+    M1 = am.make_arbitrary_moment_product(rank=1, attr='volume', attr_unit='m^3')
+    M2 = am.make_arbitrary_moment_product(rank=2, attr='volume', attr_unit='m^3')
     products = (
-        ParticleSizeSpectrumPerVolume(
-            radius_bins_edges=settings.radius_bins_edges, name='dv/dlnr'
-        ),
-        TotalParticleConcentration(name="M0"),
-        CollisionRatePerGridbox(name='cr'),
-        CollisionRateDeficitPerGridbox(name='crd')
+        M0(name='M0'),
+        M1(name='M1'),
+        M2(name='M2')
     )
     return builder.build(attributes, products)
