@@ -1,4 +1,4 @@
 """
-work-in-progress on deJong & Mackay SDM breakup paper figures
+work-in-progress on Bieli 2022 figure 2
 """
 # pylint: disable=invalid-name
