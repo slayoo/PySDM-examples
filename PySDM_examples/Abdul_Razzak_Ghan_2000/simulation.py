@@ -2,6 +2,7 @@ import numpy as np
 from PySDM.environments import Parcel
 from PySDM import Builder
 from PySDM.backends import CPU
+from PySDM.backends.impl_numba.test_helpers import bdf
 from PySDM.dynamics import AmbientThermodynamics, Condensation
 from PySDM.initialisation import discretise_multiplicities, equilibrate_wet_radii
 from PySDM.initialisation.spectra import Sum
@@ -30,21 +31,22 @@ class Simulation(BasicSimulation):
         builder.set_environment(env)
 
         builder.add_dynamic(AmbientThermodynamics())
-        builder.add_dynamic(Condensation())
+        builder.add_dynamic(Condensation(rtol_thd=1e-9, rtol_x=1e-9))
         builder.add_dynamic(Magick())
 
         products = products or (
-            PySDM_products.WaterMixingRatio(name = "ql", unit = "g/kg", radius_range = (0.0, np.inf)), 
-            PySDM_products.PeakSupersaturation(name = "S max"),                                                                                                                          
-            PySDM_products.RipeningRate(name = "Ripe Rate"), 
-            PySDM_products.DeactivatingRate(name = "Deact Rate"), 
-            PySDM_products.ActivatingRate(name = "Act Rate"), 
+            PySDM_products.WaterMixingRatio(name = "ql", unit = "g/kg", radius_range = (0.0, np.inf)),
+            PySDM_products.PeakSupersaturation(name = "S max"),
+            PySDM_products.AmbientRelativeHumidity(name="RH"),
+            # PySDM_products.RipeningRate(name = "Ripe Rate"), 
+            # PySDM_products.DeactivatingRate(name = "Deact Rate"), 
+            # PySDM_products.ActivatingRate(name = "Act Rate"), 
             PySDM_products.ParcelDisplacement(name = "z"),
             PySDM_products.ParticleSizeSpectrumPerMass(
-                name = "Particle Size Spectrum Per Mass", 
+                name = "Particle Size Spectrum Per Mass",
                 radius_bins_edges=settings.wet_radius_bins_edges, unit= "1/um/mg"),
         )
-        
+
         volume = env.mass_of_dry_air / settings.rho0
         attributes = {k: np.empty(0) for k in ('dry volume', 'kappa times dry volume', 'n')}
         for i, mode in enumerate(settings.aerosol.aerosol_modes):
@@ -56,16 +58,18 @@ class Simulation(BasicSimulation):
             attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
             attributes['kappa times dry volume'] = np.append(
                 attributes['kappa times dry volume'], v_dry * kappa)
-        
+
         r_wet = equilibrate_wet_radii(
             r_dry=settings.formulae.trivia.radius(volume=attributes['dry volume']),
             environment=env,
             kappa_times_dry_volume=attributes['kappa times dry volume'],
         )
-        
+
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
 
-        super().__init__(particulator=builder.build(attributes=attributes, products=products))
+        particulator=builder.build(attributes=attributes, products=products)
+        bdf.patch_particulator(particulator)
+        super().__init__(particulator=particulator)
 
         self.output_attributes = {'volume': tuple([] for _ in range(self.particulator.n_sd)),
                                  'critical volume': tuple([] for _ in range(self.particulator.n_sd)),
