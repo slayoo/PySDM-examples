@@ -13,7 +13,7 @@ from PySDM.environments import Parcel
 from PySDM_examples.Abdul_Razzak_Ghan_2000.aerosol import AerosolARG
 
 class Magick:
-    def register(self, builder):
+    def register(self, builder): # pylint: disable=no-self-use
         builder.request_attribute("critical supersaturation")
 
     def __call__(self):

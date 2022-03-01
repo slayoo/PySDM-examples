@@ -52,7 +52,7 @@ def volfrac_just_soluble(volfrac: dict):
 
 def kappa(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
-    molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}   
+    molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
     volume_fractions_of_just_soluble = volfrac_just_soluble(volfrac)
 
     ns_per_vol = f_soluble_volume(mass_fractions) * sum(
