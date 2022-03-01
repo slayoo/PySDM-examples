@@ -6,11 +6,12 @@ from PySDM.dynamics import AmbientThermodynamics, Condensation
 from PySDM.initialisation import equilibrate_wet_radii
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.physics import si
+from PySDM.backends.impl_numba.test_helpers import bdf
 from PySDM_examples.utils import BasicSimulation
 
 
 class Simulation(BasicSimulation):
-    def __init__(self, settings, products=None):
+    def __init__(self, settings, products=None, scipy_solver=False, rtol_thd=1e-10, rtol_x=1e-10):
         env = Parcel(
             dt=settings.timestep,
             p0=settings.initial_pressure,
@@ -23,7 +24,7 @@ class Simulation(BasicSimulation):
         builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
         builder.add_dynamic(AmbientThermodynamics())
-        builder.add_dynamic(Condensation())
+        builder.add_dynamic(Condensation(rtol_thd=rtol_thd, rtol_x=rtol_x))
 
         volume = env.mass_of_dry_air / settings.initial_air_density
         attributes = {k: np.empty(0) for k in ('dry volume', 'kappa times dry volume', 'n')}
@@ -43,6 +44,8 @@ class Simulation(BasicSimulation):
         attributes['volume'] = settings.formulae.trivia.volume(radius=r_wet)
 
         super().__init__(particulator=builder.build(attributes=attributes, products=products))
+        if scipy_solver:
+            bdf.patch_particulator(self.particulator)
 
         self.output_attributes = {'volume': tuple([] for _ in range(self.particulator.n_sd))}
         self.settings = settings
@@ -53,8 +56,8 @@ class Simulation(BasicSimulation):
         for attribute in attributes.values():
             assert attribute.shape[0] == self.particulator.n_sd
         np.testing.assert_approx_equal(
-            np.sum(attributes['n']) / volume,
-            np.sum(mode.norm_factor for mode in self.settings.aerosol_modes_by_kappa.values()),
+            sum(attributes['n']) / volume,
+            sum(mode.norm_factor for mode in self.settings.aerosol_modes_by_kappa.values()),
             significant=4
         )
 
