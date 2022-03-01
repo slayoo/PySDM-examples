@@ -68,15 +68,15 @@ class Aerosol:
 
 
 @strict
-class AerosolFigure1(Aerosol):
-    def __init__(self, mode2N: float = 100):
+class AerosolARG(Aerosol):
+    def __init__(self, M2_sol: float=0, M2_N: float = 100, M2_rad: float=50):
         mode1 = {
             '(NH4)2SO4': 1.0,
             'insoluble': 0,
         }
         mode2 = {
-            '(NH4)2SO4': 1.0,
-            'insoluble': 0,
+            '(NH4)2SO4': M2_sol,
+            'insoluble': (1-M2_sol),
         }
 
         self.aerosol_modes = (
@@ -92,42 +92,44 @@ class AerosolFigure1(Aerosol):
         {
             'kappa': kappa(mode2),
             'spectrum': spectra.Lognormal(
-                norm_factor = mode2N / si.cm ** 3,
-                m_mode = 50.0 * si.nm,
+                norm_factor = M2_N / si.cm ** 3,
+                m_mode = M2_rad * si.nm,
                 s_geom = 2.0
             ),
         }
     )
 
 @strict
-class AerosolFigure2(Aerosol):
-    def __init__(self, mode2N: float = 100):
-        mode1 = {
-            '(NH4)2SO4': 1.0,
-            'insoluble': 0,
-        }
-        mode2 = {
-            '(NH4)2SO4': 0.1,
-            'insoluble': 0.9,
-        }
+class AerosolWhitby(Aerosol):
+    def __init__(self):
+        nuclei = {'(NH4)2SO4': 1.0,}
+        accum = {'(NH4)2SO4': 1.0}
+        coarse = {'(NH4)2SO4': 1.0}
 
         self.aerosol_modes = (
         {
-            'kappa': kappa(mode1),
+            'kappa': kappa(nuclei),
             'spectrum': spectra.Lognormal(
-                norm_factor = 100.0 / si.cm ** 3, 
-                m_mode = 50.0 * si.nm,  
-                s_geom = 2.0
+                norm_factor = 1000.0 / si.cm ** 3, 
+                m_mode = 0.008 * si.um,  
+                s_geom = 1.6
             ),
             
         },
         {
-            'kappa': kappa(mode2),
+            'kappa': kappa(accum),
             'spectrum': spectra.Lognormal(
-                norm_factor = mode2N / si.cm ** 3,
-                m_mode = 50.0 * si.nm,
-                s_geom = 2.0
+                norm_factor = 800 / si.cm ** 3,
+                m_mode = 0.034 * si.um,
+                s_geom = 2.1
+            ),
+        },
+        {
+            'kappa': kappa(coarse),
+            'spectrum': spectra.Lognormal(
+                norm_factor = 0.72 / si.cm ** 3,
+                m_mode = 0.46 * si.um,
+                s_geom = 2.2
             ),
         }
-    )
-
+    )       
