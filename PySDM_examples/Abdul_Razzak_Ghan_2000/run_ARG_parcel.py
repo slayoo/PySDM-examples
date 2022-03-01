@@ -4,7 +4,6 @@ from PySDM import Formulae
 from PySDM import Builder, products as PySDM_products
 from PySDM.physics import si
 from PySDM.initialisation import equilibrate_wet_radii
-from PySDM.initialisation.spectra import Lognormal
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.backends import CPU
 from PySDM.backends.impl_numba.test_helpers import bdf
@@ -27,7 +26,7 @@ def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
      PySDM_products.AmbientRelativeHumidity(name="RH"),
      PySDM_products.ParcelDisplacement(name="z")
     )
-    
+
     formulae = Formulae()
     const = formulae.constants
     RH0, T0, p0 = 1.0, 294, 1e5
@@ -61,8 +60,9 @@ def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
         specific_concentration = concentration / builder.formulae.constants.rho_STP
         attributes['n'] = np.append(attributes['n'], specific_concentration * env.mass_of_dry_air)
         attributes['dry volume'] = np.append(attributes['dry volume'], v_dry)
-        attributes['kappa times dry volume'] = np.append(attributes['kappa times dry volume'], v_dry * kappa)
-    
+        attributes['kappa times dry volume'] = np.append(
+            attributes['kappa times dry volume'], v_dry * kappa)
+
     r_wet = equilibrate_wet_radii(
         r_dry=builder.formulae.trivia.radius(volume=attributes['dry volume']),
         environment=env,
@@ -88,7 +88,7 @@ def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
             attr_data = particulator.attributes[key].to_ndarray()
             for drop_id in range(particulator.n_sd):
                 attr[drop_id].append(attr_data[drop_id])
-    
+
     error = np.zeros(len(aerosol.aerosol_modes))
     activated_fraction_S = np.zeros(len(aerosol.aerosol_modes))
     activated_fraction_V = np.zeros(len(aerosol.aerosol_modes))
@@ -108,5 +108,5 @@ def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
         error[j] = max_multiplicity_j / sum_multiplicity_j
         activated_fraction_S[j] = activated_drops_j_S / sum_multiplicity_j
         activated_fraction_V[j] = activated_drops_j_V / sum_multiplicity_j
-    
+
     return output, output_attributes, aerosol, activated_fraction_S, activated_fraction_V, error

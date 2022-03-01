@@ -52,9 +52,9 @@ def volfrac_just_soluble(volfrac: dict):
 
 def kappa(mass_fractions: dict):
     volfrac = volume_fractions(mass_fractions)
-    molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}     
+    molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}   
     volume_fractions_of_just_soluble = volfrac_just_soluble(volfrac)
-    
+
     ns_per_vol = f_soluble_volume(mass_fractions) * sum(
         ionic_dissociation_phi[i] * volume_fractions_of_just_soluble[i] / molar_volumes[i]
         for i in compounds)
@@ -83,11 +83,10 @@ class AerosolARG(Aerosol):
         {
             'kappa': kappa(mode1),
             'spectrum': spectra.Lognormal(
-                norm_factor = 100.0 / si.cm ** 3, 
-                m_mode = 50.0 * si.nm,  
+                norm_factor = 100.0 / si.cm ** 3,
+                m_mode = 50.0 * si.nm,
                 s_geom = 2.0
             ),
-            
         },
         {
             'kappa': kappa(mode2),
@@ -110,11 +109,10 @@ class AerosolWhitby(Aerosol):
         {
             'kappa': kappa(nuclei),
             'spectrum': spectra.Lognormal(
-                norm_factor = 1000.0 / si.cm ** 3, 
-                m_mode = 0.008 * si.um,  
+                norm_factor = 1000.0 / si.cm ** 3,
+                m_mode = 0.008 * si.um,
                 s_geom = 1.6
             ),
-            
         },
         {
             'kappa': kappa(accum),
@@ -132,4 +130,4 @@ class AerosolWhitby(Aerosol):
                 s_geom = 2.2
             ),
         }
-    )       
+    )
