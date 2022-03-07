@@ -1,5 +1,5 @@
-import numpy as np
 from collections import namedtuple
+import numpy as np
 
 from PySDM import Formulae
 from PySDM import Builder, products as PySDM_products
