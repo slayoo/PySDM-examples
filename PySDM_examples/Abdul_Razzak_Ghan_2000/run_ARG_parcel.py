@@ -1,4 +1,5 @@
 import numpy as np
+from collections import namedtuple
 
 from PySDM import Formulae
 from PySDM import Builder, products as PySDM_products
@@ -109,4 +110,8 @@ def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
         activated_fraction_S[j] = activated_drops_j_S / sum_multiplicity_j
         activated_fraction_V[j] = activated_drops_j_V / sum_multiplicity_j
 
-    return output, output_attributes, aerosol, activated_fraction_S, activated_fraction_V, error
+    Output = namedtuple("Output", ["profile", "attributes", "aerosol", "activated_fraction_S",
+                                    "activated_fraction_V", "error"])
+    return Output(profile=output, attributes=output_attributes, aerosol=aerosol,
+            activated_fraction_S=activated_fraction_S, activated_fraction_V=activated_fraction_V,
+            error=error)
