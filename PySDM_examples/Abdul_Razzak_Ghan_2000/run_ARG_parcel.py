@@ -38,7 +38,7 @@ def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
      mass_of_dry_air=1e3 * si.kg,
      p0=p0 * si.Pa,
      q0=q0 * si.kg / si.kg,
-     w=w * si.m / si.s,
+     w=w,
      T0=T0 * si.K
     )
 

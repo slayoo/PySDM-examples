@@ -69,7 +69,7 @@ class Aerosol:
 
 @strict
 class AerosolARG(Aerosol):
-    def __init__(self, M2_sol: float=0, M2_N: float = 100, M2_rad: float=50):
+    def __init__(self, M2_sol: float=0, M2_N: float = 100 / si.cm ** 3, M2_rad: float=50 * si.nm):
         mode1 = {
             '(NH4)2SO4': 1.0,
             'insoluble': 0,
@@ -91,8 +91,8 @@ class AerosolARG(Aerosol):
         {
             'kappa': kappa(mode2),
             'spectrum': spectra.Lognormal(
-                norm_factor = M2_N / si.cm ** 3,
-                m_mode = M2_rad * si.nm,
+                norm_factor = M2_N,
+                m_mode = M2_rad,
                 s_geom = 2.0
             ),
         }
