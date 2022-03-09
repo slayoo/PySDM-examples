@@ -20,31 +20,36 @@ class Magick:
     def __call__(self):
         pass
 
-def run_parcel(w, sol2, N2, rad2, n_sd_per_mode):
+def run_parcel(w, sol2, N2, rad2, n_sd_per_mode,
+               RH0=1.,
+               T0=294*si.K,
+               p0=1e5*si.Pa,
+               n_steps=50,
+               mass_of_dry_air=1e3 * si.kg,
+               dt=2*si.s
+              ):
     products = (
-     PySDM_products.WaterMixingRatio(unit="g/kg", name="ql"),
-     PySDM_products.PeakSupersaturation(name="S max"),
-     PySDM_products.AmbientRelativeHumidity(name="RH"),
-     PySDM_products.ParcelDisplacement(name="z")
+        PySDM_products.WaterMixingRatio(unit="g/kg", name="ql"),
+        PySDM_products.PeakSupersaturation(name="S max"),
+        PySDM_products.AmbientRelativeHumidity(name="RH"),
+        PySDM_products.ParcelDisplacement(name="z")
     )
 
     formulae = Formulae()
     const = formulae.constants
-    RH0, T0, p0 = 1.0, 294, 1e5
     pv0 = RH0 * formulae.saturation_vapour_pressure.pvs_Celsius(T0 - const.T0)
     q0 = const.eps * pv0 / (p0 - pv0)
 
     env = Parcel(
-     dt=2 * si.s,
-     mass_of_dry_air=1e3 * si.kg,
-     p0=p0 * si.Pa,
-     q0=q0 * si.kg / si.kg,
+     dt=dt,
+     mass_of_dry_air=mass_of_dry_air,
+     p0=p0,
+     q0=q0,
      w=w,
-     T0=T0 * si.K
+     T0=T0
     )
 
     aerosol = AerosolARG(M2_sol=sol2, M2_N=N2, M2_rad=rad2)
-    n_steps = 50
     n_sd = n_sd_per_mode * len(aerosol.aerosol_modes)
 
     builder = Builder(backend=CPU(), n_sd=n_sd)
