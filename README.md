@@ -1,5 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Copyright](https://img.shields.io/static/v1?label=Copyright&color=249fe2&message=Jagiellonian%20University&)](https://en.uj.edu.pl/)
+[![DOI](https://zenodo.org/badge/351755603.svg)](https://zenodo.org/badge/latestdoi/351755603)   
 
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PySDM-examples/workflows/PySDM-examples/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PySDM-examples/actions)    
 [![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PySDM-examples.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PySDM-examples/pulls?q=)
@@ -61,6 +62,12 @@ Please use the [PySDM issue-tracking](https://github.com/atmos-cloud-sim-uj/PySD
     [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Yang_et_al_2018/fig_2.ipynb)
     [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Yang_et_al_2018/fig_2.ipynb)
     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Yang_et_al_2018/fig_2.ipynb)
+
+- [Abdul-Razzak & Ghan 2000](http://doi.wiley.com/10.1029/1999JD901161) (aerosol activation parameterization for GCMs):
+  - Figs. 1 -- 5:
+    [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Abdul_Razzak_Ghan_2000/figs1-5.ipynb)
+    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=PySDM_examples/Abdul_Razzak_Ghan_2000/figs1-5.ipynb)
+    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Abdul_Razzak_Ghan_2000/figs1-5.ipynb)
 
 - [Pyrcel documentation example](https://pyrcel.readthedocs.io/en/latest/examples/basic_run.html) (externally mixed polydisperse size spectrum activation test case)
   - supersaturation, temperature, wet radii evolution and dry spectra plots:
