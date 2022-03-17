@@ -4,26 +4,30 @@ from PySDM.physics import si
 from PySDM.physics import constants_defaults as const
 from chempy import Substance
 
-compounds = ('(NH4)2SO4', 'betacary')
+compounds = ('(NH4)2SO4', 'bcaryophyllene', 'apinene')
 
 molar_masses = {
     "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass * si.gram / si.mole,
-    "betacary": 204.36 * si.gram / si.mole
+    "bcaryophyllene": 204.36 * si.gram / si.mole,
+    "apinene": 136.23 * si.gram / si.mole,
 }
 
 densities = {
     '(NH4)2SO4': 1.77 * si.g / si.cm**3,
-    'betacary': 0.905 * si.g / si.cm**3
+    'bcaryophyllene': 0.905 * si.g / si.cm**3,
+    'apinene': 0.858 * si.g / si.cm**3,
 }
 
 is_organic = {
     '(NH4)2SO4': False,
-    'betacary': True
+    'bcaryophyllene': True,
+    'apinene': True,
 }
 
 ionic_dissociation_phi = {
     '(NH4)2SO4': 3,
-    'betacary': 1
+    'bcaryophyllene': 1,
+    'apinene': 1,
 }
 
 def volume_fractions(mass_fractions: dict):
@@ -40,14 +44,14 @@ def f_org_volume(mass_fractions: dict):
 
 def kappa(mass_fractions: dict):
     kappa = {}
-    for model in ('bulk', 'Ovad', 'Ruehl', 'SL'):
+    for model in ('bulk', 'CompressedFilmOvadnevaite', 'CompressedFilmRuehl', 'SzyszkowskiLangmuir'):
         volfrac = volume_fractions(mass_fractions)
         molar_volumes = {i: molar_masses[i] / densities[i] for i in compounds}
 
         _masked = {k: (not is_organic[k]) * volfrac[k] for k in compounds}
         volume_fractions_of_just_inorg = {k:_masked[k] / sum(list(_masked.values())) for k in compounds}
 
-        if model == 'Ovad' or 'Ruehl' or 'SL':
+        if model in ('CompressedFilmOvadnevaite', 'CompressedFilmRuehl', 'SzyszkowskiLangmuir'):
             ns_per_vol = (1 - f_org_volume(mass_fractions))  * sum(
                 ionic_dissociation_phi[i] * volume_fractions_of_just_inorg[i] / molar_volumes[i] for i in compounds
             )
@@ -73,9 +77,9 @@ class _Aerosol:
     pass
 
 @strict
-class AerosolBetaCary(_Aerosol):
+class AerosolBetaCaryophyllene(_Aerosol):
     def __init__(self, Forg: float = 0.8, N: float = 400):
-        mode = {'(NH4)2SO4': (1-Forg), 'betacary': Forg}
+        mode = {'(NH4)2SO4': (1-Forg), 'bcaryophyllene': Forg, 'apinene': 0}
         self.aerosol_modes_per_cc = (
             {
                 'f_org': f_org_volume(mode),
@@ -88,4 +92,22 @@ class AerosolBetaCary(_Aerosol):
                 )
             },
         )
-    color = 'dodgerblue'
+    color = 'orange'
+
+@strict
+class AerosolAlphaPinene(_Aerosol):
+    def __init__(self, Forg: float = 0.8, N: float = 400):
+        mode = {'(NH4)2SO4': (1-Forg), 'bcaryophyllene': 0, 'apinene': Forg}
+        self.aerosol_modes_per_cc = (
+            {
+                'f_org': f_org_volume(mode),
+                'kappa': kappa(mode),
+                'nu_org': nu_org(mode),
+                'spectrum': spectra.Lognormal(
+                    norm_factor = N / si.cm ** 3,
+                    m_mode = 50.0 * si.nm,
+                    s_geom = 1.75
+                )
+            },
+        )
+    color = 'green'
