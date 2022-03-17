@@ -24,6 +24,7 @@ setup(
         "pyvinecopulib",
         "seaborn",
         "ghapi",
+        "corner",
     ],  # note: test-time-requirement?
     author="https://github.com/orgs/atmos-cloud-sim-uj/people",
     author_email="sylwester.arabas@uj.edu.pl",
