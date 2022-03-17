@@ -4,7 +4,7 @@ from PySDM import Formulae
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si
 from PySDM.physics import constants_defaults as const
-from PySDM_examples.Singer.aerosol import _Aerosol
+from PySDM_examples.Singer_Ward.aerosol import _Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
 
 @strict
