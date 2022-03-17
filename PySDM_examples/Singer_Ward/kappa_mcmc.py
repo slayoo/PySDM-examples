@@ -6,18 +6,33 @@ from scipy.optimize import minimize_scalar, minimize
 from PySDM import Formulae
 from PySDM.physics import si
 from PySDM.physics import constants_defaults as const
-from PySDM.physics.surface_tension import compressed_film_ovadnevaite
-from PySDM_examples.Singer.aerosol import AerosolBetaCary
 
 # parameter transformation so the MCMC parameters range from [-inf, inf]
 # but the compressed film parameters are bounded appropriately
+# for Ovadnevaite:
+# sgm_org = [0,72.8] and delta_min = [0,inf]
+# for Ruehl:
 # A0 = [0,inf], C0 = [0,inf], sgm_min = [0,inf], and m_sigma = [-inf,inf]
-def param_transform(mcmc_params):
+# for SzyszkowskiLangmuir
+# A0 = [0,inf], C0 = [0,inf], and sgm_min = [0,inf]
+def param_transform(mcmc_params, model):
     film_params = np.copy(mcmc_params)
-    film_params[0] = mcmc_params[0]*1e-20
-    film_params[1] = np.exp(mcmc_params[1])
-    film_params[2] = np.exp(mcmc_params[2])
-    film_params[3] = mcmc_params[3]*1e17
+    
+    if model == "CompressedFilmOvadnevaite":
+        film_params[0] = const.sgm_w / (1 + np.exp(-1 * mcmc_params[0])) / (si.mN / si.m)
+        film_params[1] = np.exp(mcmc_params[1])
+    elif model == "CompressedFilmRuehl":
+        film_params[0] = mcmc_params[0]*1e-20
+        film_params[1] = np.exp(mcmc_params[1])
+        film_params[2] = np.exp(mcmc_params[2])
+        film_params[3] = mcmc_params[3]*1e17  
+    elif model == "SzyszkowskiLangmuir":
+        film_params[0] = mcmc_params[0]*1e-20
+        film_params[1] = np.exp(mcmc_params[1])
+        film_params[2] = np.exp(mcmc_params[2])
+    else:
+        raise AssertionError()
+    
     return film_params
 
 def negSS(r_wet, args):
@@ -31,21 +46,41 @@ def negSS(r_wet, args):
 
 # evaluate the y-values of the model, given the current guess of parameter values
 def get_model(params, args): 
-    T, r_dry, OVF = args
-    c = AerosolBetaCary(OVF)
+    T, r_dry, OVF, c, model = args
     f_org = c.aerosol_modes_per_cc[0]['f_org']
-    kappa = c.aerosol_modes_per_cc[0]['kappa']['Ruehl']
+    kappa = c.aerosol_modes_per_cc[0]['kappa'][model]
     
-    formulae = Formulae(
-        surface_tension='CompressedFilmRuehl',
-        constants={
-            'RUEHL_nu_org': c.aerosol_modes_per_cc[0]['nu_org'][0],
-            'RUEHL_A0': param_transform(params)[0] * si.m * si.m,
-            'RUEHL_C0': param_transform(params)[1],
-            'RUEHL_sgm_min': param_transform(params)[2] * si.mN / si.m,
-            'RUEHL_m_sigma': param_transform(params)[3] * si.J / si.m**2
-        }
-    )
+    if model == "CompressedFilmOvadnevaite":
+        formulae = Formulae(
+            surface_tension=model,
+            constants = {
+                'sgm_org': param_transform(params, model)[0] * si.mN / si.m,
+                'delta_min': param_transform(params, model)[1] * si.nm
+            }
+        )
+    elif model == "CompressedFilmRuehl":
+        formulae = Formulae(
+            surface_tension=model,
+            constants={
+                'RUEHL_nu_org': c.aerosol_modes_per_cc[0]['nu_org'][0],
+                'RUEHL_A0': param_transform(params, model)[0] * si.m * si.m,
+                'RUEHL_C0': param_transform(params, model)[1],
+                'RUEHL_sgm_min': param_transform(params, model)[2] * si.mN / si.m,
+                'RUEHL_m_sigma': param_transform(params, model)[3] * si.J / si.m**2
+            }
+        )
+    elif model == "SzyszkowskiLangmuir":
+        formulae = Formulae(
+            surface_tension=model,
+            constants={
+                'RUEHL_nu_org': c.aerosol_modes_per_cc[0]['nu_org'][0],
+                'RUEHL_A0': param_transform(params, model)[0] * si.m * si.m,
+                'RUEHL_C0': param_transform(params, model)[1],
+                'RUEHL_sgm_min': param_transform(params, model)[2] * si.mN / si.m
+            }
+        )
+    else:
+        raise AssertionError()
     
     Scrit, rcrit = np.zeros(len(r_dry)), np.zeros(len(r_dry))
     for i, rd in enumerate(r_dry):
