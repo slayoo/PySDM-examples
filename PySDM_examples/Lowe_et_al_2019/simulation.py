@@ -116,7 +116,7 @@ class Simulation(BasicSimulation):
         if self.settings.BDF:
             output["Activated Fraction"] = self.particulator.products[
                 "activable fraction"
-            ].get(S_max=np.nanmax(output["RH"])-100)
+            ].get(S_max=np.nanmax(output["RH"]) - 100)
         else:
             output["Activated Fraction"] = self.particulator.products[
                 "activable fraction"
