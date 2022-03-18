@@ -1,11 +1,12 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import os
-from scipy.optimize import minimize_scalar, minimize
 
+import matplotlib.pyplot as plt
+import numpy as np
 from PySDM import Formulae
-from PySDM.physics import si
 from PySDM.physics import constants_defaults as const
+from PySDM.physics import si
+from scipy.optimize import minimize, minimize_scalar
+
 
 # parameter transformation so the MCMC parameters range from [-inf, inf]
 # but the compressed film parameters are bounded appropriately
@@ -43,7 +44,7 @@ def negSS(r_wet, args):
     v_dry = formulae.trivia.volume(r_dry)
     v_wet = formulae.trivia.volume(r_wet)
     sigma = formulae.surface_tension.sigma(T, v_wet, v_dry, f_org)
-    RH_eq = formulae.hygroscopicity.RH_eq(r_wet, T, kappa, r_dry**3, sigma)
+    RH_eq = formulae.hygroscopicity.RH_eq(r_wet, T, kappa, r_dry ** 3, sigma)
     SS = (RH_eq - 1) * 100
     return -1 * SS
 
@@ -70,7 +71,7 @@ def get_model(params, args):
                 "RUEHL_A0": param_transform(params, model)[0] * si.m * si.m,
                 "RUEHL_C0": param_transform(params, model)[1],
                 "RUEHL_sgm_min": param_transform(params, model)[2] * si.mN / si.m,
-                "RUEHL_m_sigma": param_transform(params, model)[3] * si.J / si.m**2,
+                "RUEHL_m_sigma": param_transform(params, model)[3] * si.J / si.m ** 2,
             },
         )
     elif model == "SzyszkowskiLangmuir":
@@ -93,7 +94,7 @@ def get_model(params, args):
         Scrit[i], rcrit[i] = -1 * res.fun, res.x
 
     kap_eff = (
-        (2 * rcrit**2) / (3 * r_dry**3 * const.Rv * T * const.rho_w) * const.sgm_w
+        (2 * rcrit ** 2) / (3 * r_dry ** 3 * const.Rv * T * const.rho_w) * const.sgm_w
     )
 
     return kap_eff

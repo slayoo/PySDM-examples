@@ -1,10 +1,8 @@
-from matplotlib import pylab
 import numpy as np
-from corner import corner
-
 from atmos_cloud_sim_uj_utils import show_plot
-from kappa_mcmc import param_transform
-from kappa_mcmc import get_model
+from corner import corner
+from kappa_mcmc import get_model, param_transform
+from matplotlib import pylab
 
 
 def plot_param_chain(param_chain, args, title):

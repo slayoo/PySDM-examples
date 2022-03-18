@@ -1,8 +1,8 @@
-from pystrict import strict
-from PySDM.initialisation import spectra
-from PySDM.physics import si
-from PySDM.physics import constants_defaults as const
 from chempy import Substance
+from PySDM.initialisation import spectra
+from PySDM.physics import constants_defaults as const
+from PySDM.physics import si
+from pystrict import strict
 
 compounds = ("(NH4)2SO4", "bcaryophyllene", "apinene")
 
@@ -13,9 +13,9 @@ molar_masses = {
 }
 
 densities = {
-    "(NH4)2SO4": 1.77 * si.g / si.cm**3,
-    "bcaryophyllene": 0.905 * si.g / si.cm**3,
-    "apinene": 0.858 * si.g / si.cm**3,
+    "(NH4)2SO4": 1.77 * si.g / si.cm ** 3,
+    "bcaryophyllene": 0.905 * si.g / si.cm ** 3,
+    "apinene": 0.858 * si.g / si.cm ** 3,
 }
 
 is_organic = {
@@ -111,7 +111,7 @@ class AerosolBetaCaryophyllene(_Aerosol):
                 "kappa": kappa(mode),
                 "nu_org": nu_org(mode),
                 "spectrum": spectra.Lognormal(
-                    norm_factor=N / si.cm**3, m_mode=50.0 * si.nm, s_geom=1.75
+                    norm_factor=N / si.cm ** 3, m_mode=50.0 * si.nm, s_geom=1.75
                 ),
             },
         )
@@ -129,7 +129,7 @@ class AerosolAlphaPinene(_Aerosol):
                 "kappa": kappa(mode),
                 "nu_org": nu_org(mode),
                 "spectrum": spectra.Lognormal(
-                    norm_factor=N / si.cm**3, m_mode=50.0 * si.nm, s_geom=1.75
+                    norm_factor=N / si.cm ** 3, m_mode=50.0 * si.nm, s_geom=1.75
                 ),
             },
         )

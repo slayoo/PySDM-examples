@@ -1,11 +1,12 @@
 import numpy as np
-from pystrict import strict
 from PySDM import Formulae
-from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
-from PySDM.physics import si
-from PySDM.physics import constants_defaults as const
-from PySDM_examples.Singer_Ward.aerosol import _Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
+from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
+from PySDM.physics import constants_defaults as const
+from PySDM.physics import si
+from pystrict import strict
+
+from PySDM_examples.Singer_Ward.aerosol import _Aerosol
 
 
 @strict
@@ -40,7 +41,7 @@ class Settings:
         self.rtol_thd = rtol_thd
 
         self.w = w
-        self.g = 9.81 * si.m / si.s**2
+        self.g = 9.81 * si.m / si.s ** 2
 
         self.p0 = 980 * si.mbar
         self.T0 = 280 * si.K
