@@ -1,7 +1,7 @@
-import numpy as np
-from matplotlib import pyplot
 import matplotlib
+import numpy as np
 from atmos_cloud_sim_uj_utils import show_plot
+from matplotlib import pyplot
 
 
 def plot_profiles(subplot_list, updraft_list, forg_list, output, save=False):
