@@ -7,25 +7,28 @@ from PySDM.physics import constants_defaults as const
 from PySDM_examples.Singer_Ward.aerosol import _Aerosol
 from PySDM.dynamics.condensation import DEFAULTS
 
+
 @strict
 class Settings:
-    def __init__(self, dt: float, n_sd_per_mode: int,
-                 aerosol: _Aerosol,
-                 model: str,
-                 spectral_sampling: type(spec_sampling.SpectralSampling),
-                 w: float = 0.1 * si.m / si.s,
-                 rtol_x: float = DEFAULTS.rtol_x,
-                 rtol_thd: float = DEFAULTS.rtol_x
-                 ):
-        assert model in ('bulk', 'film', 'Ovad', 'Ruehl')
+    def __init__(
+        self,
+        dt: float,
+        n_sd_per_mode: int,
+        aerosol: _Aerosol,
+        model: str,
+        spectral_sampling: type(spec_sampling.SpectralSampling),
+        w: float = 0.1 * si.m / si.s,
+        rtol_x: float = DEFAULTS.rtol_x,
+        rtol_thd: float = DEFAULTS.rtol_x,
+    ):
+        assert model in ("bulk", "film", "Ovad", "Ruehl")
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
         self.formulae = Formulae(
-            surface_tension='CompressedFilmOvadnevaite' if model == 'Ovad' else 'Constant',
-            constants={
-                'sgm_org': 34.77 * si.mN / si.m,
-                'delta_min': 1.73 * si.nm
-            }
+            surface_tension="CompressedFilmOvadnevaite"
+            if model == "Ovad"
+            else "Constant",
+            constants={"sgm_org": 34.77 * si.mN / si.m, "delta_min": 1.73 * si.nm},
         )
         const = self.formulae.constants
         self.aerosol = aerosol
@@ -41,21 +44,17 @@ class Settings:
 
         self.p0 = 980 * si.mbar
         self.T0 = 280 * si.K
-        pv0 = .99 * self.formulae.saturation_vapour_pressure.pvs_Celsius(self.T0 - const.T0)
+        pv0 = 0.99 * self.formulae.saturation_vapour_pressure.pvs_Celsius(
+            self.T0 - const.T0
+        )
         self.q0 = const.eps * pv0 / (self.p0 - pv0)
 
-        self.cloud_radius_range = (
-                .5 * si.micrometre,
-                np.inf
-        )
+        self.cloud_radius_range = (0.5 * si.micrometre, np.inf)
 
         self.mass_of_dry_air = 44
 
         self.wet_radius_bins_edges = np.logspace(
-            np.log10(4 * si.um),
-            np.log10(12 * si.um),
-            128+1,
-            endpoint=True
+            np.log10(4 * si.um), np.log10(12 * si.um), 128 + 1, endpoint=True
         )
 
     @property
