@@ -1,10 +1,5 @@
-import numpy as np
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import (
-    AlwaysN,
-    ExponFrag,
-    Feingold1988Frag,
-)
+from PySDM.dynamics.collisions.breakup_fragmentations import Feingold1988Frag
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import Golovin
 from PySDM.formulae import Formulae
@@ -27,7 +22,7 @@ class Settings:
         self.dt = 1 * si.seconds
         self.adaptive = False
         self.seed = 44
-        self._steps = [i for i in range(60)]
+        self._steps = list(range(60))
         self.kernel = Golovin(b=2000 * si.cm ** 3 / si.g / si.s * rho_w)
         self.coal_effs = [ConstEc(Ec=0.8), ConstEc(Ec=0.9), ConstEc(Ec=1.0)]
         self.vmin = 1.0 * si.um ** 3
