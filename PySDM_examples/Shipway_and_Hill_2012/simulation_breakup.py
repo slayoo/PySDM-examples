@@ -4,20 +4,24 @@ from PySDM import Builder
 from PySDM.backends import CPU
 from PySDM.dynamics import (
     AmbientThermodynamics,
-    Coalescence,
+    Collision,
     Condensation,
     Displacement,
     EulerianAdvection,
 )
+from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
+from PySDM.dynamics.collisions.breakup_fragmentations import ExponFrag
+from PySDM.dynamics.collisions.coalescence_efficiencies import Berry1967, ConstEc
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.environments.kinematic_1d import Kinematic1D
 from PySDM.impl.mesh import Mesh
 from PySDM.initialisation.sampling import spatial_sampling, spectral_sampling
+from PySDM.physics import si
 
 from PySDM_examples.Shipway_and_Hill_2012.mpdata_1d import MPDATA_1D
 
 
-class Simulation:
+class SimulationB:
     def __init__(self, settings, backend=CPU):
         self.nt = settings.nt
 
@@ -50,8 +54,12 @@ class Simulation:
         builder.add_dynamic(EulerianAdvection(mpdata))
         if settings.precip:
             builder.add_dynamic(
-                Coalescence(
+                Collision(
                     collision_kernel=Geometric(collection_efficiency=1),
+                    # coalescence_efficiency=Berry1967(),
+                    coalescence_efficiency=ConstEc(Ec=1.0),
+                    breakup_efficiency=ConstEb(Eb=1.0),
+                    fragmentation_function=ExponFrag(scale=500 * si.um),
                     adaptive=settings.coalescence_adaptive,
                 )
             )
@@ -101,8 +109,8 @@ class Simulation:
         self.particulator = builder.build(attributes=attributes, products=products)
         if settings.precip:
             displacement.upload_courant_field(
-                courant_field=(np.zeros(settings.nz + 1),)  # TODO #424
-            )
+                courant_field=(np.zeros(settings.nz + 1),)
+            )  # TODO #424
 
     def save(self, output, step):
         for k, v in self.particulator.products.items():
