@@ -1,3 +1,5 @@
+from xml.dom.expatbuilder import FragmentBuilder
+
 import numpy as np
 import PySDM.products as PySDM_products
 from PySDM import Builder
@@ -10,7 +12,7 @@ from PySDM.dynamics import (
     EulerianAdvection,
 )
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import ExponFrag
+from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN, ExponFrag
 from PySDM.dynamics.collisions.coalescence_efficiencies import Berry1967, ConstEc
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.environments.kinematic_1d import Kinematic1D
@@ -56,10 +58,11 @@ class SimulationB:
             builder.add_dynamic(
                 Collision(
                     collision_kernel=Geometric(collection_efficiency=1),
+                    coalescence_efficiency=ConstEc(Ec=0.95),
                     # coalescence_efficiency=Berry1967(),
-                    coalescence_efficiency=ConstEc(Ec=1.0),
                     breakup_efficiency=ConstEb(Eb=1.0),
-                    fragmentation_function=ExponFrag(scale=500 * si.um),
+                    fragmentation_function=ExponFrag(scale=100 * si.um),
+                    # fragmentation_function=AlwaysN(n=2),
                     adaptive=settings.coalescence_adaptive,
                 )
             )
