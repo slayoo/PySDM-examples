@@ -1,9 +1,8 @@
-from packaging import version
-
 import matplotlib
 import numpy as np
 from atmos_cloud_sim_uj_utils import show_plot
 from matplotlib import pyplot
+from packaging import version
 from PySDM.physics.constants import si
 
 from PySDM_examples.Shima_et_al_2009.error_measure import error_measure
