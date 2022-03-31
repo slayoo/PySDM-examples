@@ -1,4 +1,4 @@
-from distutils.version import StrictVersion
+from packaging import version
 
 import matplotlib
 import numpy as np
@@ -8,8 +8,8 @@ from PySDM.physics.constants import si
 
 from PySDM_examples.Shima_et_al_2009.error_measure import error_measure
 
-_matplotlib_version_3_3_3 = StrictVersion("3.3.0")
-_matplotlib_version_actual = StrictVersion(matplotlib.__version__)
+_matplotlib_version_3_3_3 = version.parse("3.3.0")
+_matplotlib_version_actual = version.parse(matplotlib.__version__)
 
 
 class SpectrumColors:
