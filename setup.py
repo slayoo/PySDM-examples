@@ -1,4 +1,5 @@
 import platform
+
 from setuptools import find_packages, setup
 
 
@@ -23,7 +24,8 @@ setup(
         "ipywidgets",
         "seaborn",
         "ghapi",
-    ] + (["pyvinecopulib"] if platform.architecture()[0] != '32bit' else []),
+    ]
+    + (["pyvinecopulib"] if platform.architecture()[0] != "32bit" else []),
     author="https://github.com/orgs/atmos-cloud-sim-uj/people",
     author_email="sylwester.arabas@uj.edu.pl",
     long_description=get_long_description(),
