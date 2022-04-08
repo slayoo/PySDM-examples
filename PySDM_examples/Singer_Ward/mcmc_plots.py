@@ -5,48 +5,46 @@ from kappa_mcmc import get_model, param_transform
 from matplotlib import pylab
 
 
-def plot_param_chain(param_chain, args, title):
+def plot_param_chain(param_chain, args):
     T, r_dry, ovf, c, model = args
     p = param_transform(param_chain, model)
-
+    
     if model == "CompressedFilmOvadnevaite":
         labels = ["sgm_org", "delta_min"]
         fig, axes = pylab.subplots(2, 1, figsize=(6, 8))
-        for i, ax in enumerate(axes.flatten()):
-            ax.plot(p[i, :])
-            ax.set_ylabel(labels[i])
-            ax.grid()
     elif model == "CompressedFilmRuehl":
         labels = ["A0", "C0", "sgm_min", "m_sigma"]
         fig, axes = pylab.subplots(2, 2, figsize=(12, 8))
-        for i, ax in enumerate(axes.flatten()):
-            ax.plot(p[i, :])
-            ax.set_ylabel(labels[i])
-            ax.grid()
     elif model == "SzyszkowskiLangmuir":
         labels = ["A0", "C0", "sgm_min"]
         fig, axes = pylab.subplots(3, 1, figsize=(6, 12))
-        for i, ax in enumerate(axes.flatten()):
-            ax.plot(p[i, :])
-            ax.set_ylabel(labels[i])
-            ax.grid()
     else:
         raise AssertionError()
+        
+    for i, ax in enumerate(axes.flatten()):
+        p[i,0:100] = np.nan
+        ax.plot(p[i, :])
+        ax.set_ylabel(labels[i])
+        ax.grid()
     pylab.tight_layout()
 
     modelname = model.split("CompressedFilm")[-1]
     aerosolname = c.__class__.__name__.split("Aerosol")[-1]
     pylab.savefig(
-        aerosolname + "_" + title + "_" + modelname + "_chain.png",
+        aerosolname + "_" + modelname + "_chain.png",
         dpi=200,
         bbox_inches="tight",
     )
     pylab.show()
+    
+    filename = aerosolname + "_" + modelname + "_chain"+str(np.max(np.shape(param_chain)))+".csv"
+    np.savetxt(filename, param_chain.T, fmt='%.6e', delimiter=',')
 
 
-def plot_corner(param_chain, args, title):
+def plot_corner(param_chain, args):
     T, r_dry, ovf, c, model = args
     data = param_transform(param_chain, model).T
+    data = data[100:,:]
 
     if model == "CompressedFilmOvadnevaite":
         labels = ["sgm_org", "delta_min"]
@@ -71,14 +69,14 @@ def plot_corner(param_chain, args, title):
     modelname = model.split("CompressedFilm")[-1]
     aerosolname = c.__class__.__name__.split("Aerosol")[-1]
     pylab.savefig(
-        aerosolname + "_" + title + "_" + modelname + "_corner.png",
+        aerosolname + "_" + modelname + "_corner.png",
         dpi=200,
         bbox_inches="tight",
     )
     pylab.show()
 
 
-def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory, title):
+def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory):
     T, r_dry, ovf, c, model = args
 
     # create aerosol
@@ -115,7 +113,7 @@ def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory, title):
     modelname = model.split("CompressedFilm")[-1]
     aerosolname = c.__class__.__name__.split("Aerosol")[-1]
     pylab.savefig(
-        aerosolname + "_" + title + "_" + modelname + "_fit.png",
+        aerosolname + "_" + modelname + "_fit.png",
         dpi=200,
         bbox_inches="tight",
     )

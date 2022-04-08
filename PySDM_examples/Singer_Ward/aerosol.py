@@ -4,30 +4,38 @@ from PySDM.physics import constants_defaults as const
 from PySDM.physics import si
 from pystrict import strict
 
-compounds = ("(NH4)2SO4", "bcaryophyllene", "apinene")
+compounds = ("(NH4)2SO4", "bcary_dark", "bcary_light", "apinene_dark", "apinene_light")
 
 molar_masses = {
     "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass * si.gram / si.mole,
-    "bcaryophyllene": 204.36 * si.gram / si.mole,
-    "apinene": 136.23 * si.gram / si.mole,
+    "bcary_dark": 299 * si.gram / si.mole,
+    "bcary_light": 360 * si.gram / si.mole,
+    "apinene_dark": 209 * si.gram / si.mole,
+    "apinene_light": 265 * si.gram / si.mole,
 }
 
 densities = {
     "(NH4)2SO4": 1.77 * si.g / si.cm ** 3,
-    "bcaryophyllene": 0.905 * si.g / si.cm ** 3,
-    "apinene": 0.858 * si.g / si.cm ** 3,
+    "bcary_dark": 1.20 * si.g / si.cm ** 3,
+    "bcary_light": 1.40 * si.g / si.cm ** 3,
+    "apinene_dark": 1.27 * si.g / si.cm ** 3,
+    "apinene_light": 1.51 * si.g / si.cm ** 3,
 }
 
 is_organic = {
     "(NH4)2SO4": False,
-    "bcaryophyllene": True,
-    "apinene": True,
+    "bcary_dark": True,
+    "bcary_light": True,
+    "apinene_dark": True,
+    "apinene_light": True,
 }
 
 ionic_dissociation_phi = {
     "(NH4)2SO4": 3,
-    "bcaryophyllene": 1,
-    "apinene": 1,
+    "bcary_dark": 1,
+    "bcary_light": 1,
+    "apinene_dark": 1,
+    "apinene_light": 1,
 }
 
 
@@ -102,9 +110,37 @@ class _Aerosol:
 
 
 @strict
-class AerosolBetaCaryophyllene(_Aerosol):
+class AerosolBetaCaryophylleneDark(_Aerosol):
     def __init__(self, Forg: float = 0.8, N: float = 400):
-        mode = {"(NH4)2SO4": (1 - Forg), "bcaryophyllene": Forg, "apinene": 0}
+        mode = {
+            "(NH4)2SO4": (1 - Forg),
+            "bcary_dark": Forg,
+            "bcary_light": 0,
+            "apinene_dark": 0,
+            "apinene_light": 0
+        }
+        self.aerosol_modes_per_cc = (
+            {
+                "f_org": f_org_volume(mode),
+                "kappa": kappa(mode),
+                "nu_org": nu_org(mode),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=N / si.cm ** 3, m_mode=50.0 * si.nm, s_geom=1.75
+                ),
+            },
+        )
+
+    color = "red"
+    
+class AerosolBetaCaryophylleneLight(_Aerosol):
+    def __init__(self, Forg: float = 0.8, N: float = 400):
+        mode = {
+            "(NH4)2SO4": (1 - Forg),
+            "bcary_dark": 0,
+            "bcary_light": Forg,
+            "apinene_dark": 0,
+            "apinene_light": 0
+        }
         self.aerosol_modes_per_cc = (
             {
                 "f_org": f_org_volume(mode),
@@ -118,11 +154,39 @@ class AerosolBetaCaryophyllene(_Aerosol):
 
     color = "orange"
 
-
 @strict
-class AerosolAlphaPinene(_Aerosol):
+class AerosolAlphaPineneDark(_Aerosol):
     def __init__(self, Forg: float = 0.8, N: float = 400):
-        mode = {"(NH4)2SO4": (1 - Forg), "bcaryophyllene": 0, "apinene": Forg}
+        mode = {
+            "(NH4)2SO4": (1 - Forg),
+            "bcary_dark": 0,
+            "bcary_light": 0,
+            "apinene_dark": Forg,
+            "apinene_light": 0
+        }
+        self.aerosol_modes_per_cc = (
+            {
+                "f_org": f_org_volume(mode),
+                "kappa": kappa(mode),
+                "nu_org": nu_org(mode),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=N / si.cm ** 3, m_mode=50.0 * si.nm, s_geom=1.75
+                ),
+            },
+        )
+
+    color = "green"
+    
+@strict
+class AerosolAlphaPineneLight(_Aerosol):
+    def __init__(self, Forg: float = 0.8, N: float = 400):
+        mode = {
+            "(NH4)2SO4": (1 - Forg),
+            "bcary_dark": 0,
+            "bcary_light": 0,
+            "apinene_dark": 0,
+            "apinene_light": Forg
+        }
         self.aerosol_modes_per_cc = (
             {
                 "f_org": f_org_volume(mode),
