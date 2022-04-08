@@ -31,13 +31,13 @@ def plot_param_chain(param_chain, args):
     modelname = model.split("CompressedFilm")[-1]
     aerosolname = c.__class__.__name__.split("Aerosol")[-1]
     pylab.savefig(
-        aerosolname + "_" + modelname + "_chain.png",
+        "mcmc_output/" + aerosolname + "_" + modelname + "_chain.png",
         dpi=200,
         bbox_inches="tight",
     )
     pylab.show()
     
-    filename = aerosolname + "_" + modelname + "_chain"+str(np.max(np.shape(param_chain)))+".csv"
+    filename = "mcmc_output/" + aerosolname + "_" + modelname + "_chain"+str(np.max(np.shape(param_chain)))+".csv"
     np.savetxt(filename, param_chain.T, fmt='%.6e', delimiter=',')
 
 
@@ -69,7 +69,7 @@ def plot_corner(param_chain, args):
     modelname = model.split("CompressedFilm")[-1]
     aerosolname = c.__class__.__name__.split("Aerosol")[-1]
     pylab.savefig(
-        aerosolname + "_" + modelname + "_corner.png",
+        "mcmc_output/" + aerosolname + "_" + modelname + "_corner.png",
         dpi=200,
         bbox_inches="tight",
     )
@@ -113,7 +113,7 @@ def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory):
     modelname = model.split("CompressedFilm")[-1]
     aerosolname = c.__class__.__name__.split("Aerosol")[-1]
     pylab.savefig(
-        aerosolname + "_" + modelname + "_fit.png",
+        "mcmc_output/" + aerosolname + "_" + modelname + "_fit.png",
         dpi=200,
         bbox_inches="tight",
     )
