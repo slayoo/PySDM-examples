@@ -13,19 +13,19 @@ from pystrict import strict
 class Settings:
     def __init__(self):
         self.formulae = Formulae()
-        self.n_sd = 2 ** 12
-        self.n_part = 1e4 / si.cm ** 3
+        self.n_sd = 2**12
+        self.n_part = 1e4 / si.cm**3
         self.theta = 0.33e-9 * si.g / rho_w
         self.k = 1
-        self.dv = 0.1 * si.m ** 3
+        self.dv = 0.1 * si.m**3
         self.norm_factor = self.n_part * self.dv
         self.dt = 1 * si.seconds
         self.adaptive = False
         self.seed = 44
         self._steps = list(range(60))
-        self.kernel = Golovin(b=2000 * si.cm ** 3 / si.g / si.s * rho_w)
+        self.kernel = Golovin(b=2000 * si.cm**3 / si.g / si.s * rho_w)
         self.coal_effs = [ConstEc(Ec=0.8), ConstEc(Ec=0.9), ConstEc(Ec=1.0)]
-        self.vmin = 1.0 * si.um ** 3
+        self.vmin = 1.0 * si.um**3
         self.nfmax = 10
         self.fragtol = 1e-3
         self.fragmentation = Feingold1988Frag(
