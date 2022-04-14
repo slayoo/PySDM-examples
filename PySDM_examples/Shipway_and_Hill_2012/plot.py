@@ -4,15 +4,8 @@ from matplotlib import pyplot
 from PySDM.physics.constants import convert_to, si
 
 
-def plot(
-    var,
-    qlabel,
-    fname,
-    output,
-    vmin=None,
-    vmax=None,
-    line={15: ":", 20: "--", 25: "-", 30: "-."},
-):
+def plot(var, qlabel, fname, output, vmin=None, vmax=None, line=None):
+    line = line or {15: ":", 20: "--", 25: "-", 30: "-."}
     dt = output["t"][1] - output["t"][0]
     dz = output["z"][1] - output["z"][0]
     tgrid = np.concatenate(((output["t"][0] - dt / 2,), output["t"] + dt / 2))
