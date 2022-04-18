@@ -5,7 +5,7 @@ import PyMPDATA
 import PySDM
 import scipy
 from PySDM import Formulae
-from PySDM.dynamics import collisions, condensation
+from PySDM.dynamics import collisions, condensation, displacement
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.initialisation import spectra
 from PySDM.physics import si
@@ -31,6 +31,9 @@ class Common:
 
         self.freezing_singular = True
         self.freezing_inp_spec = None
+
+        self.displacement_adaptive = displacement.DEFAULTS.adaptive
+        self.displacement_rtol = displacement.DEFAULTS.rtol
 
         self.n_sd_per_gridbox = 20
 
@@ -61,12 +64,12 @@ class Common:
         self.spin_up_time = 0
 
         self.mode_1 = spectra.Lognormal(
-            norm_factor=60 / si.centimetre ** 3 / const.rho_STP,
+            norm_factor=60 / si.centimetre**3 / const.rho_STP,
             m_mode=0.04 * si.micrometre,
             s_geom=1.4,
         )
         self.mode_2 = spectra.Lognormal(
-            norm_factor=40 / si.centimetre ** 3 / const.rho_STP,
+            norm_factor=40 / si.centimetre**3 / const.rho_STP,
             m_mode=0.15 * si.micrometre,
             s_geom=1.6,
         )

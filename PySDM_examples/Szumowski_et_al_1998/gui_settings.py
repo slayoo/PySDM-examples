@@ -99,6 +99,16 @@ class GUISettings:
             value=settings.condensation_adaptive,
             description="coalescence adaptive time-step",
         )
+        self.ui_displacement_rtol = IntSlider(
+            value=np.log10(settings.displacement_rtol),
+            min=-3,
+            max=0,
+            description="log$_{10}$(rtol)",
+        )
+        self.ui_displacement_adaptive = Checkbox(
+            value=settings.displacement_adaptive,
+            description="displacement adaptive time-step",
+        )
         self.ui_processes = [
             Checkbox(value=settings.processes[key], description=key)
             for key in settings.processes.keys()
@@ -250,11 +260,11 @@ class GUISettings:
 
     @property
     def condensation_rtol_x(self):
-        return 10 ** self.ui_condensation_rtol_x.value
+        return 10**self.ui_condensation_rtol_x.value
 
     @property
     def condensation_rtol_thd(self):
-        return 10 ** self.ui_condensation_rtol_thd.value
+        return 10**self.ui_condensation_rtol_thd.value
 
     @property
     def condensation_adaptive(self):
@@ -263,6 +273,14 @@ class GUISettings:
     @property
     def coalescence_adaptive(self):
         return self.ui_coalescence_adaptive.value
+
+    @property
+    def displacement_rtol(self):
+        return 10**self.ui_displacement_rtol.value
+
+    @property
+    def displacement_adaptive(self):
+        return self.ui_displacement_adaptive.value
 
     @property
     def processes(self):
@@ -316,7 +334,7 @@ class GUISettings:
             return Lognormal(
                 norm_factor=1,
                 m_mode=10 ** (self.ui_freezing["lognormal_log10_A_um2"].value)
-                * si.um ** 2,
+                * si.um**2,
                 s_geom=np.exp(self.ui_freezing["lognormal_ln_sgm_g"].value),
             )
         raise NotImplementedError()
@@ -345,6 +363,8 @@ class GUISettings:
                         self.ui_condensation_rtol_thd,
                         self.ui_condensation_adaptive,
                         self.ui_coalescence_adaptive,
+                        self.ui_displacement_rtol,
+                        self.ui_displacement_adaptive,
                         *self.ui_mpdata_options,
                     ]
                 ),
