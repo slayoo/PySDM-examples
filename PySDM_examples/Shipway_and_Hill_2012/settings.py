@@ -87,7 +87,7 @@ class Settings:
         self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
         self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
         self.condensation_adaptive = True
-        self.coalescence_adaptive = False
+        self.coalescence_adaptive = True
 
         self.r_bins_edges = np.logspace(
             np.log10(0.001 * si.um), np.log10(100 * si.um), 101, endpoint=True
