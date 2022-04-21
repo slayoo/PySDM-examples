@@ -19,6 +19,7 @@ def plot(var, qlabel, fname, output, vmin=None, vmax=None, line=None):
 
     ax1.set_xlabel("time [s]")
     ax1.set_ylabel("z [km]")
+    ax1.set_ylim(0, None)
 
     cbar = fig.colorbar(mesh, fraction=0.05, location="top")
     cbar.set_label(qlabel)
@@ -42,4 +43,4 @@ def plot(var, qlabel, fname, output, vmin=None, vmax=None, line=None):
                     ax1.axvline(t, **params)
         last_t = t
 
-    show_plot(filename=fname)
+    show_plot(filename=fname, inline_format="png")
