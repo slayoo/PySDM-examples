@@ -6,7 +6,7 @@ from PySDM.physics import constants_defaults as const
 from PySDM.physics import si
 from pystrict import strict
 
-from PySDM_examples.Singer_Ward.aerosol import _Aerosol
+from PySDM_examples.utils import BasicAerosol
 
 
 @strict
@@ -15,20 +15,23 @@ class Settings:
         self,
         dt: float,
         n_sd_per_mode: int,
-        aerosol: _Aerosol,
+        aerosol: BasicAerosol,
         model: str,
         spectral_sampling: type(spec_sampling.SpectralSampling),
         w: float = 0.1 * si.m / si.s,
         rtol_x: float = DEFAULTS.rtol_x,
         rtol_thd: float = DEFAULTS.rtol_x,
     ):
-        assert model in ("bulk", "film", "Ovad", "Ruehl")
+        assert model in (
+            "Constant",
+            "CompressedFilmOvadnevaite",
+            "CompressedFilmRuehl",
+            "SzyszkowskiLangmuir",
+        )
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
         self.formulae = Formulae(
-            surface_tension="CompressedFilmOvadnevaite"
-            if model == "Ovad"
-            else "Constant",
+            surface_tension=model,
             constants={"sgm_org": 34.77 * si.mN / si.m, "delta_min": 1.73 * si.nm},
         )
         const = self.formulae.constants
@@ -41,7 +44,7 @@ class Settings:
         self.rtol_thd = rtol_thd
 
         self.w = w
-        self.g = 9.81 * si.m / si.s ** 2
+        self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 980 * si.mbar
         self.T0 = 280 * si.K

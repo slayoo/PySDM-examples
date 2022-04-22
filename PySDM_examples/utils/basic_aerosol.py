@@ -61,27 +61,37 @@ class BasicAerosol:
         molar_volumes = {
             i: self.molar_masses[i] / self.densities[i] for i in self.compounds
         }
+        volume_fractions_of_just_soluble = self.volfrac_just_soluble(
+            volfrac, soluble=True
+        )
+        all_soluble_ns = sum(
+            self.ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i]
+            for i in self.compounds
+        )
+        part_soluble_ns = self.f_soluble_volume(mass_fractions) * sum(
+            self.ionic_dissociation_phi[i]
+            * volume_fractions_of_just_soluble[i]
+            / molar_volumes[i]
+            for i in self.compounds
+        )
 
         result = {}
-        for model in ("bulk", "film"):
-            if model == "bulk":
-                ns_per_vol = sum(
-                    self.ionic_dissociation_phi[i] * volfrac[i] / molar_volumes[i]
-                    for i in self.compounds
-                )
-            elif model == "film":
-                volume_fractions_of_just_soluble = self.volfrac_just_soluble(
-                    volfrac, soluble=True
-                )
-                ns_per_vol = self.f_soluble_volume(mass_fractions) * sum(
-                    self.ionic_dissociation_phi[i]
-                    * volume_fractions_of_just_soluble[i]
-                    / molar_volumes[i]
-                    for i in self.compounds
-                )
+        for st in (
+            "Constant",
+            "CompressedFilmOvadnevaite",
+            "CompressedFilmRuehl",
+            "SzyszkowskiLangmuir",
+        ):
+            if st in ("Constant"):
+                result[st] = all_soluble_ns * Mv / rho_w
+            elif st in (
+                "CompressedFilmOvadnevaite",
+                "CompressedFilmRuehl",
+                "SzyszkowskiLangmuir",
+            ):
+                result[st] = part_soluble_ns * Mv / rho_w
             else:
                 raise AssertionError()
-            result[model] = ns_per_vol * Mv / rho_w
         return result
 
     # calculate molar volume of just organic species
