@@ -30,26 +30,26 @@ class AerosolARG(BasicAerosol):
                 / si.mole,
                 "insoluble": 44 * si.g / si.mole,
             },
-            aerosol_modes=(
-                {
-                    "kappa": super().kappa(mode1),
-                    "spectrum": spectra.Lognormal(
-                        norm_factor=100.0 / si.cm**3, m_mode=50.0 * si.nm, s_geom=2.0
-                    ),
-                },
-                {
-                    "kappa": super().kappa(mode2),
-                    "spectrum": spectra.Lognormal(
-                        norm_factor=M2_N, m_mode=M2_rad, s_geom=2.0
-                    ),
-                },
-            ),
             densities={
                 "(NH4)2SO4": 1.77 * si.g / si.cm**3,
                 "insoluble": 1.77 * si.g / si.cm**3,
             },
             compounds=("(NH4)2SO4", "insoluble"),
             is_soluble={"(NH4)2SO4": True, "insoluble": False},
+        )
+        self.aerosol_modes = (
+            {
+                "kappa": self.kappa(mode1),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=100.0 / si.cm**3, m_mode=50.0 * si.nm, s_geom=2.0
+                ),
+            },
+            {
+                "kappa": self.kappa(mode2),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=M2_N, m_mode=M2_rad, s_geom=2.0
+                ),
+            },
         )
 
 
@@ -69,29 +69,29 @@ class AerosolWhitby(BasicAerosol):
                 * si.gram
                 / si.mole
             },
-            aerosol_modes=(
-                {
-                    "kappa": super().kappa(nuclei),
-                    "spectrum": spectra.Lognormal(
-                        norm_factor=1000.0 / si.cm**3,
-                        m_mode=0.008 * si.um,
-                        s_geom=1.6,
-                    ),
-                },
-                {
-                    "kappa": super().kappa(accum),
-                    "spectrum": spectra.Lognormal(
-                        norm_factor=800 / si.cm**3, m_mode=0.034 * si.um, s_geom=2.1
-                    ),
-                },
-                {
-                    "kappa": super().kappa(coarse),
-                    "spectrum": spectra.Lognormal(
-                        norm_factor=0.72 / si.cm**3, m_mode=0.46 * si.um, s_geom=2.2
-                    ),
-                },
-            ),
             densities={"(NH4)2SO4": 1.77 * si.g / si.cm**3},
             compounds="(NH4)2SO4",
             is_soluble={"(NH4)2SO4": True},
+        )
+        self.aerosol_modes = (
+            {
+                "kappa": self.kappa(nuclei),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=1000.0 / si.cm**3,
+                    m_mode=0.008 * si.um,
+                    s_geom=1.6,
+                ),
+            },
+            {
+                "kappa": self.kappa(accum),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=800 / si.cm**3, m_mode=0.034 * si.um, s_geom=2.1
+                ),
+            },
+            {
+                "kappa": self.kappa(coarse),
+                "spectrum": spectra.Lognormal(
+                    norm_factor=0.72 / si.cm**3, m_mode=0.46 * si.um, s_geom=2.2
+                ),
+            },
         )

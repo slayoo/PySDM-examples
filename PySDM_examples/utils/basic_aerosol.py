@@ -7,19 +7,26 @@ class BasicAerosol:
     def __init__(
         self,
         *,
-        aerosol_modes: Tuple[Dict],
         densities: Dict[str, float],
         compounds: Tuple[str],
         molar_masses: Dict[str, float],
         is_soluble: Dict[str, bool],
         ionic_dissociation_phi: Dict[str, int]
     ):
-        self.aerosol_modes = aerosol_modes
+        self._aerosol_modes = None
         self.densities = densities
         self.compounds = compounds
         self.molar_masses = molar_masses
         self.is_soluble = is_soluble
         self.ionic_dissociation_phi = ionic_dissociation_phi
+
+    @property
+    def aerosol_modes(self):
+        return self._aerosol_modes
+
+    @aerosol_modes.setter
+    def aerosol_model(self, value: Tuple[Dict]):
+        self._aerosol_modes = value
 
     # convert mass fractions to volume fractions
     def volume_fractions(self, mass_fractions: dict):
