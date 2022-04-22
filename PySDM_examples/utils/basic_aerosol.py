@@ -25,7 +25,7 @@ class BasicAerosol:
         return self._aerosol_modes
 
     @aerosol_modes.setter
-    def aerosol_model(self, value: Tuple[Dict]):
+    def aerosol_modes(self, value: Tuple[Dict]):
         self._aerosol_modes = value
 
     # convert mass fractions to volume fractions
