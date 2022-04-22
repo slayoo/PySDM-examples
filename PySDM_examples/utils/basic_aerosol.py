@@ -1,17 +1,25 @@
-from PySDM.initialisation import spectra
-from PySDM.physics import si
+from typing import Dict, Tuple
+
 from PySDM.physics.constants_defaults import Mv, rho_w
 
 
 class BasicAerosol:
-    def __init__(self):
-        mode = {}
-        self.aerosol_modes = (
-            {
-                "kappa": self.kappa(mode),
-                "spectrum": spectra.Lognormal(),
-            },
-        )
+    def __init__(
+        self,
+        *,
+        aerosol_modes: Tuple[Dict],
+        densities: Dict[str, float],
+        compounds: Tuple[str],
+        molar_masses: Dict[str, float],
+        is_soluble: Dict[str, bool],
+        ionic_dissociation_phi: Dict[str, int]
+    ):
+        self.aerosol_modes = aerosol_modes
+        self.densities = densities
+        self.compounds = compounds
+        self.molar_masses = molar_masses
+        self.is_soluble = is_soluble
+        self.ionic_dissociation_phi = ionic_dissociation_phi
 
     # convert mass fractions to volume fractions
     def volume_fractions(self, mass_fractions: dict):
