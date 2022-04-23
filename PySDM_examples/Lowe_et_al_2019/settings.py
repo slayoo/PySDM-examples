@@ -1,11 +1,10 @@
 import numpy as np
 from PySDM import Formulae
+from PySDM.initialisation import BasicAerosol
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si
 from pystrict import strict
 from scipy import constants as sci
-
-from PySDM_examples.utils import BasicAerosol
 
 
 @strict

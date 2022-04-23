@@ -1,9 +1,7 @@
 from chempy import Substance
-from PySDM.initialisation import spectra
+from PySDM.initialisation import BasicAerosol, spectra
 from PySDM.physics import si
 from pystrict import strict
-
-from PySDM_examples.utils import BasicAerosol
 
 
 @strict
