@@ -1,4 +1,5 @@
-# figure 1
+# pylint:disable=too-many-lines
+
 Fig1_N2_param_jl = [
     0.0,
     50.505050505050505,
