@@ -1,5 +1,3 @@
-# pylint:disable=too-many-lines
-
 # figure 1
 Fig1_N2_obs = [
     0,
