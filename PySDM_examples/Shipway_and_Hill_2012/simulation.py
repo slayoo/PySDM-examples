@@ -140,6 +140,7 @@ class Simulation:
 
         self.save(output, 0)
         for step in range(nt):
+            self.mpdata.update_courant_field()
             if "Displacement" in self.particulator.dynamics:
                 self.particulator.dynamics["Displacement"].upload_courant_field(
                     (self.mpdata.advector / self.g_factor_vec,)
