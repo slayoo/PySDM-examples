@@ -168,6 +168,7 @@ class Simulation:
 
         self.save(output, 0)
         for step in range(nt):
+            self.mpdata.update_advector_field()
             if &#34;Displacement&#34; in self.particulator.dynamics:
                 self.particulator.dynamics[&#34;Displacement&#34;].upload_courant_field(
                     (self.mpdata.advector / self.g_factor_vec,)
@@ -319,6 +320,7 @@ class Simulation:
 
         self.save(output, 0)
         for step in range(nt):
+            self.mpdata.update_advector_field()
             if &#34;Displacement&#34; in self.particulator.dynamics:
                 self.particulator.dynamics[&#34;Displacement&#34;].upload_courant_field(
                     (self.mpdata.advector / self.g_factor_vec,)
@@ -358,6 +360,7 @@ class Simulation:
 
     self.save(output, 0)
     for step in range(nt):
+        self.mpdata.update_advector_field()
         if &#34;Displacement&#34; in self.particulator.dynamics:
             self.particulator.dynamics[&#34;Displacement&#34;].upload_courant_field(
                 (self.mpdata.advector / self.g_factor_vec,)
