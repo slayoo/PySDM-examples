@@ -54,7 +54,7 @@ class MPDATA_1D:
     def advector(self):
         return self.solver.advector.get_component(0)
 
-    def update_courant_field(self):
+    def update_advector_field(self):
         self.__t += 0.5 * self.dt
         self.advector[:] = self.advector_of_t(self.__t)
         self.__t += 0.5 * self.dt
