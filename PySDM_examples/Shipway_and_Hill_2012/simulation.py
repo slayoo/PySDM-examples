@@ -69,7 +69,12 @@ class Simulation:
                     adaptive=settings.coalescence_adaptive,
                 )
             )
-        displacement = Displacement(enable_sedimentation=settings.precip)
+        displacement = Displacement(
+            enable_sedimentation=settings.precip,
+            precipitation_counting_level_index=int(
+                settings.particle_reservoir_depth / settings.dz
+            ),
+        )
         builder.add_dynamic(displacement)
         attributes = env.init_attributes(
             spatial_discretisation=spatial_sampling.Pseudorandom(),
