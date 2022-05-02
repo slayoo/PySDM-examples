@@ -24,22 +24,36 @@ from PySDM_examples.Shipway_and_Hill_2012.mpdata_1d import MPDATA_1D
 class SimulationB:
     def __init__(self, settings, backend=CPU):
         self.nt = settings.nt
+        self.z0 = -settings.particle_reservoir_depth
 
         builder = Builder(
             n_sd=settings.n_sd, backend=backend(formulae=settings.formulae)
         )
-        mesh = Mesh(grid=(settings.nz,), size=(settings.z_max,))
+        mesh = Mesh(
+            grid=(settings.nz,),
+            size=(settings.z_max + settings.particle_reservoir_depth,),
+        )
         env = Kinematic1D(
-            dt=settings.dt, mesh=mesh, thd_of_z=settings.thd, rhod_of_z=settings.rhod
+            dt=settings.dt,
+            mesh=mesh,
+            thd_of_z=settings.thd,
+            rhod_of_z=settings.rhod,
+            z0=-settings.particle_reservoir_depth,
         )
 
-        mpdata = MPDATA_1D(
+        self.mpdata = MPDATA_1D(
             nz=settings.nz,
             dt=settings.dt,
             mpdata_settings=settings.mpdata_settings,
             advector_of_t=lambda t: settings.rho_times_w(t) * settings.dt / settings.dz,
-            advectee_of_zZ_at_t0=lambda zZ: settings.qv(zZ * settings.dz),
-            g_factor_of_zZ=lambda zZ: settings.rhod(zZ * settings.dz),
+            advectee_of_zZ_at_t0=lambda zZ: settings.qv(zZ * settings.z_max + self.z0),
+            g_factor_of_zZ=lambda zZ: settings.rhod(zZ * settings.z_max + self.z0),
+        )
+
+        _extra_nz = settings.particle_reservoir_depth // settings.dz
+        self.g_factor_vec = settings.rhod(
+            settings.dz
+            * np.linspace(-_extra_nz, settings.nz - _extra_nz, settings.nz + 1)
         )
 
         builder.set_environment(env)
@@ -51,21 +65,19 @@ class SimulationB:
                 rtol_x=settings.condensation_rtol_x,
             )
         )
-        builder.add_dynamic(EulerianAdvection(mpdata))
+        builder.add_dynamic(EulerianAdvection(self.mpdata))
         if settings.precip:
             builder.add_dynamic(
                 Collision(
                     collision_kernel=Geometric(collection_efficiency=1),
                     coalescence_efficiency=ConstEc(Ec=0.95),
-                    # coalescence_efficiency=Berry1967(),
                     breakup_efficiency=ConstEb(Eb=1.0),
                     fragmentation_function=ExponFrag(scale=100 * si.um),
-                    # fragmentation_function=AlwaysN(n=2),
                     adaptive=settings.coalescence_adaptive,
                 )
             )
-            displacement = Displacement(enable_sedimentation=True)
-            builder.add_dynamic(displacement)
+        displacement = Displacement(enable_sedimentation=True)
+        builder.add_dynamic(displacement)
         attributes = env.init_attributes(
             spatial_discretisation=spatial_sampling.Pseudorandom(),
             spectral_discretisation=spectral_sampling.ConstantMultiplicity(
@@ -106,12 +118,9 @@ class SimulationB:
                 radius_range=settings.cloud_water_radius_range
             ),
             PySDM_products.PeakSupersaturation(unit="%"),
+            PySDM_products.SuperDropletCountPerGridbox(),
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
-        if settings.precip:
-            displacement.upload_courant_field(
-                courant_field=(np.zeros(settings.nz + 1),)
-            )  # TODO #819
 
     def save(self, output, step):
         for k, v in self.particulator.products.items():
@@ -130,11 +139,18 @@ class SimulationB:
             0, self.nt * self.particulator.dt, self.nt + 1, endpoint=True
         )
         output["z"] = np.linspace(
-            mesh.dz / 2, (mesh.grid[-1] - 1 / 2) * mesh.dz, mesh.grid[-1], endpoint=True
+            self.z0 + mesh.dz / 2,
+            self.z0 + (mesh.grid[-1] - 1 / 2) * mesh.dz,
+            mesh.grid[-1],
+            endpoint=True,
         )
 
         self.save(output, 0)
         for step in range(nt):
+            if "Displacement" in self.particulator.dynamics:
+                self.particulator.dynamics["Displacement"].upload_courant_field(
+                    (self.mpdata.advector / self.g_factor_vec,)
+                )
             self.particulator.run(steps=1)
             self.save(output, step + 1)
         return output
