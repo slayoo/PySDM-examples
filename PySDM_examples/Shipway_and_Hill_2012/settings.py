@@ -88,6 +88,7 @@ class Settings:
             t_span=z_span,
             y0=np.asarray((self.rhod0,)),
             t_eval=z_points,
+            max_step=dz / 2,
         )
         assert rhod_solution.success
         self.rhod = interp1d(z_points, rhod_solution.y[0])
