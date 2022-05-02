@@ -37,20 +37,24 @@ class Simulation:
             z0=-settings.particle_reservoir_depth,
         )
 
+        def zZ_to_z_above_reservoir(zZ):
+            z_above_reservoir = zZ * (settings.nz * settings.dz) + self.z0
+            return z_above_reservoir
+
         self.mpdata = MPDATA_1D(
             nz=settings.nz,
             dt=settings.dt,
             mpdata_settings=settings.mpdata_settings,
             advector_of_t=lambda t: settings.rho_times_w(t) * settings.dt / settings.dz,
-            advectee_of_zZ_at_t0=lambda zZ: settings.qv(zZ * settings.z_max + self.z0),
-            g_factor_of_zZ=lambda zZ: settings.rhod(zZ * settings.z_max + self.z0),
+            advectee_of_zZ_at_t0=lambda zZ: settings.qv(zZ_to_z_above_reservoir(zZ)),
+            g_factor_of_zZ=lambda zZ: settings.rhod(zZ_to_z_above_reservoir(zZ)),
         )
 
         _extra_nz = settings.particle_reservoir_depth // settings.dz
-        self.g_factor_vec = settings.rhod(
-            settings.dz
-            * np.linspace(-_extra_nz, settings.nz - _extra_nz, settings.nz + 1)
+        _z_vec = settings.dz * np.linspace(
+            -_extra_nz, settings.nz - _extra_nz, settings.nz + 1
         )
+        self.g_factor_vec = settings.rhod(_z_vec)
 
         builder.set_environment(env)
         builder.add_dynamic(AmbientThermodynamics())
