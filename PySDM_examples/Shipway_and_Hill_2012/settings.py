@@ -64,8 +64,8 @@ class Settings:
         g = self.formulae.constants.g_std
         self.rhod0 = self.formulae.state_variable_triplet.rho_d(
             p=p0,
-            qv=self.qv(-self.particle_reservoir_depth),
-            theta_std=self._th(-self.particle_reservoir_depth),
+            qv=self.qv(0 * si.m),
+            theta_std=self._th(0 * si.m),
         )
 
         def drhod_dz(z_above_reservoir, rhod):
