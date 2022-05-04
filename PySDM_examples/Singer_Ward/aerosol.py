@@ -1,13 +1,12 @@
 from chempy import Substance
 from PySDM.initialisation import spectra
+from PySDM.initialisation.aerosol_composition import DryAerosolMixture
 from PySDM.physics import si
 from pystrict import strict
 
-from PySDM_examples.utils import BasicAerosol
-
 
 @strict
-class AerosolBetaCaryophylleneDark(BasicAerosol):
+class AerosolBetaCaryophylleneDark(DryAerosolMixture):
     def __init__(self, Forg: float = 0.8, N: float = 400):
         mode = {
             "(NH4)2SO4": (1 - Forg),
@@ -35,7 +34,7 @@ class AerosolBetaCaryophylleneDark(BasicAerosol):
                 "bcary_dark": 1,
             },
         )
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
@@ -49,7 +48,7 @@ class AerosolBetaCaryophylleneDark(BasicAerosol):
     color = "red"
 
 
-class AerosolBetaCaryophylleneLight(BasicAerosol):
+class AerosolBetaCaryophylleneLight(DryAerosolMixture):
     def __init__(self, Forg: float = 0.8, N: float = 400):
         mode = {
             "(NH4)2SO4": (1 - Forg),
@@ -57,7 +56,7 @@ class AerosolBetaCaryophylleneLight(BasicAerosol):
         }
 
         super().__init__(
-            compounds=("(NH4)2SO4", "bcary_dark"),
+            compounds=("(NH4)2SO4", "bcary_light"),
             molar_masses={
                 "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass
                 * si.gram
@@ -77,7 +76,7 @@ class AerosolBetaCaryophylleneLight(BasicAerosol):
                 "bcary_light": 1,
             },
         )
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
@@ -92,7 +91,7 @@ class AerosolBetaCaryophylleneLight(BasicAerosol):
 
 
 @strict
-class AerosolAlphaPineneDark(BasicAerosol):
+class AerosolAlphaPineneDark(DryAerosolMixture):
     def __init__(self, Forg: float = 0.8, N: float = 400):
         mode = {
             "(NH4)2SO4": (1 - Forg),
@@ -100,7 +99,7 @@ class AerosolAlphaPineneDark(BasicAerosol):
         }
 
         super().__init__(
-            compounds=("(NH4)2SO4", "bcary_dark"),
+            compounds=("(NH4)2SO4", "apinene_dark"),
             molar_masses={
                 "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass
                 * si.gram
@@ -120,7 +119,7 @@ class AerosolAlphaPineneDark(BasicAerosol):
                 "apinene_dark": 1,
             },
         )
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
@@ -135,7 +134,7 @@ class AerosolAlphaPineneDark(BasicAerosol):
 
 
 @strict
-class AerosolAlphaPineneLight(BasicAerosol):
+class AerosolAlphaPineneLight(DryAerosolMixture):
     def __init__(self, Forg: float = 0.8, N: float = 400):
         mode = {
             "(NH4)2SO4": (1 - Forg),
@@ -143,7 +142,7 @@ class AerosolAlphaPineneLight(BasicAerosol):
         }
 
         super().__init__(
-            compounds=("(NH4)2SO4", "bcary_dark"),
+            compounds=("(NH4)2SO4", "apinene_light"),
             molar_masses={
                 "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass
                 * si.gram
@@ -163,7 +162,7 @@ class AerosolAlphaPineneLight(BasicAerosol):
                 "apinene_light": 1,
             },
         )
-        self.aerosol_modes_per_cc = (
+        self.aerosol_modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
