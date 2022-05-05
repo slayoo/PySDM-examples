@@ -18,7 +18,7 @@ class Simulation:
             T0=settings.T0,
             w=settings.w,
         )
-        n_sd = settings.n_sd_per_mode * len(settings.aerosol.aerosol_modes_per_cc)
+        n_sd = settings.n_sd_per_mode * len(settings.aerosol.aerosol_modes)
         builder = Builder(n_sd=n_sd, backend=CPU(formulae=settings.formulae))
         builder.set_environment(env)
 
@@ -28,7 +28,7 @@ class Simulation:
             "kappa times dry volume": np.empty(0),
             "n": np.ndarray(0),
         }
-        for mode in settings.aerosol.aerosol_modes_per_cc:
+        for mode in settings.aerosol.aerosol_modes:
             r_dry, n_in_dv = settings.spectral_sampling(
                 spectrum=mode["spectrum"]
             ).sample(settings.n_sd_per_mode)
@@ -53,8 +53,8 @@ class Simulation:
             np.sum(attributes["n"]) / dv,
             Sum(
                 tuple(
-                    settings.aerosol.aerosol_modes_per_cc[i]["spectrum"]
-                    for i in range(len(settings.aerosol.aerosol_modes_per_cc))
+                    settings.aerosol.aerosol_modes[i]["spectrum"]
+                    for i in range(len(settings.aerosol.aerosol_modes))
                 )
             ).norm_factor,
             significant=5,

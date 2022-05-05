@@ -1,12 +1,11 @@
 import numpy as np
 from PySDM import Formulae
 from PySDM.dynamics.condensation import DEFAULTS
+from PySDM.initialisation.aerosol_composition import DryAerosolMixture
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import constants_defaults as const
 from PySDM.physics import si
 from pystrict import strict
-
-from PySDM_examples.utils import BasicAerosol
 
 
 @strict
@@ -15,7 +14,7 @@ class Settings:
         self,
         dt: float,
         n_sd_per_mode: int,
-        aerosol: BasicAerosol,
+        aerosol: DryAerosolMixture,
         model: str,
         spectral_sampling: type(spec_sampling.SpectralSampling),
         w: float = 0.1 * si.m / si.s,
