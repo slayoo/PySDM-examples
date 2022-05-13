@@ -15,25 +15,26 @@ class Settings:
         *,
         n_sd_per_gridbox: int,
         p0: float = 1007 * si.hPa,  # as used in Olesik et al. 2022 (GMD)
-        particle_reservoir_depth: float = 0 * si.m,
         kappa: float = 1,
         rho_times_w_1: float = 2 * si.m / si.s * si.kg / si.m**3,
+        particles_per_cm3: int = 50,
         dt: float = 1 * si.s,
         dz: float = 25 * si.m,
-        precip: bool = True
+        precip: bool = True,
+        breakup: bool = True
     ):
         self.formulae = Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox
         self.kappa = kappa
         self.wet_radius_spectrum_per_mass_of_dry_air = spectra.Lognormal(
-            norm_factor=50 / si.cm**3 / self.formulae.constants.rho_STP,
+            norm_factor= particles_per_cm3 / si.cm**3 / self.formulae.constants.rho_STP,
             m_mode=0.08 / 2 * si.um,
             s_geom=1.4,
         )
-        self.particle_reservoir_depth = particle_reservoir_depth
         self.dt = dt
         self.dz = dz
         self.precip = precip
+        self.breakup = breakup
 
         self.z_max = 3000 * si.metres
         self.t_max = 60 * si.minutes
@@ -42,6 +43,7 @@ class Settings:
         self.rho_times_w = (
             lambda t: rho_times_w_1 * np.sin(np.pi * t / t_1) if t < t_1 else 0
         )
+        self.particle_reservoir_depth = (2 * (rho_times_w_1 / self.formulae.constants.rho_STP) * t_1 / np.pi)//self.dz * self.dz
 
         self._th = interp1d(
             (0.0 * si.m, 740.0 * si.m, 3260.00 * si.m),
@@ -50,7 +52,7 @@ class Settings:
         )
 
         self.qv = interp1d(
-            (-max(particle_reservoir_depth, 1), 0, 740, 3260),
+            (-max(self.particle_reservoir_depth, 1), 0, 740, 3260),
             (0.015, 0.015, 0.0138, 0.0024),
             fill_value="extrapolate",
         )
@@ -104,6 +106,7 @@ class Settings:
         )
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
+        self.save_spec_and_attr_times = [0, 15  * si.minutes, 20  * si.minutes, 25  * si.minutes, 30  * si.minutes]
 
     @property
     def n_sd(self):
