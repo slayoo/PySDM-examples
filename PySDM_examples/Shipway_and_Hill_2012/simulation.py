@@ -165,10 +165,8 @@ class Simulation:
                 self.output_products[k][:, :, index] = v.get()  # TODO #840
 
     def save_attributes(self):
-        for k in self.output_attributes:
-            self.output_attributes[k].append(
-                self.particulator.attributes[k].to_ndarray()
-            )
+        for k, v in self.output_attributes.items():
+            v.append(self.particulator.attributes[k].to_ndarray())
 
     def save(self, step):
         self.save_scalar(step)
