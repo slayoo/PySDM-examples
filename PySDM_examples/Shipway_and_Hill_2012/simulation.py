@@ -147,10 +147,10 @@ class Simulation:
             if len(v.shape) == 1:
                 self.output_products[k] = np.zeros((mesh.grid[-1], self.nt + 1))
             elif len(v.shape) == 2:
-                bins_number = settings.r_bins_edges.size - 1
-                time_sections = len(self.save_spec_and_attr_times)
+                number_of_bins = settings.r_bins_edges.size - 1
+                number_of_time_sections = len(self.save_spec_and_attr_times)
                 self.output_products[k] = np.zeros(
-                    (mesh.grid[-1], bins_number, time_sections)
+                    (mesh.grid[-1], number_of_bins, number_of_time_sections)
                 )
 
     def save_scalar(self, step):
