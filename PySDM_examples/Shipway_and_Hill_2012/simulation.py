@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import numpy as np
 import PySDM.products as PySDM_products
 from PySDM import Builder
@@ -199,4 +201,7 @@ class Simulation:
                 )
             self.particulator.run(steps=1)
             self.save(step + 1)
-        return self.output_products, self.output_attributes
+
+        Outputs = namedtuple("outputs", "products attributes")
+        outputs = Outputs(self.output_products, self.output_attributes)
+        return outputs
