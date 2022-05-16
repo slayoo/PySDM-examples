@@ -21,7 +21,7 @@ class Settings:
         dt: float = 1 * si.s,
         dz: float = 25 * si.m,
         precip: bool = True,
-        breakup: bool = True
+        breakup: bool = False
     ):
         self.formulae = Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox
