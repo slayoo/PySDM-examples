@@ -111,12 +111,7 @@ class Settings:
         )
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
-        self.save_spec_and_attr_times = [
-            15 * si.minutes,
-            20 * si.minutes,
-            25 * si.minutes,
-            30 * si.minutes,
-        ]
+        self.save_spec_and_attr_times = []
 
     @property
     def n_sd(self):
