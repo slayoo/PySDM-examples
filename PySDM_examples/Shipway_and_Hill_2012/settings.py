@@ -27,7 +27,9 @@ class Settings:
         self.n_sd_per_gridbox = n_sd_per_gridbox
         self.kappa = kappa
         self.wet_radius_spectrum_per_mass_of_dry_air = spectra.Lognormal(
-            norm_factor= particles_per_cm3 / si.cm**3 / self.formulae.constants.rho_STP,
+            norm_factor=particles_per_cm3
+            / si.cm**3
+            / self.formulae.constants.rho_STP,
             m_mode=0.08 / 2 * si.um,
             s_geom=1.4,
         )
@@ -43,7 +45,10 @@ class Settings:
         self.rho_times_w = (
             lambda t: rho_times_w_1 * np.sin(np.pi * t / t_1) if t < t_1 else 0
         )
-        self.particle_reservoir_depth = (2 * (rho_times_w_1 / self.formulae.constants.rho_STP) * t_1 / np.pi)//self.dz * self.dz
+        apprx_w1 = rho_times_w_1 / self.formulae.constants.rho_STP
+        self.particle_reservoir_depth = (
+            (2 * apprx_w1 * t_1 / np.pi) // self.dz * self.dz
+        )
 
         self._th = interp1d(
             (0.0 * si.m, 740.0 * si.m, 3260.00 * si.m),
@@ -106,7 +111,12 @@ class Settings:
         )
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
-        self.save_spec_and_attr_times = [0, 15  * si.minutes, 20  * si.minutes, 25  * si.minutes, 30  * si.minutes]
+        self.save_spec_and_attr_times = [
+            15 * si.minutes,
+            20 * si.minutes,
+            25 * si.minutes,
+            30 * si.minutes,
+        ]
 
     @property
     def n_sd(self):

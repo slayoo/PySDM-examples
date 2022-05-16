@@ -141,19 +141,17 @@ class Simulation:
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
 
-        self.output_attributes = {
-            "cell id": [],
-            "radius": [],
-            "volume": [],
-            "n": []
-        }
+        self.output_attributes = {"cell id": [], "radius": [], "volume": [], "n": []}
         self.output_products = {}
         for k, v in self.particulator.products.items():
             if len(v.shape) == 1:
                 self.output_products[k] = np.zeros((mesh.grid[-1], self.nt + 1))
             elif len(v.shape) == 2:
-                self.output_products[k] = np.zeros((mesh.grid[-1], settings.r_bins_edges.size - 1, len(self.save_spec_and_attr_times)))
-
+                bins_number = settings.r_bins_edges.size - 1
+                time_sections = len(self.save_spec_and_attr_times)
+                self.output_products[k] = np.zeros(
+                    (mesh.grid[-1], bins_number, time_sections)
+                )
 
     def save_scalar(self, step):
         for k, v in self.particulator.products.items():
@@ -164,16 +162,18 @@ class Simulation:
     def save_spectrum(self, index):
         for k, v in self.particulator.products.items():
             if len(v.shape) == 2:
-                self.output_products[k][:, :, index] = v.get() #TODO v.get() returns weird numbers (mixed ~e+16 and zero)
+                self.output_products[k][:, :, index] = v.get()  # TODO ...
 
     def save_attributes(self):
-        for k in self.output_attributes.keys():
-            self.output_attributes[k].append(self.particulator.attributes[k].to_ndarray())
+        for k in self.output_attributes:
+            self.output_attributes[k].append(
+                self.particulator.attributes[k].to_ndarray()
+            )
 
     def save(self, step):
         self.save_scalar(step)
         time = step * self.particulator.dt
-        if (time in self.save_spec_and_attr_times):
+        if time in self.save_spec_and_attr_times:
             save_index = self.save_spec_and_attr_times.index(time)
             self.save_spectrum(save_index)
             self.save_attributes()
