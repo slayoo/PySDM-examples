@@ -162,7 +162,7 @@ class Simulation:
     def save_spectrum(self, index):
         for k, v in self.particulator.products.items():
             if len(v.shape) == 2:
-                self.output_products[k][:, :, index] = v.get()  # TODO #840
+                self.output_products[k][:, :, index] = v.get()
 
     def save_attributes(self):
         for k, v in self.output_attributes.items():
