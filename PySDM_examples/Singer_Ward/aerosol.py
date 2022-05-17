@@ -34,7 +34,7 @@ class AerosolBetaCaryophylleneDark(DryAerosolMixture):
                 "bcary_dark": 1,
             },
         )
-        self.aerosol_modes = (
+        self.modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
@@ -76,7 +76,7 @@ class AerosolBetaCaryophylleneLight(DryAerosolMixture):
                 "bcary_light": 1,
             },
         )
-        self.aerosol_modes = (
+        self.modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
@@ -119,7 +119,7 @@ class AerosolAlphaPineneDark(DryAerosolMixture):
                 "apinene_dark": 1,
             },
         )
-        self.aerosol_modes = (
+        self.modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
@@ -162,7 +162,7 @@ class AerosolAlphaPineneLight(DryAerosolMixture):
                 "apinene_light": 1,
             },
         )
-        self.aerosol_modes = (
+        self.modes = (
             {
                 "f_org": 1 - self.f_soluble_volume(mode),
                 "kappa": self.kappa(mode),
