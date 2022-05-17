@@ -26,7 +26,6 @@ setup(
         "seaborn",
         "ghapi",
         "corner",
-    ],  # note: test-time-requirement?
     ]
     + (["pyvinecopulib"] if platform.architecture()[0] != "32bit" else []),
     author="https://github.com/orgs/atmos-cloud-sim-uj/people",
