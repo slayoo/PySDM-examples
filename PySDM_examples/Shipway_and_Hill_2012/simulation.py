@@ -120,7 +120,9 @@ class Simulation:
             PySDM_products.AmbientDryAirDensity(name="rhod"),
             PySDM_products.AmbientDryAirPotentialTemperature(name="thd"),
             PySDM_products.ParticleSizeSpectrumPerVolume(
-                name="dry spectrum", radius_bins_edges=settings.r_bins_edges, dry=True
+                name="dry spectrum",
+                radius_bins_edges=settings.r_bins_edges_dry,
+                dry=True,
             ),
             PySDM_products.ParticleSizeSpectrumPerVolume(
                 name="wet spectrum", radius_bins_edges=settings.r_bins_edges
@@ -149,10 +151,9 @@ class Simulation:
             if len(v.shape) == 1:
                 self.output_products[k] = np.zeros((mesh.grid[-1], self.nt + 1))
             elif len(v.shape) == 2:
-                number_of_bins = settings.r_bins_edges.size - 1
                 number_of_time_sections = len(self.save_spec_and_attr_times)
                 self.output_products[k] = np.zeros(
-                    (mesh.grid[-1], number_of_bins, number_of_time_sections)
+                    (mesh.grid[-1], settings.number_of_bins, number_of_time_sections)
                 )
 
     def save_scalar(self, step):

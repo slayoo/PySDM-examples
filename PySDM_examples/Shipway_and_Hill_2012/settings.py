@@ -104,8 +104,18 @@ class Settings:
         self.condensation_adaptive = True
         self.coalescence_adaptive = True
 
+        self.number_of_bins = 100
+        self.r_bins_edges_dry = np.logspace(
+            np.log10(0.001 * si.um),
+            np.log10(1 * si.um),
+            self.number_of_bins + 1,
+            endpoint=True,
+        )
         self.r_bins_edges = np.logspace(
-            np.log10(0.001 * si.um), np.log10(100 * si.um), 101, endpoint=True
+            np.log10(0.001 * si.um),
+            np.log10(100 * si.um),
+            self.number_of_bins + 1,
+            endpoint=True,
         )
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
