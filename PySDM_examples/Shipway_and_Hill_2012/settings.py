@@ -45,8 +45,8 @@ class Settings:
         )
         apprx_w1 = rho_times_w_1 / self.formulae.constants.rho_STP
         self.particle_reservoir_depth = (
-            (2 * apprx_w1 * t_1 / np.pi) // self.dz * self.dz
-        )
+            (2 * apprx_w1 * t_1 / np.pi) // self.dz + 1
+        ) * self.dz
 
         self._th = interp1d(
             (0.0 * si.m, 740.0 * si.m, 3260.00 * si.m),
