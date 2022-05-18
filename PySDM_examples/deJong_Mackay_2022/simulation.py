@@ -1,3 +1,4 @@
+import numpy as np
 from PySDM.backends import CPU
 from PySDM.builder import Builder
 from PySDM.dynamics import Coalescence, Collision
@@ -14,7 +15,7 @@ from PySDM.products.size_spectral import (
 )
 
 
-def run_box_breakup(settings, step):
+def run_box_breakup(settings, steps):
     backend = CPU
 
     builder = Builder(n_sd=settings.n_sd, backend=backend(settings.formulae))
@@ -42,11 +43,13 @@ def run_box_breakup(settings, step):
     )
     core = builder.build(attributes, products)
 
+    y = np.ndarray((len(steps), len(settings.radius_bins_edges) - 1))
     # run
-    core.run(step - core.n_steps)
+    for (i, step) in enumerate(steps):
+        core.run(step - core.n_steps)
+        y[i] = core.products["dv/dlnr"].get()[0]
 
-    x = (settings.radius_bins_edges[:-1] / si.micrometres,)
-    y = core.products["dv/dlnr"].get()
+    x = (settings.radius_bins_edges[:-1] / si.micrometres,)[0]
 
     return (x, y)
 
