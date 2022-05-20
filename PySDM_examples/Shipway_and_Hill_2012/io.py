@@ -66,7 +66,7 @@ class NetCDFExporter_1D:
                 dim_name = name.replace(" ", "_") + "_bin_index"
                 if self.n_save_spec == 0:
                     continue
-                elif self.n_save_spec == 1:
+                if self.n_save_spec == 1:
                     dimensions = ("height", f"{dim_name}")
                 else:
                     dimensions = ("height", f"{dim_name}", "time_save_spec")
@@ -84,7 +84,7 @@ class NetCDFExporter_1D:
             elif n_dimensions == 2:
                 if self.n_save_spec == 0:
                     continue
-                elif self.n_save_spec == 1:
+                if self.n_save_spec == 1:
                     self.vars[var][:, :] = self.data[var][-self.nz_wo_reservoir :, :, 0]
                 else:
                     self.vars[var][:, :, :] = self.data[var][
