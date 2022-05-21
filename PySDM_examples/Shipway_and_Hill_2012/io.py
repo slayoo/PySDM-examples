@@ -7,14 +7,20 @@ from scipy.io.netcdf import netcdf_file
 
 
 class NetCDFExporter_1D:
-    def __init__(self, data, settings, simulator, filename):
+    def __init__(
+        self, data, settings, simulator, filename, exclude_particle_reservoir=True
+    ):
         self.data = data
         self.settings = settings
         self.simulator = simulator
         self.vars = None
         self.filename = filename
         self.XZ = "Z"
-        self.nz_wo_reservoir = int(self.settings.z_max / self.settings.dz)
+        self.nz_export = (
+            int(self.settings.z_max / self.settings.dz)
+            if exclude_particle_reservoir
+            else settings.nz
+        )
         self.n_save_spec = len(self.settings.save_spec_and_attr_times)
 
     def _write_settings(self, ncdf):
@@ -23,7 +29,7 @@ class NetCDFExporter_1D:
 
     def _create_dimensions(self, ncdf):
         ncdf.createDimension("time", self.settings.nt + 1)
-        ncdf.createDimension("height", self.nz_wo_reservoir)
+        ncdf.createDimension("height", self.nz_export)
 
         if self.n_save_spec != 0:
             ncdf.createDimension("time_save_spec", self.n_save_spec)
@@ -39,9 +45,7 @@ class NetCDFExporter_1D:
         self.vars["time"].units = "seconds"
 
         self.vars["height"] = ncdf.createVariable("height", "f", ["height"])
-        self.vars["height"][:] = self.settings.dz * (
-            1 / 2 + np.arange(self.nz_wo_reservoir)
-        )
+        self.vars["height"][:] = self.settings.dz * (1 / 2 + np.arange(self.nz_export))
         self.vars["height"].units = "metres"
 
         if self.n_save_spec != 0:
@@ -84,16 +88,14 @@ class NetCDFExporter_1D:
         for var in self.simulator.particulator.products.keys():
             n_dimensions = len(self.simulator.particulator.products[var].shape)
             if n_dimensions == 1:
-                self.vars[var][:, :] = self.data[var][-self.nz_wo_reservoir :, :]
+                self.vars[var][:, :] = self.data[var][-self.nz_export :, :]
             elif n_dimensions == 2:
                 if self.n_save_spec == 0:
                     continue
                 if self.n_save_spec == 1:
-                    self.vars[var][:, :] = self.data[var][-self.nz_wo_reservoir :, :, 0]
+                    self.vars[var][:, :] = self.data[var][-self.nz_export :, :, 0]
                 else:
-                    self.vars[var][:, :, :] = self.data[var][
-                        -self.nz_wo_reservoir :, :, :
-                    ]
+                    self.vars[var][:, :, :] = self.data[var][-self.nz_export :, :, :]
             else:
                 raise NotImplementedError()
 
