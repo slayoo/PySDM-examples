@@ -109,9 +109,8 @@ class NetCDFExporter_1D:
 
 class VTKExporter_1D:
     def __init__(
-        self, settings, data, path=".", verbose=False, exclude_particle_reservoir=True
+        self, data, settings, path=".", verbose=False, exclude_particle_reservoir=True
     ):
-        assert len(data["cell origin"].shape) == 1
 
         self.settings = settings
         self.data = data
@@ -138,12 +137,13 @@ class VTKExporter_1D:
         if self.verbose:
             print("Exporting Attributes to vtk, path: " + path)
 
-        if len(self.data["cell origin"].shape) != 1:
-            raise NotImplementedError("Simulation domain is not 1 dimensional.")
-
         payload = {}
         for k in self.data.keys():
             payload[k] = self.data[k].to_ndarray(raw=True)
+
+        if len(payload["cell origin"].shape) != 1:
+            raise NotImplementedError("Simulation domain is not 1 dimensional.")
+
         if self.exclude_particle_reservoir:
             reservoir_particles_indexes = np.where(payload["cell origin"] < 0)
             for k in payload.keys():
