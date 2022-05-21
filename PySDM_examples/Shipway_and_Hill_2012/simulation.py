@@ -145,7 +145,12 @@ class Simulation:
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
 
-        self.output_attributes = {"cell id": [], "radius": [], "volume": [], "n": []}
+        self.output_attributes = {
+            "cell origin": [],
+            "position in cell": [],
+            "radius": [],
+            "n": [],
+        }
         self.output_products = {}
         for k, v in self.particulator.products.items():
             if len(v.shape) == 1:
