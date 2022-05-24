@@ -208,6 +208,6 @@ class Simulation:
             self.particulator.run(steps=1)
             self.save(step + 1)
 
-        Outputs = namedtuple("outputs", "products attributes")
-        outputs = Outputs(self.output_products, self.output_attributes)
-        return outputs
+        Outputs = namedtuple("Outputs", "products attributes")
+        output_results = Outputs(self.output_products, self.output_attributes)
+        return output_results

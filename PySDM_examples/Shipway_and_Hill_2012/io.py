@@ -1,4 +1,5 @@
 import os
+from collections import namedtuple
 
 import numpy as np
 import vtk
@@ -106,6 +107,14 @@ class NetCDFExporter_1D:
             self._create_dimensions(ncdf)
             self._create_variables(ncdf)
             self._write_variables()
+
+
+def readNetCDF_1D(file):
+    f = netcdf_file(file, "r")
+    output_dicts = namedtuple("output_dicts", "settings products")
+    outputs = output_dicts(f._attributes, f.variables)
+    f.close()
+    return outputs
 
 
 class VTKExporter_1D:
