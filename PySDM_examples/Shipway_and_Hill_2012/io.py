@@ -165,7 +165,7 @@ class VTKExporter_1D:
         if self.exclude_particle_reservoir:
             reservoir_particles_indexes = np.where(z < 0)
             z = np.delete(z, reservoir_particles_indexes)
-            for k in payload.keys():
+            for k in payload:
                 payload[k] = np.delete(payload[k], reservoir_particles_indexes)
 
         x = np.full_like(z, 0)
@@ -191,7 +191,7 @@ def readVTK_1D(file):
 
     z = np.zeros(vtk_output.GetNumberOfPoints())
     for i in range(vtk_output.GetNumberOfPoints()):
-        x, y, z[i] = vtk_output.GetPoint(i)
+        z[i] = vtk_output.GetPoint(i)[2]
 
     data = {}
     data["z"] = z
