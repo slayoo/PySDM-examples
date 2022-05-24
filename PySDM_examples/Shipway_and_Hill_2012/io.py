@@ -1,5 +1,6 @@
 import os
 from collections import namedtuple
+from copy import deepcopy
 
 import numpy as np
 import vtk
@@ -112,7 +113,7 @@ class NetCDFExporter_1D:
 def readNetCDF_1D(file):
     f = netcdf_file(file, "r")
     output_dicts = namedtuple("output_dicts", "settings products")
-    outputs = output_dicts(f._attributes, f.variables)
+    outputs = output_dicts(deepcopy(f._attributes), deepcopy(f.variables))
     f.close()
     return outputs
 
@@ -130,7 +131,7 @@ class VTKExporter_1D:
         self.data = data
         self.settings = settings
         self.path = path
-        if not os.path.isdir(self.path):
+        if not os.path.isdir(self.path) and len(settings.save_spec_and_attr_times) > 0:
             os.mkdir(self.path)
 
         self.verbose = verbose
