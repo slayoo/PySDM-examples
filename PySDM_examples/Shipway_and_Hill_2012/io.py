@@ -169,7 +169,8 @@ class VTKExporter_1D:
         if self.exclude_particle_reservoir:
             reservoir_particles_indexes = np.where(z < 0)
             z = np.delete(z, reservoir_particles_indexes)
-            for k in payload:
+            keys = payload.keys()
+            for k in keys:
                 payload[k] = np.delete(payload[k], reservoir_particles_indexes)
 
         x = np.full_like(z, 0)
