@@ -22,7 +22,6 @@ class NetCDFExporter_1D:
         self.simulator = simulator
         self.vars = None
         self.filename = filename
-        self.XZ = "Z"
         self.nz_export = (
             int(self.settings.z_max / self.settings.dz)
             if exclude_particle_reservoir
