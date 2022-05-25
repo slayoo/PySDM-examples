@@ -6,9 +6,11 @@ import numpy as np
 import vtk
 from pyevtk.hl import pointsToVTK
 from scipy.io.netcdf import netcdf_file
-from vtk.util import (
-    numpy_support as VN,  # pylint: disable = import-error, no-name-in-module
-)
+
+# pylint: disable = import-error, no-name-in-module
+from vtk.util import numpy_support as VN
+
+# pylint: enable = import-error, no-name-in-module
 
 
 class NetCDFExporter_1D:
