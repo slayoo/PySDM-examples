@@ -6,7 +6,9 @@ import numpy as np
 import vtk
 from pyevtk.hl import pointsToVTK
 from scipy.io.netcdf import netcdf_file
-from vtk.util import numpy_support as VN
+from vtk.util import (
+    numpy_support as VN,  # pylint: disable = import-error, no-name-in-module
+)
 
 
 class NetCDFExporter_1D:
@@ -183,7 +185,7 @@ class VTKExporter_1D:
 
 def readVTK_1D(file):
 
-    reader = vtk.vtkXMLUnstructuredGridReader()
+    reader = vtk.vtkXMLUnstructuredGridReader()  # pylint: disable = no-member
     reader.SetFileName(file)
     reader.Update()
 
