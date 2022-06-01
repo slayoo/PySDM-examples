@@ -71,6 +71,7 @@ class Simulation:
                 adaptive=settings.condensation_adaptive,
                 rtol_thd=settings.condensation_rtol_thd,
                 rtol_x=settings.condensation_rtol_x,
+                update_thd=settings.condensation_update_thd,
             )
         )
         builder.add_dynamic(EulerianAdvection(self.mpdata))

@@ -102,6 +102,7 @@ class Settings:
         self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
         self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
         self.condensation_adaptive = True
+        self.condensation_update_thd = False
         self.coalescence_adaptive = True
 
         self.number_of_bins = 100
