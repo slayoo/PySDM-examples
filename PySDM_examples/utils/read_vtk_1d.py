@@ -1,13 +1,20 @@
+import platform
+
 import numpy as np
-import vtk
 
-# pylint: disable = import-error, no-name-in-module
-from vtk.util import numpy_support as VN
+if platform.architecture()[0] != "32bit":
+    import vtk
 
-# pylint: enable = import-error, no-name-in-module
+    # pylint: disable = import-error, no-name-in-module
+    from vtk.util import numpy_support as VN
+
+    # pylint: enable = import-error, no-name-in-module
 
 
 def readVTK_1d(file):
+    if platform.architecture()[0] == "32bit":
+        print("Not implemented for system arcitucture 32bit!")
+        return
 
     reader = vtk.vtkXMLUnstructuredGridReader()  # pylint: disable = no-member
     reader.SetFileName(file)
