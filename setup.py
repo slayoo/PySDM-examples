@@ -13,7 +13,7 @@ setup(
     name="PySDM-examples",
     description="PySDM usage examples reproducing results from literature "
     "and depicting how to use PySDM from Python Jupyter notebooks",
-    use_scm_version=True,
+    use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
         "PySDM",
