@@ -34,4 +34,9 @@ setup(
     url="https://github.com/atmos-cloud-sim-uj/PySDM-examples",
     license="GPL-3.0",
     packages=find_packages(include=["PySDM_examples", "PySDM_examples.*"]),
+    project_urls={
+        "Tracker": "https://github.com/atmos-cloud-sim-uj/PySDM/issues",
+        "Documentation": "https://atmos-cloud-sim-uj.github.io/PySDM-examples",
+        "Source": "https://github.com/atmos-cloud-sim-uj/PySDM-examples",
+    },
 )
