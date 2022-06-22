@@ -13,7 +13,7 @@ setup(
     name="PySDM-examples",
     description="PySDM usage examples reproducing results from literature "
     "and depicting how to use PySDM from Python Jupyter notebooks",
-    use_scm_version=True,
+    use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
         "PySDM",
@@ -26,7 +26,7 @@ setup(
         "seaborn",
         "ghapi",
     ]
-    + (["pyvinecopulib"] if platform.architecture()[0] != "32bit" else []),
+    + (["pyvinecopulib", "vtk"] if platform.architecture()[0] != "32bit" else []),
     author="https://github.com/orgs/atmos-cloud-sim-uj/people",
     author_email="sylwester.arabas@uj.edu.pl",
     long_description=get_long_description(),
@@ -34,4 +34,9 @@ setup(
     url="https://github.com/atmos-cloud-sim-uj/PySDM-examples",
     license="GPL-3.0",
     packages=find_packages(include=["PySDM_examples", "PySDM_examples.*"]),
+    project_urls={
+        "Tracker": "https://github.com/atmos-cloud-sim-uj/PySDM/issues",
+        "Documentation": "https://atmos-cloud-sim-uj.github.io/PySDM-examples",
+        "Source": "https://github.com/atmos-cloud-sim-uj/PySDM-examples",
+    },
 )
