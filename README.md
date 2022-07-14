@@ -8,7 +8,7 @@
 [![PyPI version](https://badge.fury.io/py/PySDM-examples.svg)](https://pypi.org/project/PySDM-examples)
 [![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://atmos-cloud-sim-uj.github.io/PySDM-examples/)
 
-s repository stores example files for `PySDM` depicting usage of `PySDM` from Python via Jupyter.
+This repository stores example files for `PySDM` depicting usage of `PySDM` from Python via Jupyter.
 For information on the `PySDM` package itself and examples of usage from Julia and Matlab, 
 see [PySDM README.md](https://github.com/atmos-cloud-sim-uj/PySDM/blob/master/README.md) file.
 

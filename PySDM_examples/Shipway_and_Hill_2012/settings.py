@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import numpy as np
 from PySDM import Formulae
 from PySDM.dynamics import condensation
@@ -10,6 +12,25 @@ from scipy.interpolate import interp1d
 
 @strict
 class Settings:
+    def __dir__(self) -> Iterable[str]:
+        return (
+            "n_sd_per_gridbox",
+            "p0",
+            "kappa",
+            "rho_times_w_1",
+            "particles_per_volume_STP",
+            "dt",
+            "dz",
+            "precip",
+            "breakup",
+            "z_max",
+            "t_max",
+            "cloud_water_radius_range",
+            "rain_water_radius_range",
+            "r_bins_edges_dry",
+            "r_bins_edges",
+        )
+
     def __init__(
         self,
         *,
@@ -25,12 +46,10 @@ class Settings:
     ):
         self.formulae = Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox
+        self.p0 = p0
         self.kappa = kappa
-        self.wet_radius_spectrum_per_mass_of_dry_air = spectra.Lognormal(
-            norm_factor=particles_per_volume_STP / self.formulae.constants.rho_STP,
-            m_mode=0.08 / 2 * si.um,
-            s_geom=1.4,
-        )
+        self.rho_times_w_1 = rho_times_w_1
+        self.particles_per_volume_STP = particles_per_volume_STP
         self.dt = dt
         self.dz = dz
         self.precip = precip
@@ -47,6 +66,12 @@ class Settings:
         self.particle_reservoir_depth = (
             (2 * apprx_w1 * t_1 / np.pi) // self.dz + 1
         ) * self.dz
+
+        self.wet_radius_spectrum_per_mass_of_dry_air = spectra.Lognormal(
+            norm_factor=particles_per_volume_STP / self.formulae.constants.rho_STP,
+            m_mode=0.08 / 2 * si.um,
+            s_geom=1.4,
+        )
 
         self._th = interp1d(
             (0.0 * si.m, 740.0 * si.m, 3260.00 * si.m),
@@ -102,6 +127,7 @@ class Settings:
         self.condensation_rtol_x = condensation.DEFAULTS.rtol_x
         self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
         self.condensation_adaptive = True
+        self.condensation_update_thd = False
         self.coalescence_adaptive = True
 
         self.number_of_bins = 100

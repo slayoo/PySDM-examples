@@ -71,6 +71,7 @@ class Simulation:
                 adaptive=settings.condensation_adaptive,
                 rtol_thd=settings.condensation_rtol_thd,
                 rtol_x=settings.condensation_rtol_x,
+                update_thd=settings.condensation_update_thd,
             )
         )
         builder.add_dynamic(EulerianAdvection(self.mpdata))
@@ -145,7 +146,12 @@ class Simulation:
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
 
-        self.output_attributes = {"cell id": [], "radius": [], "volume": [], "n": []}
+        self.output_attributes = {
+            "cell origin": [],
+            "position in cell": [],
+            "radius": [],
+            "n": [],
+        }
         self.output_products = {}
         for k, v in self.particulator.products.items():
             if len(v.shape) == 1:
@@ -203,6 +209,6 @@ class Simulation:
             self.particulator.run(steps=1)
             self.save(step + 1)
 
-        Outputs = namedtuple("outputs", "products attributes")
-        outputs = Outputs(self.output_products, self.output_attributes)
-        return outputs
+        Outputs = namedtuple("Outputs", "products attributes")
+        output_results = Outputs(self.output_products, self.output_attributes)
+        return output_results
