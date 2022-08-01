@@ -76,11 +76,7 @@ class CurvedText(mtext.Text):
         # points of the curve in figure coordinates:
         x_fig, y_fig = (
             np.array(l)
-            for l in zip(
-                *self.axes.transData.transform(
-                    list(zip(self.__x, self.__y))
-                )
-            )
+            for l in zip(*self.axes.transData.transform(list(zip(self.__x, self.__y))))
         )
 
         # point distances in figure coordinates
