@@ -1,18 +1,22 @@
 from typing import Optional
-from pystrict import strict
+
 from PySDM import Formulae
-from PySDM.physics import si, constants as const
+from PySDM.physics import constants as const
+from PySDM.physics import si
+from pystrict import strict
 
 
 @strict
 class Settings:
-    def __init__(self, *,
-                 formulae: Optional[Formulae] = None,
-                 ccn_sampling_n: int = 11,
-                 in_sampling_n: int = 20,
-                 initial_temperature: float,
-                 timestep: float
-                 ):
+    def __init__(
+        self,
+        *,
+        formulae: Optional[Formulae] = None,
+        ccn_sampling_n: int = 11,
+        in_sampling_n: int = 20,
+        initial_temperature: float,
+        timestep: float
+    ):
         self.ccn_sampling_n = ccn_sampling_n
         self.in_sampling_n = in_sampling_n
 
@@ -20,10 +24,10 @@ class Settings:
         self.initial_temperature = initial_temperature
         self.formulae = formulae or Formulae()
 
-        self.initial_relative_humidity = .985
+        self.initial_relative_humidity = 0.985
         self.vertical_velocity = 20 * si.cm / si.s
         self.displacement = 300 * si.m
-        self.kappa = .53  # ammonium sulfate (Tab. 1 in P&K07)
+        self.kappa = 0.53  # ammonium sulfate (Tab. 1 in P&K07)
         self.mass_of_dry_air = 1e3 * si.kg
 
         # note: 2000 um in the paper... but it gives 0 concentrations
