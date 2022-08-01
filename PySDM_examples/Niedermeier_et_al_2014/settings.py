@@ -45,7 +45,7 @@ class Settings:
     @property
     def q0(self):
         pv0 = self.pv0
-        return const.eps * pv0 / (self.p0 - pv0)
+        return self.formulae.constants.eps * pv0 / (self.p0 - pv0)
 
     @property
     def T0(self):
@@ -53,5 +53,5 @@ class Settings:
 
     @property
     def rhod0(self):
-        rho_v = self.pv0 / const.Rv / self.T0
+        rho_v = self.pv0 / self.formulae.constants.Rv / self.T0
         return rho_v / self.q0

@@ -11,7 +11,7 @@ class CurvedText(mtext.Text):
     """
 
     def __init__(self, x, y, text, axes, **kwargs):
-        super(CurvedText, self).__init__(x[0], y[0], " ", **kwargs)
+        super().__init__(x[0], y[0], " ", **kwargs)
 
         axes.add_artist(self)
 
@@ -40,13 +40,13 @@ class CurvedText(mtext.Text):
 
     ##overloading some member functions, to assure correct functionality
     ##on update
-    def set_zorder(self, zorder):
-        super(CurvedText, self).set_zorder(zorder)
+    def set_zorder(self, level):
+        super().set_zorder(level)
         self.__zorder = self.get_zorder()
-        for c, t in self.__Characters:
+        for _, t in self.__Characters:
             t.set_zorder(self.__zorder + 1)
 
-    def draw(self, renderer, *args, **kwargs):
+    def draw(self, renderer, *_, **__):
         """
         Overload of the Text.draw() function. Do not do
         do any drawing, but update the positions and rotation
@@ -79,7 +79,7 @@ class CurvedText(mtext.Text):
             np.array(l)
             for l in zip(
                 *self.axes.transData.transform(
-                    [(i, j) for i, j in zip(self.__x, self.__y)]
+                    list(zip(self.__x, self.__y))
                 )
             )
         )
@@ -111,7 +111,7 @@ class CurvedText(mtext.Text):
                 rel_pos += w
                 continue
 
-            elif c != " ":
+            if c != " ":
                 t.set_alpha(1.0)
 
             # finding the two data points between which the horizontal

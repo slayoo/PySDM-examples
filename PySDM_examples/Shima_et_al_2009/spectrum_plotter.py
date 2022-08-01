@@ -90,12 +90,10 @@ class SpectrumPlotter:
         if t == 0:
             analytic_solution = settings.spectrum.size_distribution
         else:
-            analytic_solution = (
-                lambda x: settings.norm_factor
-                * settings.kernel.analytic_solution(
+            def analytic_solution(x):
+                return settings.norm_factor * settings.kernel.analytic_solution(
                     x=x, t=t, x_0=settings.X0, N_0=settings.n_part
                 )
-            )
 
         volume_bins_edges = self.settings.formulae.trivia.volume(
             settings.radius_bins_edges
