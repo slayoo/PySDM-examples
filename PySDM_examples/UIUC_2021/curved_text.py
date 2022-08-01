@@ -31,7 +31,6 @@ class CurvedText(mtext.Text):
                 t = mtext.Text(0, 0, c, **kwargs)
 
             # resetting unnecessary arguments
-            t.set_ha("center")
             t.set_rotation(0)
             t.set_zorder(self.__zorder + 1)
 
@@ -139,7 +138,6 @@ class CurvedText(mtext.Text):
 
             # getting the offset when setting correct vertical alignment
             # in data coordinates
-            t.set_va(self.get_va())
             bbox2 = t.get_window_extent(renderer=renderer)
 
             bbox1d = self.axes.transData.inverted().transform(bbox1)
