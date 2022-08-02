@@ -3,12 +3,10 @@ import numpy as np
 from matplotlib import pyplot
 from PySDM.physics import si
 
+from PySDM_examples.UIUC_2021.curved_text import CurvedText
 from PySDM_examples.UIUC_2021.frozen_fraction import FrozenFraction
 
-labels = {
-    True: "singular (Niemand et al. 2012)",
-    False: "time-dependent (ABIFM, illite)",
-}
+labels = {True: "singular/INAS", False: "time-dependent/ABIFM"}
 colors = {True: "black", False: "teal"}
 qi_unit = si.g / si.m**3
 
@@ -96,23 +94,36 @@ def make_freezing_spec_plot(
 
     T = np.linspace(max(datum["T"]), min(datum["T"]))
     for multiplier, color in {0.1: "orange", 1: "red", 10: "brown"}.items():
-        prim.plot(
-            T,
+        qi = (
             ff.ff2qi(
                 formulae.freezing_temperature_spectrum.cdf(
                     T, multiplier * surf_spec.median
                 )
             )
-            / qi_unit,
-            label=f"singular CDF for {multiplier}x median surface",
+            / qi_unit
+        )
+        prim.plot(
+            T,
+            qi,
+            label="" if multiplier != 1 else "singular CDF for median surface",
             linewidth=2.5,
             color=color,
             linestyle="--",
         )
+        if multiplier != 1:
+            _ = CurvedText(
+                x=T.squeeze(),
+                y=qi.squeeze(),
+                text=f"              {multiplier}x median A",
+                va="bottom",
+                color=color,
+                axes=prim,
+            )
     prim.set_title(f"$σ_g$=exp({np.log(surf_spec.s_geom):.3g})")
-    prim.set_ylabel("ice water content [$g/m^3$]")
+    # prim.set_ylabel('ice water content [$g/m^3$]')
+    prim.set_yticks([])
     prim.set_xlim(T[0], T[-1])
-    prim.legend(bbox_to_anchor=(1.2, -0.2))
+    prim.legend(bbox_to_anchor=(1.02, -0.2))
     prim.grid()
 
 
