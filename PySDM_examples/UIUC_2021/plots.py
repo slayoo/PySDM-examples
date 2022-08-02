@@ -4,8 +4,7 @@ from matplotlib import pyplot
 from PySDM.physics import si
 
 from PySDM_examples.UIUC_2021.frozen_fraction import FrozenFraction
-
-from .curved_text import CurvedText
+from PySDM_examples.UIUC_2021.curved_text import CurvedText
 
 labels = {True: "singular/INAS", False: "time-dependent/ABIFM"}
 colors = {True: "black", False: "teal"}
