@@ -6,6 +6,9 @@ import PySDM
 import scipy
 from PySDM import Formulae
 from PySDM.dynamics import collisions, condensation, displacement
+from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
+from PySDM.dynamics.collisions.breakup_fragmentations import ExponFrag
+from PySDM.dynamics.collisions.coalescence_efficiencies import Berry1967
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.initialisation import spectra
 from PySDM.physics import si
@@ -28,6 +31,10 @@ class Common:
         self.coalescence_optimized_random = True
         self.coalescence_substeps = 1
         self.kernel = Geometric(collection_efficiency=1)
+        self.coalescence_efficiency = Berry1967()
+        self.breakup_efficiency = ConstEb(1.0)  # no "bouncing"
+        self.fragmentation_function = ExponFrag(scale=100.0 * si.micrometres)
+
 
         self.freezing_singular = True
         self.freezing_inp_spec = None
@@ -80,6 +87,7 @@ class Common:
             "particle advection": True,
             "fluid advection": True,
             "coalescence": True,
+            "breakup": False,
             "condensation": True,
             "sedimentation": True,
             "freezing": False,

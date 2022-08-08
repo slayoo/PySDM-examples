@@ -182,6 +182,9 @@ class GUISettings:
         self.condensation_dt_cond_range = settings.condensation_dt_cond_range
         self.condensation_schedule = settings.condensation_schedule
         self.kernel = settings.kernel
+        self.coalescence_efficiency = settings.coalescence_efficiency
+        self.breakup_efficiency = settings.breakup_efficiency
+        self.fragmentation_function = settings.fragmentation_function
         self.spectrum_per_mass_of_dry_air = settings.spectrum_per_mass_of_dry_air
         self.coalescence_dt_coal_range = settings.coalescence_dt_coal_range
         self.coalescence_optimized_random = settings.coalescence_optimized_random
