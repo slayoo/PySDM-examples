@@ -69,10 +69,10 @@ def plot(plot_data, rtols, schemes, setups_num, show_plot, path=None):
     for settings_idx in range(setups_num):
         BDF_S = None
         PySDM_S = None
-        for rtol_idx, _ in enumerate(rtols):
+        for rtol_idx, _rtol in enumerate(rtols):
             ax = axs[settings_idx, rtol_idx]
             for scheme in schemes:
-                datum = plot_data[scheme][rtols[rtol_idx]][settings_idx]
+                datum = plot_data[scheme][_rtol][settings_idx]
                 S = datum["S"]
                 z = datum["z"]
                 dt = datum["dt_cond_min"]
