@@ -12,9 +12,6 @@ from PySDM.dynamics import (
     Displacement,
     EulerianAdvection,
 )
-from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import ExponFrag
-from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.environments.kinematic_1d import Kinematic1D
 from PySDM.impl.mesh import Mesh
@@ -80,10 +77,11 @@ class Simulation1D:
                 builder.add_dynamic(
                     Collision(
                         collision_kernel=Geometric(collection_efficiency=1),
-                        coalescence_efficiency=ConstEc(Ec=0.95),
-                        breakup_efficiency=ConstEb(Eb=1.0),
-                        fragmentation_function=ExponFrag(scale=100 * si.um),
+                        coalescence_efficiency=settings.coalescence_efficiency,
+                        breakup_efficiency=settings.breakup_efficiency,
+                        fragmentation_function=settings.fragmentation_function,
                         adaptive=settings.coalescence_adaptive,
+                        warn_overflows=settings.warn_breakup_overflow,
                     )
                 )
             else:
