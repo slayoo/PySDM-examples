@@ -11,7 +11,7 @@ from PySDM.physics.trivia import Trivia
 
 
 @strict
-class Settings:
+class Settings0D:
     def __init__(self):
         self.formulae = Formulae()
         self.n_sd = 2**10
