@@ -35,6 +35,7 @@ def run_box_breakup(settings, steps):
         breakup_efficiency=settings.break_eff,
         fragmentation_function=settings.fragmentation,
         adaptive=settings.adaptive,
+        min_volume=settings.vmin,
         warn_overflows=settings.warn_overflows
     )
     builder.add_dynamic(breakup)

@@ -141,6 +141,21 @@ class Simulation1D:
             ),
             PySDM_products.PeakSupersaturation(unit="%"),
             PySDM_products.SuperDropletCountPerGridbox(),
+            PySDM_products.BreakupRatePerGridbox(
+                name="breakup_rate",
+            ),
+            PySDM_products.CollisionRatePerGridbox(
+                name="collision_rate",
+            ),
+            PySDM_products.CoalescenceRatePerGridbox(
+                name="coalescence_rate",
+            ),
+            PySDM_products.BreakupRateDeficitPerGridbox(
+                name="breakup_deficit",
+            )
+            # PySDM_products.CoalescenceOnlyRatePerGridbox(
+            #     name="coalescence_rate",
+            # ),
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
 

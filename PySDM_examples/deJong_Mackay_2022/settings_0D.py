@@ -29,6 +29,7 @@ class Settings0D:
         self.kernel = Geometric()
         self.coal_eff = Berry1967()
         self.fragmentation = ExponFrag(scale=self.frag_scale)
+        self.vmin = 0.0
         self.break_eff = ConstEb(1.0)  # no "bouncing"
         self.spectrum = Exponential(norm_factor=self.norm_factor, scale=self.X0)
         self.radius_bins_edges = np.logspace(

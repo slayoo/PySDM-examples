@@ -4,7 +4,7 @@ from matplotlib import pyplot
 from PySDM.physics.constants import convert_to, si
 
 
-def plot1D(var, qlabel, fname, output, vmin=None, vmax=None, line=None):
+def plot1D(var, qlabel, fname, output, vmin=None, vmax=None, line=None, cmin=0.0, cmax=None):
     line = line or {15: ":", 20: "--", 25: "-", 30: "-."}
     dt = output["t"][1] - output["t"][0]
     dz = output["z"][1] - output["z"][0]
@@ -15,7 +15,7 @@ def plot1D(var, qlabel, fname, output, vmin=None, vmax=None, line=None):
     fig = pyplot.figure(constrained_layout=True)
     gs = fig.add_gridspec(25, 5)
     ax1 = fig.add_subplot(gs[:-1, 0:4])
-    mesh = ax1.pcolormesh(tgrid, zgrid, output[var], cmap="twilight")
+    mesh = ax1.pcolormesh(tgrid, zgrid, output[var], cmap="BuPu", vmin=cmin, vmax=cmax)
 
     ax1.set_xlabel("time [s]")
     ax1.set_ylabel("z [km]")
