@@ -103,7 +103,7 @@ class Simulation2D:
                     enable_breakup=self.settings.processes["breakup"],
                     coalescence_efficiency=self.settings.coalescence_efficiency,
                     breakup_efficiency=self.settings.breakup_efficiency,
-                    breakup_fragmentation=self.settings.breakup_fragmentation,
+                    fragmentation_function=self.settings.breakup_fragmentation,
                     adaptive=self.settings.coalescence_adaptive,
                     dt_coal_range=self.settings.coalescence_dt_coal_range,
                     substeps=self.settings.coalescence_substeps,

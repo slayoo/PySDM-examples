@@ -75,8 +75,8 @@ def make_default_product_collection(settings):
         products.append(PySDM_products.CollisionRatePerGridbox())
         products.append(PySDM_products.CollisionRateDeficitPerGridbox())
     if settings.processes["breakup"]:
-        products.append(PySDM_products.BreakupRatePerGridBox())
-        products.append(PySDM_products.BreakupRateDeficitPerGridbox())
+        products.append(PySDM_products.BreakupRatePerGridbox())
+        #products.append(PySDM_products.BreakupRateDeficitPerGridbox())
     if settings.processes["freezing"]:
         products.append(PySDM_products.IceWaterContent())
         if settings.freezing_singular:
