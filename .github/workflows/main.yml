@@ -44,9 +44,10 @@ jobs:
 
       - if: matrix.platform == 'ubuntu-latest'
         run: |
-          sudo apt-get install python3-paraview
+          sudo apt-get install python3-paraview gdb
           ldd /usr/bin/pvpython
           sudo apt list --installed | fgrep libproj
+          gdb -q -batch -ex "run --version" -ex bt /usr/bin/pvpython
           pvpython --version
  
       - run: python -m pytest -p no:unraisableexception -We
