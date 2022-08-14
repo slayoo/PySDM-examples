@@ -40,12 +40,12 @@ jobs:
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
-        env: 
-          NUMBA_THREADING_LAYER: omp
-        run: python -m pytest -p no:unraisableexception -We
+        run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
-      - if: matrix.platform != 'ubuntu-latest'
-        run: python -m pytest -p no:unraisableexception -We
+      - if: matrix.platform == 'ubuntu-latest'
+        run: sudo apt-get install paraview
+ 
+      - run: python -m pytest -p no:unraisableexception -We
         
   dist:
     runs-on: ubuntu-latest
