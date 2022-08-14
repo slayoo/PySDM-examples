@@ -51,7 +51,7 @@ jobs:
       - if: startsWith(matrix.platform, 'macos-')
         run: |
           brew install --cask paraview
-          echo PVPYTHON=`dirname /Applications/ParaView-*.app/Contents/bin/pvpython | head -1` >> $GITHUB_PATH
+          echo `dirname /Applications/ParaView-*.app/Contents/bin/pvpython | head -1` >> $GITHUB_PATH
       - if: matrix.platform != 'windows-latest'
         run: pvpython --version
 
