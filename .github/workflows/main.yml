@@ -43,7 +43,9 @@ jobs:
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
       - if: matrix.platform == 'ubuntu-latest'
-        run: sudo apt-get install python3-paraview
+        run: |
+          sudo apt-get install python3-paraview
+          pvpython --version
  
       - run: python -m pytest -p no:unraisableexception -We
         
