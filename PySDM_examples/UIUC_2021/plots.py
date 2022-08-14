@@ -92,7 +92,7 @@ def make_freezing_spec_plot(
         prim.plot(
             T,
             qi,
-            label='' if multiplier != 1 else f'singular CDF for median surface',
+            label='' if multiplier != 1 else 'singular CDF for median surface',
             linewidth=2.5,
             color=color,
             linestyle='--'

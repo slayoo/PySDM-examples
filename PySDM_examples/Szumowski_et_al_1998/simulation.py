@@ -151,7 +151,11 @@ class Simulation:
                         attributes[name][orig] = array
                         attributes[name][copy] = array
 
-                non_zero_per_gridbox = np.count_nonzero(attributes[freezing_attribute]) / np.prod(self.settings.grid)
+                non_zero_per_gridbox = (
+                    np.count_nonzero(attributes[freezing_attribute])
+                    /
+                    np.prod(self.settings.grid)
+                )
                 assert non_zero_per_gridbox == self.settings.n_sd_per_gridbox / 2
 
         self.particulator = builder.build(attributes, tuple(products))
