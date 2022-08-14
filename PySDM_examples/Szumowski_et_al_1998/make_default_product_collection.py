@@ -70,8 +70,8 @@ def make_default_product_collection(settings):
             PySDM_products.SurfacePrecipitation(name="surf_precip", unit="mm/day")
         )
     if settings.processes["coalescence"]:
-        products.append(PySDM_products.CoalescenceTimestepMean(name="dt_coal_avg"))
-        products.append(PySDM_products.CoalescenceTimestepMin(name="dt_coal_min"))
+        products.append(PySDM_products.CollisionTimestepMean(name="dt_coal_avg"))
+        products.append(PySDM_products.CollisionTimestepMin(name="dt_coal_min"))
         products.append(PySDM_products.CollisionRatePerGridbox())
         products.append(PySDM_products.CollisionRateDeficitPerGridbox())
     if settings.processes["freezing"]:

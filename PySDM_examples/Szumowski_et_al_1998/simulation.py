@@ -97,7 +97,7 @@ class Simulation:
         if self.settings.processes["coalescence"]:
             builder.add_dynamic(
                 Coalescence(
-                    kernel=self.settings.kernel,
+                    collision_kernel=self.settings.kernel,
                     adaptive=self.settings.coalescence_adaptive,
                     dt_coal_range=self.settings.coalescence_dt_coal_range,
                     substeps=self.settings.coalescence_substeps,
