@@ -48,8 +48,11 @@ jobs:
           ldd /usr/bin/pvpython
           sudo apt list --installed | fgrep libproj
           gdb -q -batch -ex "run --version" -ex bt /usr/bin/pvpython
-          pvpython --version
- 
+      - if: startsWith(matrix.platform, 'macos-')
+        run: brew install --cask paraview
+      - if: matrix.platform != 'windows-latest'
+        run: pvpython --version
+
       - run: python -m pytest -p no:unraisableexception -We
         
   dist:
