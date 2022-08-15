@@ -138,7 +138,7 @@ class AerosolBoreal(DryAerosolMixture):
 
 @strict
 class AerosolNascent(DryAerosolMixture):
-    def __init__(self, Forg: float = 0.3, Acc_N2: float = 30):
+    def __init__(self, Acc_Forg: float = 0.3, Acc_N2: float = 30):
         Ultrafine = {
             "SOA1": 0.52,
             "SOA2": 0,
@@ -146,8 +146,8 @@ class AerosolNascent(DryAerosolMixture):
         }
         Accumulation = {
             "SOA1": 0,
-            "SOA2": Forg,
-            "(NH4)2SO4": (1 - Forg),
+            "SOA2": Acc_Forg,
+            "(NH4)2SO4": (1 - Acc_Forg),
         }
         super().__init__(
             ionic_dissociation_phi={
