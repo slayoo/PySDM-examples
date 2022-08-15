@@ -39,10 +39,10 @@ jobs:
           python -m pip install --user -e .
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
-      - if: matrix.platform == 'ubuntu-latest'
+      - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
-      - if: matrix.platform == 'ubuntu-latest'
+      - if: startsWith(matrix.platform, 'ubuntu-')
         run: |
           sudo apt-get install python3-paraview gdb
           ldd /usr/bin/pvpython
