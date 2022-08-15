@@ -182,7 +182,7 @@ class GUISettings:
         self.coalescence_dt_coal_range = settings.coalescence_dt_coal_range
         self.coalescence_optimized_random = settings.coalescence_optimized_random
         self.coalescence_substeps = settings.coalescence_substeps
-        self.freeing_inp_frac = settings.freeing_inp_frac
+        self.freezing_inp_frac = settings.freezing_inp_frac
 
         for attr in ("rhod_of_zZ", "versions", "n_spin_up"):
             setattr(self, attr, getattr(settings, attr))
