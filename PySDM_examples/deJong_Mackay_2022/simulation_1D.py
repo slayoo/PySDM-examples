@@ -111,10 +111,16 @@ class Simulation1D:
             PySDM_products.AmbientTemperature(name="T"),
             PySDM_products.AmbientWaterVapourMixingRatio(name="qv"),
             PySDM_products.WaterMixingRatio(
-                name="ql", unit="g/kg", radius_range=settings.cloud_water_radius_range
+                name="qc", unit="g/kg", radius_range=settings.cloud_water_radius_range
+            ),
+            PySDM_products.WaterMixingRatio(
+                name="qc_igel", unit="g/kg", radius_range=settings.cloud_water_radius_range_igel
             ),
             PySDM_products.WaterMixingRatio(
                 name="qr", unit="g/kg", radius_range=settings.rain_water_radius_range
+            ),
+            PySDM_products.WaterMixingRatio(
+                name="qr_igel", unit="g/kg", radius_range=settings.rain_water_radius_range_igel
             ),
             PySDM_products.AmbientDryAirDensity(name="rhod"),
             PySDM_products.AmbientDryAirPotentialTemperature(name="thd"),
@@ -130,33 +136,36 @@ class Simulation1D:
                 name="nc", radius_range=settings.cloud_water_radius_range
             ),
             PySDM_products.ParticleConcentration(
-                name="na", radius_range=(0, settings.cloud_water_radius_range[0])
+                name="na", unit="cm^-3", radius_range=(0, settings.cloud_water_radius_range[0])
             ),
             PySDM_products.MeanRadius(),
-            PySDM_products.RipeningRate(),
-            PySDM_products.ActivatingRate(),
-            PySDM_products.DeactivatingRate(),
+            PySDM_products.RipeningRate(name='ripening'),
+            PySDM_products.ActivatingRate(name='activating'),
+            PySDM_products.DeactivatingRate(name='deactivating'),
             PySDM_products.EffectiveRadius(
                 radius_range=settings.cloud_water_radius_range
             ),
             PySDM_products.PeakSupersaturation(unit="%"),
             PySDM_products.SuperDropletCountPerGridbox(),
-            PySDM_products.BreakupRatePerGridbox(
-                name="breakup_rate",
-            ),
             PySDM_products.CollisionRatePerGridbox(
                 name="collision_rate",
+            ),
+            PySDM_products.CollisionRateDeficitPerGridbox(
+                name="collision_deficit",
             ),
             PySDM_products.CoalescenceRatePerGridbox(
                 name="coalescence_rate",
             ),
-            PySDM_products.BreakupRateDeficitPerGridbox(
-                name="breakup_deficit",
-            )
-            # PySDM_products.CoalescenceOnlyRatePerGridbox(
-            #     name="coalescence_rate",
-            # ),
         ]
+        if settings.breakup:
+            products.append(PySDM_products.BreakupRateDeficitPerGridbox(
+                name="breakup_deficit",
+                )
+            )
+            products.append(PySDM_products.BreakupRatePerGridbox(
+                name="breakup_rate",
+                )
+            )
         self.particulator = builder.build(attributes=attributes, products=products)
 
         self.output_attributes = {

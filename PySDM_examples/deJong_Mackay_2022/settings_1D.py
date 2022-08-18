@@ -138,7 +138,7 @@ class Settings1D:
         self.condensation_rtol_thd = condensation.DEFAULTS.rtol_thd
         self.condensation_adaptive = True
         self.condensation_update_thd = False
-        self.coalescence_adaptive = True
+        self.coalescence_adaptive = False
 
         self.number_of_bins = 100
         self.r_bins_edges_dry = np.logspace(
@@ -154,7 +154,9 @@ class Settings1D:
             endpoint=True,
         )
         self.cloud_water_radius_range = [1 * si.um, 50 * si.um]
+        self.cloud_water_radius_range_igel = [1 * si.um, 25 * si.um]
         self.rain_water_radius_range = [50 * si.um, np.inf * si.um]
+        self.rain_water_radius_range_igel = [25 * si.um, np.inf * si.um]
         self.save_spec_and_attr_times = []
 
     @property
