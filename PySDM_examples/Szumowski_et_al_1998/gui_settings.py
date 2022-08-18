@@ -34,7 +34,7 @@ class GUISettings:
             description="$\\rho_d w_{max}$",
             value=settings.rhod_w_max,
             min=0.1,
-            max=2,
+            max=4,
             step=0.1,
         )
         self.ui_kappa = FloatSlider(
@@ -131,15 +131,21 @@ class GUISettings:
                 max=5,
             ),
         ]
+
+        formulae_init_params = inspect.signature(Formulae.__init__).parameters.items()
+        defaults = {k: v.default for k, v in formulae_init_params}
+        defaults["freezing_temperature_spectrum"] = "Niemand_et_al_2012"
+        defaults["heterogeneous_ice_nucleation_rate"] = "ABIFM"
         self.ui_formulae_options = [
             Dropdown(
                 description=k,
                 options=formulae._choices(getattr(physics, k)).keys(),
-                value=v.default,
+                value=defaults[k],
             )
-            for k, v in inspect.signature(Formulae.__init__).parameters.items()
+            for k, v in formulae_init_params
             if k not in ("self", "fastmath", "seed", "constants")
         ]
+
         self.ui_formulae_options.append(
             Checkbox(
                 value=inspect.signature(Formulae.__init__)
@@ -189,7 +195,6 @@ class GUISettings:
         self.coalescence_efficiency = settings.coalescence_efficiency
         self.breakup_efficiency = settings.breakup_efficiency
         self.breakup_fragmentation = settings.breakup_fragmentation
-
         for attr in ("rhod_of_zZ", "versions", "n_spin_up"):
             setattr(self, attr, getattr(settings, attr))
 
@@ -226,7 +231,8 @@ class GUISettings:
     @property
     def formulae(self) -> Formulae:
         return Formulae(
-            **{widget.description: widget.value for widget in self.ui_formulae_options}
+            **{widget.description: widget.value for widget in self.ui_formulae_options},
+            constants={"NIEMAND_A": 0, "NIEMAND_B": 0, "ABIFM_M": 0, "ABIFM_C": 0}
         )
 
     @property
