@@ -1,4 +1,3 @@
-from tkinter import N
 from typing import Iterable
 
 import numpy as np
