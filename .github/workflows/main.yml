@@ -52,7 +52,9 @@ jobs:
       - if: matrix.platform != 'windows-latest'
         run: pvpython --version
 
-      - run: python -m pytest -p no:unraisableexception -We
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m pytest -p no:unraisableexception -We
         
   dist:
     runs-on: ubuntu-latest
