@@ -1,4 +1,5 @@
 from unicodedata import name
+
 import numpy as np
 from PySDM.backends import CPU
 from PySDM.builder import Builder
@@ -7,10 +8,10 @@ from PySDM.environments import Box
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.physics import si
 from PySDM.products.collision.collision_rates import (
+    BreakupRatePerGridbox,
+    CoalescenceRatePerGridbox,
     CollisionRateDeficitPerGridbox,
     CollisionRatePerGridbox,
-    CoalescenceRatePerGridbox,
-    BreakupRatePerGridbox
 )
 from PySDM.products.size_spectral import (
     ParticleSizeSpectrumPerVolume,
@@ -36,7 +37,7 @@ def run_box_breakup(settings, steps):
         fragmentation_function=settings.fragmentation,
         adaptive=settings.adaptive,
         min_volume=settings.vmin,
-        warn_overflows=settings.warn_overflows
+        warn_overflows=settings.warn_overflows,
     )
     builder.add_dynamic(breakup)
     products = (
@@ -46,7 +47,7 @@ def run_box_breakup(settings, steps):
         CollisionRatePerGridbox(name="cr"),
         CollisionRateDeficitPerGridbox(name="crd"),
         CoalescenceRatePerGridbox(name="cor"),
-        BreakupRatePerGridbox(name="br")
+        BreakupRatePerGridbox(name="br"),
     )
     core = builder.build(attributes, products)
 
@@ -56,17 +57,17 @@ def run_box_breakup(settings, steps):
     for (i, step) in enumerate(steps):
         core.run(step - core.n_steps)
         y[i] = core.products["dv/dlnr"].get()[0]
-        rates[i,0] = core.products["cr"].get()
-        rates[i,1] = core.products["crd"].get()
-        rates[i,2] = core.products["cor"].get()
-        rates[i,3] = core.products["br"].get()
+        rates[i, 0] = core.products["cr"].get()
+        rates[i, 1] = core.products["crd"].get()
+        rates[i, 2] = core.products["cor"].get()
+        rates[i, 3] = core.products["br"].get()
 
     x = (settings.radius_bins_edges[:-1] / si.micrometres,)[0]
 
     return (x, y, rates)
 
 
-def run_box_NObreakup(settings, step):
+def run_box_NObreakup(settings, steps):
     backend = CPU
 
     builder = Builder(n_sd=settings.n_sd, backend=backend(settings.formulae))
@@ -89,15 +90,20 @@ def run_box_NObreakup(settings, step):
         ),
         CollisionRatePerGridbox(name="cr"),
         CollisionRateDeficitPerGridbox(name="crd"),
-        CoalescenceRatePerGridbox(name="coal_rate"),
-        BreakupRatePerGridbox(name="br_rate")
+        CoalescenceRatePerGridbox(name="cor"),
     )
     core = builder.build(attributes, products)
 
+    y = np.ndarray((len(steps), len(settings.radius_bins_edges) - 1))
+    rates = np.zeros((len(steps), 4))
     # run
-    core.run(step - core.n_steps)
+    for (i, step) in enumerate(steps):
+        core.run(step - core.n_steps)
+        y[i] = core.products["dv/dlnr"].get()[0]
+        rates[i, 0] = core.products["cr"].get()
+        rates[i, 1] = core.products["crd"].get()
+        rates[i, 2] = core.products["cor"].get()
 
-    x = (settings.radius_bins_edges[:-1] / si.micrometres,)
-    y = core.products["dv/dlnr"].get()
+    x = (settings.radius_bins_edges[:-1] / si.micrometres,)[0]
 
-    return (x, y)
+    return (x, y, rates)

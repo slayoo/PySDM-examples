@@ -83,7 +83,7 @@ class Common:
             "coalescence": True,
             "condensation": True,
             "sedimentation": True,
-            "breakup": True,
+            "breakup": False,
             "freezing": False,
         }
 
