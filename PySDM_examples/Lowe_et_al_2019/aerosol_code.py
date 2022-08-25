@@ -7,12 +7,11 @@ from pystrict import strict
 
 @strict
 class AerosolMarine(DryAerosolMixture):
-
     # cd MAV
     # MODAL_PARS.CONC         = [223  137];   %[number/cm3]
     # MODAL_PARS.GSD          = [1.68 1.68];
     # MODAL_PARS.GEOMEAN_DIAM = [0.0390  0.139];     %[um]
-    # DENSITY(4:5)            = 0.852;               %Set organic density. Palmitic acid 256.4 [gmol-1]
+    # DENSITY(4:5)            = 0.852;  %Set organic density. Palmitic acid 256.4 [gmol-1]
     # MASS_FRAC               = [0 0.8 0 0.2 0 0 0 0.0;...
     #                            0 0.0 0 0.2 0 0 0 0.8];
     # NAT                     = 2;
@@ -102,7 +101,8 @@ class AerosolBoreal(DryAerosolMixture):
     # DENSITY                     = [1.72, 1.78, 1.77, 1.2, 1.4, 2., 2.65, 2.165]; %[gcm-3]
 
     def __init__(self, Forg: float = 0.668, Acc_N2: float = 540):
-        # note: SOA1 or SOA2 unclear from the paper
+        # TODO #899: SOA1 or SOA2 unclear from the paper
+        # TODO #899: CAN'T FIND WHERE NH4NO3 PROPERTIES ARE DEFINED IN ICPM
         INORG_MASS_RATIO = 0.1515 / 0.1559
         Aitken = {
             "SOA1": Forg,
@@ -129,8 +129,8 @@ class AerosolBoreal(DryAerosolMixture):
                 * si.gram
                 / si.mole,
                 "NH4NO3": Substance.from_formula("NH4NO3").mass * si.gram / si.mole,
-                "SOA1": 190 * si.g / si.mole,  # 190 * si.g / si.mole,
-                "SOA2": 368.4 * si.g / si.mole,  # 368.4 * si.g / si.mole,
+                "SOA1": 190 * si.g / si.mole,  # TODO #899: 190 OR 200?
+                "SOA2": 368.4 * si.g / si.mole,  # TODO #899: 368.4 OR 200?
             },
             densities={
                 "SOA1": 1.2 * si.g / si.cm**3,
@@ -186,6 +186,7 @@ class AerosolNascent(DryAerosolMixture):
     # DENSITY                 = [1.841, 1.78, 1.77, 1.2, 1.24, 2., 2.65, 2.165]; %[gcm-3]
 
     def __init__(self, Acc_Forg: float = 0.3, Acc_N2: float = 30):
+        # TODO #899: CAN'T FIND WHEN PHI IS MULTIPLIED FOR KÖHLER B IN ICPM CODE
         Ultrafine = {
             "SOA1": 0.52,
             "SOA2": 0,
@@ -200,13 +201,11 @@ class AerosolNascent(DryAerosolMixture):
             ionic_dissociation_phi={
                 "SOA1": 1,
                 "SOA2": 1,
-                "(NH4)2SO4": 3,  # TODO: CAN'T FIND WHEN PHI IS MULTIPLIED FOR KÖHLER B IN ICPM CODE
+                "(NH4)2SO4": 3,
             },
             molar_masses={
-                "SOA1": 190
-                * si.g
-                / si.mole,  # 190 * si.g / si.mole, # TODO: CAN'T FIND WHERE THIS IS SET IN ICPM CODE
-                "SOA2": 368.4 * si.g / si.mole,  # 368.4 * si.g / si.mole,
+                "SOA1": 190 * si.g / si.mole,  # TODO #899: 190 OR 200?
+                "SOA2": 368.4 * si.g / si.mole,  # TODO #899: 368.4 OR 200?
                 "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass
                 * si.gram
                 / si.mole,
