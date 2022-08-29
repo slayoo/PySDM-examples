@@ -34,6 +34,7 @@ class Common:
 
         self.displacement_adaptive = displacement.DEFAULTS.adaptive
         self.displacement_rtol = displacement.DEFAULTS.rtol
+        self.freezing_inp_frac = 1
 
         self.n_sd_per_gridbox = 20
 
