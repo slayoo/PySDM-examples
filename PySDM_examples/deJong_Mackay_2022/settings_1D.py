@@ -8,12 +8,10 @@ from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.initialisation import spectra
 from PySDM.physics import si
-from pystrict import strict
 from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 
 
-# @strict
 class Settings1D:
     def __dir__(self) -> Iterable[str]:
         return (

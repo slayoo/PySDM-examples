@@ -1,5 +1,3 @@
-from unicodedata import name
-
 import numpy as np
 from PySDM.backends import CPU
 from PySDM.builder import Builder
@@ -14,7 +12,6 @@ from PySDM.products.collision.collision_rates import (
     CollisionRatePerGridbox,
 )
 from PySDM.products.size_spectral import (
-    ParticleSizeSpectrumPerVolume,
     ParticleVolumeVersusRadiusLogarithmSpectrum,
 )
 

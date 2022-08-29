@@ -6,7 +6,6 @@ from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.formulae import Formulae
 from PySDM.initialisation.spectra import Exponential
 from PySDM.physics.constants import si
-from PySDM.physics.trivia import Trivia
 from pystrict import strict
 
 

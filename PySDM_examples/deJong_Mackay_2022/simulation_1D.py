@@ -16,7 +16,6 @@ from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.environments.kinematic_1d import Kinematic1D
 from PySDM.impl.mesh import Mesh
 from PySDM.initialisation.sampling import spatial_sampling, spectral_sampling
-from PySDM.physics import si
 
 from PySDM_examples.Shipway_and_Hill_2012.mpdata_1d import MPDATA_1D
 
