@@ -11,9 +11,7 @@ from PySDM.products.collision.collision_rates import (
     CollisionRateDeficitPerGridbox,
     CollisionRatePerGridbox,
 )
-from PySDM.products.size_spectral import (
-    ParticleVolumeVersusRadiusLogarithmSpectrum,
-)
+from PySDM.products.size_spectral import ParticleVolumeVersusRadiusLogarithmSpectrum
 
 
 def run_box_breakup(settings, steps):
