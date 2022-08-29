@@ -3,17 +3,17 @@ from typing import Iterable
 import numpy as np
 from PySDM import Formulae
 from PySDM.dynamics import condensation
+from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
+from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN
+from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.initialisation import spectra
 from PySDM.physics import si
 from pystrict import strict
 from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 
-from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN
-from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 
-#@strict
+# @strict
 class Settings1D:
     def __dir__(self) -> Iterable[str]:
         return (
@@ -66,11 +66,11 @@ class Settings1D:
         self.rho_times_w = (
             lambda t: rho_times_w_1 * np.sin(np.pi * t / t_1) if t < t_1 else 0
         )
-        self.coalescence_efficiency=ConstEc(Ec=0.95)
-        self.breakup_efficiency=ConstEb(Eb=1.0)
-        self.fragmentation_function=AlwaysN(n=4)
-        self.warn_breakup_overflow=warn_breakup_overflow
-        
+        self.coalescence_efficiency = ConstEc(Ec=0.95)
+        self.breakup_efficiency = ConstEb(Eb=1.0)
+        self.fragmentation_function = AlwaysN(n=4)
+        self.warn_breakup_overflow = warn_breakup_overflow
+
         apprx_w1 = rho_times_w_1 / self.formulae.constants.rho_STP
         self.particle_reservoir_depth = (
             (2 * apprx_w1 * t_1 / np.pi) // self.dz + 1
