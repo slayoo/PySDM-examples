@@ -68,7 +68,7 @@ def get_model(params, args):
             surface_tension=model,
             constants={
                 "RUEHL_nu_org": c.aerosol_modes[0]["nu_org"][0],
-                "RUEHL_A0": param_transform(params, model)[0] * si.m * si.m,
+                "RUEHL_A0": param_transform(params, model)[0] * si.m**2,
                 "RUEHL_C0": param_transform(params, model)[1],
                 "RUEHL_sgm_min": param_transform(params, model)[2] * si.mN / si.m,
                 "RUEHL_m_sigma": param_transform(params, model)[3] * si.J / si.m**2,
@@ -79,7 +79,7 @@ def get_model(params, args):
             surface_tension=model,
             constants={
                 "RUEHL_nu_org": c.aerosol_modes[0]["nu_org"][0],
-                "RUEHL_A0": param_transform(params, model)[0] * si.m * si.m,
+                "RUEHL_A0": param_transform(params, model)[0] * si.m**2,
                 "RUEHL_C0": param_transform(params, model)[1],
                 "RUEHL_sgm_min": param_transform(params, model)[2] * si.mN / si.m,
             },

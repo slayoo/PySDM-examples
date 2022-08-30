@@ -1,25 +1,25 @@
 import numpy as np
 from PySDM import Formulae
-from PySDM.dynamics.condensation import DEFAULTS
 from PySDM.initialisation.aerosol_composition import DryAerosolMixture
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
-from PySDM.physics import constants_defaults as const
 from PySDM.physics import si
 from pystrict import strict
+from scipy import constants as sci
 
 
 @strict
 class Settings:
     def __init__(
         self,
-        dt: float,
+        dz: float,
         n_sd_per_mode: int,
         aerosol: DryAerosolMixture,
         model: str,
         spectral_sampling: type(spec_sampling.SpectralSampling),
-        w: float = 0.1 * si.m / si.s,
-        rtol_x: float = DEFAULTS.rtol_x,
-        rtol_thd: float = DEFAULTS.rtol_x,
+        w: float = 0.32 * si.m / si.s,
+        MAC: float = 1,
+        HAC: float = 1,
+        BDF: bool = False,
     ):
         assert model in (
             "Constant",
@@ -29,25 +29,62 @@ class Settings:
         )
         self.model = model
         self.n_sd_per_mode = n_sd_per_mode
-        self.formulae = Formulae(
-            surface_tension=model,
-            constants={"sgm_org": 34.77 * si.mN / si.m, "delta_min": 1.73 * si.nm},
-        )
+        self.BDF = BDF
+
+        if model in ("Constant", "CompressedFilmOvadnevaite"):
+            form = Formulae(
+                surface_tension=model,
+                constants={
+                    "sgm_org": 40 * si.mN / si.m,
+                    "delta_min": 0.1 * si.nm,
+                    "MAC": MAC,
+                    "HAC": HAC,
+                },
+            )
+        elif model == "CompressedFilmRuehl":
+            form = Formulae(
+                surface_tension=model,
+                constants={
+                    "RUEHL_nu_org": aerosol.modes[0]["nu_org"],
+                    "RUEHL_A0": 2.5e-19 * si.m**2,
+                    "RUEHL_C0": 1e-5,
+                    "RUEHL_sgm_min": 40 * si.mN / si.m,
+                    "RUEHL_m_sigma": 1.3 * si.J / si.m**2,
+                    "MAC": MAC,
+                    "HAC": HAC,
+                },
+            )
+        elif model == "SzyszkowskiLangmuir":
+            form = Formulae(
+                surface_tension=model,
+                constants={
+                    "RUEHL_nu_org": aerosol.modes[0]["nu_org"],
+                    "RUEHL_A0": 2.5e-19 * si.m**2,
+                    "RUEHL_C0": 1e-5,
+                    "RUEHL_sgm_min": 40 * si.mN / si.m,
+                    "MAC": MAC,
+                    "HAC": HAC,
+                },
+            )
+        else:
+            AssertionError()
+        self.formulae = form
         const = self.formulae.constants
+
         self.aerosol = aerosol
         self.spectral_sampling = spectral_sampling
-        self.t_max = int(110 / w) * si.m
-        self.output_interval = 10 * si.s
-        self.dt = dt
-        self.rtol_x = rtol_x
-        self.rtol_thd = rtol_thd
 
+        max_altitude = 200 * si.m
         self.w = w
+        self.t_max = max_altitude / self.w
+        self.dt = dz / self.w
+        self.output_interval = 1 * self.dt
+
         self.g = 9.81 * si.m / si.s**2
 
         self.p0 = 980 * si.mbar
         self.T0 = 280 * si.K
-        pv0 = 0.99 * self.formulae.saturation_vapour_pressure.pvs_Celsius(
+        pv0 = 0.999 * self.formulae.saturation_vapour_pressure.pvs_Celsius(
             self.T0 - const.T0
         )
         self.q0 = const.eps * pv0 / (self.p0 - pv0)
@@ -62,14 +99,16 @@ class Settings:
 
     @property
     def rho0(self):
+        const = self.formulae.constants
         rhod0 = self.formulae.trivia.p_d(self.p0, self.q0) / self.T0 / const.Rd
         return rhod0 * (1 + self.q0)
 
     @property
-    def nt(self):
+    def nt(self) -> int:
         nt = self.t_max / self.dt
-        assert nt == int(nt)
-        return int(nt)
+        nt_int = round(nt)
+        np.testing.assert_almost_equal(nt, nt_int)
+        return nt_int
 
     @property
     def steps_per_output_interval(self) -> int:
