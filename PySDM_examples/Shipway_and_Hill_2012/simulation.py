@@ -143,6 +143,10 @@ class Simulation:
             ),
             PySDM_products.PeakSupersaturation(unit="%"),
             PySDM_products.SuperDropletCountPerGridbox(),
+            PySDM_products.AveragedTerminalVelocity(
+                name="rain averaged terminal velocity",
+                radius_range=settings.rain_water_radius_range,
+            ),
         ]
         self.particulator = builder.build(attributes=attributes, products=products)
 
