@@ -4,7 +4,6 @@ from PySDM.initialisation.aerosol_composition import DryAerosolMixture
 from PySDM.initialisation.sampling import spectral_sampling as spec_sampling
 from PySDM.physics import si
 from pystrict import strict
-from scipy import constants as sci
 
 
 @strict

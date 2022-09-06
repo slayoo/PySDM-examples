@@ -1,23 +1,23 @@
 import numpy as np
-from atmos_cloud_sim_uj_utils import show_plot
 from corner import corner
-from kappa_mcmc import get_model, param_transform
 from matplotlib import pylab
+
+from PySDM_examples.Singer_Ward.kappa_mcmc import get_model, param_transform
 
 
 def plot_param_chain(param_chain, args):
-    T, r_dry, ovf, c, model = args
+    _, _, _, c, model = args
     p = param_transform(param_chain, model)
 
     if model == "CompressedFilmOvadnevaite":
         labels = ["sgm_org", "delta_min"]
-        fig, axes = pylab.subplots(2, 1, figsize=(6, 8))
+        _, axes = pylab.subplots(2, 1, figsize=(6, 8))
     elif model == "CompressedFilmRuehl":
         labels = ["A0", "C0", "sgm_min", "m_sigma"]
-        fig, axes = pylab.subplots(2, 2, figsize=(12, 8))
+        _, axes = pylab.subplots(2, 2, figsize=(12, 8))
     elif model == "SzyszkowskiLangmuir":
         labels = ["A0", "C0", "sgm_min"]
-        fig, axes = pylab.subplots(3, 1, figsize=(6, 12))
+        _, axes = pylab.subplots(3, 1, figsize=(6, 12))
     else:
         raise AssertionError()
 
@@ -50,7 +50,7 @@ def plot_param_chain(param_chain, args):
 
 
 def plot_corner(param_chain, args):
-    T, r_dry, ovf, c, model = args
+    _, _, _, c, model = args
     data = param_transform(param_chain, model).T
     data = data[100:, :]
 
@@ -64,7 +64,7 @@ def plot_corner(param_chain, args):
         raise AssertionError()
 
     pylab.rcParams.update({"font.size": 12})
-    figure = corner(
+    _ = corner(
         data,
         labels=labels,
         label_kwargs={"fontsize": 12},
@@ -85,7 +85,7 @@ def plot_corner(param_chain, args):
 
 
 def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory):
-    T, r_dry, ovf, c, model = args
+    _, _, ovf, c, model = args
 
     # create aerosol
     dat = np.zeros((len(ovf), 4))
@@ -111,7 +111,7 @@ def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory):
 
     pylab.legend()
     pylab.xlabel("Organic Volume Fraction")
-    pylab.ylabel("$\kappa_{eff}$", fontsize=20)
+    pylab.ylabel(r"$\kappa_{eff}$", fontsize=20)
     pylab.rcParams.update({"font.size": 15})
     pylab.grid()
     pylab.tight_layout()
@@ -139,8 +139,8 @@ def plot_keff(param_chain, args, datay, errory):
     pylab.errorbar(kap_eff, datay, yerr=errory, fmt="bo", label="before")
     pylab.errorbar(kap_eff2, datay, yerr=errory, fmt="ro", label="after")
     pylab.legend()
-    pylab.xlabel("$\kappa_{eff}$ modeled", fontsize=20)
-    pylab.ylabel("$\kappa_{eff}$ measured", fontsize=20)
+    pylab.xlabel(r"$\kappa_{eff}$ modeled", fontsize=20)
+    pylab.ylabel(r"$\kappa_{eff}$ measured", fontsize=20)
     pylab.plot([-0.05, 0.55], [-0.05, 0.55], "k-")
     pylab.xlim([-0.05, 0.55])
     pylab.ylim([-0.05, 0.55])

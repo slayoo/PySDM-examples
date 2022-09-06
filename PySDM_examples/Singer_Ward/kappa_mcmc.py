@@ -1,11 +1,8 @@
-# import os
-# import matplotlib.pyplot as plt
-
 import numpy as np
 from PySDM import Formulae
 from PySDM.physics import constants_defaults as const
 from PySDM.physics import si
-from scipy.optimize import minimize, minimize_scalar
+from scipy.optimize import minimize_scalar
 
 
 # parameter transformation so the MCMC parameters range from [-inf, inf]
@@ -51,7 +48,7 @@ def negSS(r_wet, args):
 
 # evaluate the y-values of the model, given the current guess of parameter values
 def get_model(params, args):
-    T, r_dry, OVF, c, model = args
+    T, r_dry, _, c, model = args
     f_org = c.modes[0]["f_org"]
     kappa = c.modes[0]["kappa"][model]
 
@@ -89,7 +86,7 @@ def get_model(params, args):
 
     Scrit, rcrit = np.zeros(len(r_dry)), np.zeros(len(r_dry))
     for i, rd in enumerate(r_dry):
-        args = [formulae, T, r_dry[i], kappa[i], f_org[i]]
+        args = [formulae, T, rd, kappa[i], f_org[i]]
         res = minimize_scalar(negSS, args=args)
         Scrit[i], rcrit[i] = -1 * res.fun, res.x
 
