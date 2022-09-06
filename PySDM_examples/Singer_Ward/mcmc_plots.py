@@ -8,7 +8,7 @@ from matplotlib import pylab
 def plot_param_chain(param_chain, args):
     T, r_dry, ovf, c, model = args
     p = param_transform(param_chain, model)
-    
+
     if model == "CompressedFilmOvadnevaite":
         labels = ["sgm_org", "delta_min"]
         fig, axes = pylab.subplots(2, 1, figsize=(6, 8))
@@ -20,9 +20,9 @@ def plot_param_chain(param_chain, args):
         fig, axes = pylab.subplots(3, 1, figsize=(6, 12))
     else:
         raise AssertionError()
-        
+
     for i, ax in enumerate(axes.flatten()):
-        p[i,0:100] = np.nan
+        p[i, 0:100] = np.nan
         ax.plot(p[i, :])
         ax.set_ylabel(labels[i])
         ax.grid()
@@ -36,15 +36,23 @@ def plot_param_chain(param_chain, args):
         bbox_inches="tight",
     )
     pylab.show()
-    
-    filename = "mcmc_output/" + aerosolname + "_" + modelname + "_chain"+str(np.max(np.shape(param_chain)))+".csv"
-    np.savetxt(filename, param_chain.T, fmt='%.6e', delimiter=',')
+
+    filename = (
+        "mcmc_output/"
+        + aerosolname
+        + "_"
+        + modelname
+        + "_chain"
+        + str(np.max(np.shape(param_chain)))
+        + ".csv"
+    )
+    np.savetxt(filename, param_chain.T, fmt="%.6e", delimiter=",")
 
 
 def plot_corner(param_chain, args):
     T, r_dry, ovf, c, model = args
     data = param_transform(param_chain, model).T
-    data = data[100:,:]
+    data = data[100:, :]
 
     if model == "CompressedFilmOvadnevaite":
         labels = ["sgm_org", "delta_min"]
@@ -81,8 +89,6 @@ def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory):
 
     # create aerosol
     dat = np.zeros((len(ovf), 4))
-    f_org = c.aerosol_modes_per_cc[0]["f_org"]
-    kappa = c.aerosol_modes_per_cc[0]["kappa"][model]
 
     pylab.figure(figsize=(10, 6))
 
@@ -121,13 +127,6 @@ def plot_ovf_kappa_fit(param_chain, args, errorx, datay, errory):
 
 
 def plot_keff(param_chain, args, datay, errory):
-    T, r_dry, ovf, c, model = args
-
-    # create aerosol
-    dat = np.zeros((len(ovf), 4))
-    f_org = c.aerosol_modes_per_cc[0]["f_org"]
-    kappa = c.aerosol_modes_per_cc[0]["kappa"][model]
-
     pylab.figure(figsize=(10, 6))
 
     # before

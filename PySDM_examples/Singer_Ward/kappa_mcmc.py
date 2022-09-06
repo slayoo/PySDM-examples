@@ -52,8 +52,8 @@ def negSS(r_wet, args):
 # evaluate the y-values of the model, given the current guess of parameter values
 def get_model(params, args):
     T, r_dry, OVF, c, model = args
-    f_org = c.aerosol_modes[0]["f_org"]
-    kappa = c.aerosol_modes[0]["kappa"][model]
+    f_org = c.modes[0]["f_org"]
+    kappa = c.modes[0]["kappa"][model]
 
     if model == "CompressedFilmOvadnevaite":
         formulae = Formulae(
@@ -67,7 +67,7 @@ def get_model(params, args):
         formulae = Formulae(
             surface_tension=model,
             constants={
-                "RUEHL_nu_org": c.aerosol_modes[0]["nu_org"][0],
+                "RUEHL_nu_org": c.modes[0]["nu_org"][0],
                 "RUEHL_A0": param_transform(params, model)[0] * si.m**2,
                 "RUEHL_C0": param_transform(params, model)[1],
                 "RUEHL_sgm_min": param_transform(params, model)[2] * si.mN / si.m,
@@ -78,7 +78,7 @@ def get_model(params, args):
         formulae = Formulae(
             surface_tension=model,
             constants={
-                "RUEHL_nu_org": c.aerosol_modes[0]["nu_org"][0],
+                "RUEHL_nu_org": c.modes[0]["nu_org"][0],
                 "RUEHL_A0": param_transform(params, model)[0] * si.m**2,
                 "RUEHL_C0": param_transform(params, model)[1],
                 "RUEHL_sgm_min": param_transform(params, model)[2] * si.mN / si.m,
