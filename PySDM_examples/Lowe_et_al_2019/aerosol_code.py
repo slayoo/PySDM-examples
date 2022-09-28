@@ -7,7 +7,18 @@ from pystrict import strict
 
 @strict
 class AerosolMarine(DryAerosolMixture):
-    def __init__(self, Forg: float = 0.2, Acc_N2: float = 134):
+    # cd MAV
+    # MODAL_PARS.CONC         = [223  137];   %[number/cm3]
+    # MODAL_PARS.GSD          = [1.68 1.68];
+    # MODAL_PARS.GEOMEAN_DIAM = [0.0390  0.139];     %[um]
+    # DENSITY(4:5)            = 0.852;  %Set organic density. Palmitic acid 256.4 [gmol-1]
+    # MASS_FRAC               = [0 0.8 0 0.2 0 0 0 0.0;...
+    #                            0 0.0 0 0.2 0 0 0 0.8];
+    # NAT                     = 2;
+    # NMODE                   = [1 1];
+    # DENSITY                 = [1.841, 1.78, 1.77, 0.852, 1.5, 2., 2.65, 2.165]; %[gcm-3]
+
+    def __init__(self, Forg: float = 0.2, Acc_N2: float = 137):
         Aitken = {
             "palmitic": Forg,
             "(NH4)2SO4": (1 - Forg),
@@ -32,8 +43,8 @@ class AerosolMarine(DryAerosolMixture):
             },
             densities={
                 "palmitic": 0.852 * si.g / si.cm**3,
-                "(NH4)2SO4": 1.77 * si.g / si.cm**3,
-                "NaCl": 2.16 * si.g / si.cm**3,
+                "(NH4)2SO4": 1.78 * si.g / si.cm**3,
+                "NaCl": 2.165 * si.g / si.cm**3,
             },
             compounds=("palmitic", "(NH4)2SO4", "NaCl"),
             molar_masses={
@@ -50,7 +61,7 @@ class AerosolMarine(DryAerosolMixture):
                 "kappa": self.kappa(Aitken),
                 "nu_org": self.nu_org(Aitken),
                 "spectrum": spectra.Lognormal(
-                    norm_factor=226 / si.cm**3, m_mode=19.6 * si.nm, s_geom=1.71
+                    norm_factor=223 / si.cm**3, m_mode=19.6 * si.nm, s_geom=1.68
                 ),
             },
             {
@@ -58,7 +69,7 @@ class AerosolMarine(DryAerosolMixture):
                 "kappa": self.kappa(Accumulation),
                 "nu_org": self.nu_org(Accumulation),
                 "spectrum": spectra.Lognormal(
-                    norm_factor=Acc_N2 / si.cm**3, m_mode=69.5 * si.nm, s_geom=1.7
+                    norm_factor=Acc_N2 / si.cm**3, m_mode=69.5 * si.nm, s_geom=1.68
                 ),
             },
         )
@@ -68,19 +79,42 @@ class AerosolMarine(DryAerosolMixture):
 
 @strict
 class AerosolBoreal(DryAerosolMixture):
+
+    #     cd HYY
+    #     MODAL_PARS.CONC         = [1110   540];
+    #     MODAL_PARS.GSD          = [1.75   1.62];
+    #     MODAL_PARS.GEOMEAN_DIAM = [0.0453 0.1644];
+    #     DENSITY(4:5)            = [1.2 1.4];                  %Set organic density
+    #     DENSITY(1)              = 1.72;
+    #     INORG_MASS_RATIO        = 0.1515/0.1559;  %ammonium sulfate:ammonium nitrate  mass
+    #     FORG                    = 0.60;
+    #     MASS_FRAC               = [(1-FORG)/(1+INORG_MASS_RATIO) 0 ...
+    #                               INORG_MASS_RATIO*(1-FORG)/(1+INORG_MASS_RATIO) FORG...
+    #                               0 0 0 0;...
+    #                               (1-FORG)/(1+INORG_MASS_RATIO) 0 ...
+    #                               INORG_MASS_RATIO*(1-FORG)/(1+INORG_MASS_RATIO) 0 ...
+    #                               FORG 0 0 0];
+    #     NAT                     = 2;
+    #     NMODE                   = [1 1];
+
+    # DENSITY                     = [1.841, 1.78, 1.77, 1.5, 1.5, 2., 2.65, 2.165]; %[gcm-3]
+    # DENSITY                     = [1.72, 1.78, 1.77, 1.2, 1.4, 2., 2.65, 2.165]; %[gcm-3]
+
     def __init__(self, Forg: float = 0.668, Acc_N2: float = 540):
-        # note: SOA1 or SOA2 unclear from the paper
+        # TODO #899: SOA1 or SOA2 unclear from the paper
+        # TODO #899: CAN'T FIND WHERE NH4NO3 PROPERTIES ARE DEFINED IN ICPM
+        INORG_MASS_RATIO = 0.1515 / 0.1559
         Aitken = {
             "SOA1": Forg,
             "SOA2": 0,
-            "(NH4)2SO4": (1 - Forg) / 2,
-            "NH4NO3": (1 - Forg) / 2,
+            "(NH4)2SO4": INORG_MASS_RATIO * (1 - Forg) / (1 + INORG_MASS_RATIO),
+            "NH4NO3": (1 - Forg) / (1 + INORG_MASS_RATIO),
         }
         Accumulation = {
             "SOA1": 0,
             "SOA2": Forg,
-            "(NH4)2SO4": (1 - Forg) / 2,
-            "NH4NO3": (1 - Forg) / 2,
+            "(NH4)2SO4": INORG_MASS_RATIO * (1 - Forg) / (1 + INORG_MASS_RATIO),
+            "NH4NO3": (1 - Forg) / (1 + INORG_MASS_RATIO),
         }
 
         super().__init__(
@@ -95,12 +129,12 @@ class AerosolBoreal(DryAerosolMixture):
                 * si.gram
                 / si.mole,
                 "NH4NO3": Substance.from_formula("NH4NO3").mass * si.gram / si.mole,
-                "SOA1": 190 * si.g / si.mole,
-                "SOA2": 368.4 * si.g / si.mole,
+                "SOA1": 190 * si.g / si.mole,  # TODO #899: 190 OR 200?
+                "SOA2": 368.4 * si.g / si.mole,  # TODO #899: 368.4 OR 200?
             },
             densities={
-                "SOA1": 1.24 * si.g / si.cm**3,
-                "SOA2": 1.2 * si.g / si.cm**3,
+                "SOA1": 1.2 * si.g / si.cm**3,
+                "SOA2": 1.4 * si.g / si.cm**3,
                 "(NH4)2SO4": 1.77 * si.g / si.cm**3,
                 "NH4NO3": 1.72 * si.g / si.cm**3,
             },
@@ -118,7 +152,7 @@ class AerosolBoreal(DryAerosolMixture):
                 "kappa": self.kappa(Aitken),
                 "nu_org": self.nu_org(Aitken),
                 "spectrum": spectra.Lognormal(
-                    norm_factor=1110 / si.cm**3, m_mode=22.7 * si.nm, s_geom=1.75
+                    norm_factor=1110 / si.cm**3, m_mode=22.65 * si.nm, s_geom=1.75
                 ),
             },
             {
@@ -138,7 +172,21 @@ class AerosolBoreal(DryAerosolMixture):
 
 @strict
 class AerosolNascent(DryAerosolMixture):
+
+    # cd NUM
+    # MODAL_PARS.CONC         = [2000  30];
+    # MODAL_PARS.GSD          = [1.71  1.703];
+    # MODAL_PARS.GEOMEAN_DIAM = [0.023 0.200];
+    # DENSITY(4:5)            = [1.2 1.24];                  %Set organic density
+    # MASS_FRAC               = [0 0 0.48 0.52 0 0 0 0;...
+    #                            0 0 0.70 0.0 0.3 0 0 0];
+    # NAT                     = 2;
+    # NMODE                   = [1 1];
+
+    # DENSITY                 = [1.841, 1.78, 1.77, 1.2, 1.24, 2., 2.65, 2.165]; %[gcm-3]
+
     def __init__(self, Acc_Forg: float = 0.3, Acc_N2: float = 30):
+        # TODO #899: CAN'T FIND WHEN PHI IS MULTIPLIED FOR KÖHLER B IN ICPM CODE
         Ultrafine = {
             "SOA1": 0.52,
             "SOA2": 0,
@@ -156,15 +204,15 @@ class AerosolNascent(DryAerosolMixture):
                 "(NH4)2SO4": 3,
             },
             molar_masses={
-                "SOA1": 190 * si.g / si.mole,
-                "SOA2": 368.4 * si.g / si.mole,
+                "SOA1": 190 * si.g / si.mole,  # TODO #899: 190 OR 200?
+                "SOA2": 368.4 * si.g / si.mole,  # TODO #899: 368.4 OR 200?
                 "(NH4)2SO4": Substance.from_formula("(NH4)2SO4").mass
                 * si.gram
                 / si.mole,
             },
             densities={
-                "SOA1": 1.24 * si.g / si.cm**3,
-                "SOA2": 1.2 * si.g / si.cm**3,
+                "SOA1": 1.2 * si.g / si.cm**3,
+                "SOA2": 1.24 * si.g / si.cm**3,
                 "(NH4)2SO4": 1.77 * si.g / si.cm**3,
             },
             compounds=("SOA1", "SOA2", "(NH4)2SO4"),
@@ -188,7 +236,7 @@ class AerosolNascent(DryAerosolMixture):
                 "kappa": self.kappa(Accumulation),
                 "nu_org": self.nu_org(Accumulation),
                 "spectrum": spectra.Lognormal(
-                    norm_factor=Acc_N2 / si.cm**3, m_mode=100 * si.nm, s_geom=1.70
+                    norm_factor=Acc_N2 / si.cm**3, m_mode=100 * si.nm, s_geom=1.703
                 ),
             },
         )

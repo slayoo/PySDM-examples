@@ -13,7 +13,6 @@ from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 
 
-# @strict
 class Settings1D:
     def __dir__(self) -> Iterable[str]:
         return (
@@ -26,7 +25,8 @@ class Settings1D:
             "dz",
             "precip",
             "breakup",
-            "stochastic_breakup" "z_max",
+            "stochastic_breakup",
+            "z_max",
             "t_max",
             "cloud_water_radius_range",
             "rain_water_radius_range",
