@@ -4,11 +4,7 @@ import numpy as np
 from PySDM import Formulae
 from PySDM.dynamics import condensation
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import (
-    AlwaysN,
-    ExponFrag,
-    Straub2010Nf,
-)
+from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN, Straub2010Nf
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc, Straub2010Ec
 from PySDM.initialisation import spectra
 from PySDM.physics import si

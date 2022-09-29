@@ -7,7 +7,6 @@ from PySDM.formulae import Formulae
 from PySDM.initialisation.spectra import Exponential
 from PySDM.physics.constants import si
 from pystrict import strict
-from PySDM.physics.trivia import Trivia
 
 
 @strict

@@ -1,5 +1,4 @@
-
-from paraview import simple as pvs
+from paraview import simple as pvs  # pylint: disable=import-error
 
 # load data
 reader_prod = pvs.OpenDataFile("./output/sd_products.pvd")
@@ -13,8 +12,8 @@ view.CenterAxesVisibility = False
 view.OrientationAxesVisibility = False
 axesGrid = view.AxesGrid
 axesGrid.Visibility = True
-axesGrid.XTitle = 'Z [m]'
-axesGrid.YTitle = 'X [m]'
+axesGrid.XTitle = "Z [m]"
+axesGrid.YTitle = "X [m]"
 
 axesGrid.XAxisUseCustomLabels = True
 axesGrid.XAxisLabels = [300, 600, 900, 1200]
@@ -33,26 +32,26 @@ axesGrid.YLabelColor = [0, 0, 0]
 axesGrid.GridColor = [0.1, 0.1, 0.1]
 
 # render particles
-var = 'radius'
+var = "radius"
 multiplier = 1e6
-palette = 'Cold and Hot'
+palette = "Cold and Hot"
 palette_invert = False
 color_range = [0, 10]
 logscale = False
-title = var + ' [um]'
+title = var + " [um]"
 
 calculator = pvs.Calculator(reader_attr)
-calculator.Function = f'{var}*{multiplier}'
+calculator.Function = f"{var}*{multiplier}"
 display_attr = pvs.Show(calculator, view)
 
-display_attr.SetRepresentationType('Point Gaussian')
-display_attr.ShaderPreset = 'Sphere'
+display_attr.SetRepresentationType("Point Gaussian")
+display_attr.ShaderPreset = "Sphere"
 display_attr.GaussianRadius = 5
 display_attr.MapScalars = 1
 
-display_attr.Ambient = .25
-pvs.ColorBy(display_attr, ('POINTS', 'Result'))
-color_scale_attr = pvs.GetColorTransferFunction('Result')
+display_attr.Ambient = 0.25
+pvs.ColorBy(display_attr, ("POINTS", "Result"))
+color_scale_attr = pvs.GetColorTransferFunction("Result")
 color_scale_attr.ApplyPreset(palette, True)
 if palette_invert:
     color_scale_attr.InvertTransferFunction()
@@ -67,26 +66,26 @@ colorbar_attr = pvs.GetScalarBar(color_scale_attr, view)
 colorbar_attr.TitleColor = [0, 0, 0]
 colorbar_attr.LabelColor = [0, 0, 0]
 colorbar_attr.Title = title
-colorbar_attr.ComponentTitle = ''
+colorbar_attr.ComponentTitle = ""
 colorbar_attr.TitleFontSize = 30
 colorbar_attr.LabelFontSize = 30
 colorbar_attr.Visibility = True
-colorbar_attr.WindowLocation = 'AnyLocation'
-colorbar_attr.Position = [.1, .333]
-colorbar_attr.RangeLabelFormat = '%g'
+colorbar_attr.WindowLocation = "AnyLocation"
+colorbar_attr.Position = [0.1, 0.333]
+colorbar_attr.RangeLabelFormat = "%g"
 
 # render product
-var = 'effective radius'
-palette = 'X Ray'
+var = "effective radius"
+palette = "X Ray"
 palette_invert = True
 color_range = [0, 10]
 logscale = False
-title = var + ' [um]'
+title = var + " [um]"
 
 display_prod = pvs.Show(reader_prod)
-display_prod.SetRepresentationType('Surface')
-display_prod.Ambient = .25
-pvs.ColorBy(display_prod, ('CELLS', var))
+display_prod.SetRepresentationType("Surface")
+display_prod.Ambient = 0.25
+pvs.ColorBy(display_prod, ("CELLS", var))
 color_scale_prod = pvs.GetColorTransferFunction(var)
 if color_range is None:
     display_prod.RescaleTransferFunctionToDataRange(True)
@@ -99,13 +98,13 @@ colorbar_prod = pvs.GetScalarBar(color_scale_prod, view)
 colorbar_prod.TitleColor = [0, 0, 0]
 colorbar_prod.LabelColor = [0, 0, 0]
 colorbar_prod.Title = title
-colorbar_prod.ComponentTitle = ''
+colorbar_prod.ComponentTitle = ""
 colorbar_prod.TitleFontSize = 30
 colorbar_prod.LabelFontSize = 30
 colorbar_prod.Visibility = True
-colorbar_prod.Position = [.92, .333]
-colorbar_prod.WindowLocation = 'AnyLocation'
-colorbar_prod.RangeLabelFormat = '%g'
+colorbar_prod.Position = [0.92, 0.333]
+colorbar_prod.WindowLocation = "AnyLocation"
+colorbar_prod.RangeLabelFormat = "%g"
 
 # compose the scene
 scene = pvs.GetAnimationScene()
@@ -119,17 +118,17 @@ cam.SetPosition(pos)
 cam.Dolly(1.45)
 
 # save animation to an Ogg Vorbis file
-pvs.SaveAnimation('output/anim.ogv', view, FrameRate=10)
+pvs.SaveAnimation("output/anim.ogv", view, FrameRate=10)
 
 # save animation frame as pdfs
-exporters = pvs.servermanager.createModule('exporters')
+exporters = pvs.servermanager.createModule("exporters")
 exporter = exporters.GL2PSRenderViewExporterPDF()
 exporter.Rasterize3Dgeometry = False
-exporter.GL2PSdepthsortmethod = 'BSP sorting (slow, best)'
+exporter.GL2PSdepthsortmethod = "BSP sorting (slow, best)"
 for t in reader_prod.TimestepValues:
     view.ViewTime = t
     for reader in (reader_prod, reader_attr):
         reader.UpdatePipeline(t)
     exporter.SetView(view)
-    exporter.FileName = f'output/anim_frame_{t}.pdf'
+    exporter.FileName = f"output/anim_frame_{t}.pdf"
     exporter.Write()
