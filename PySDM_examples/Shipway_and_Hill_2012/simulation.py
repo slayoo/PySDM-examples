@@ -12,9 +12,6 @@ from PySDM.dynamics import (
     Displacement,
     EulerianAdvection,
 )
-from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import ExponFrag
-from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 from PySDM.environments.kinematic_1d import Kinematic1D
 from PySDM.impl.mesh import Mesh
@@ -80,10 +77,11 @@ class Simulation:
                 builder.add_dynamic(
                     Collision(
                         collision_kernel=Geometric(collection_efficiency=1),
-                        coalescence_efficiency=ConstEc(Ec=0.95),
-                        breakup_efficiency=ConstEb(Eb=1.0),
-                        fragmentation_function=ExponFrag(scale=100 * si.um),
+                        coalescence_efficiency=settings.coalescence_efficiency,
+                        breakup_efficiency=settings.breakup_efficiency,
+                        fragmentation_function=settings.fragmentation_function,
                         adaptive=settings.coalescence_adaptive,
+                        warn_overflows=settings.warn_breakup_overflow,
                     )
                 )
             else:
@@ -113,10 +111,20 @@ class Simulation:
             PySDM_products.AmbientTemperature(name="T"),
             PySDM_products.AmbientWaterVapourMixingRatio(name="qv"),
             PySDM_products.WaterMixingRatio(
-                name="ql", unit="g/kg", radius_range=settings.cloud_water_radius_range
+                name="qc", unit="g/kg", radius_range=settings.cloud_water_radius_range
+            ),
+            PySDM_products.WaterMixingRatio(
+                name="qc_igel",
+                unit="g/kg",
+                radius_range=settings.cloud_water_radius_range_igel,
             ),
             PySDM_products.WaterMixingRatio(
                 name="qr", unit="g/kg", radius_range=settings.rain_water_radius_range
+            ),
+            PySDM_products.WaterMixingRatio(
+                name="qr_igel",
+                unit="g/kg",
+                radius_range=settings.rain_water_radius_range_igel,
             ),
             PySDM_products.AmbientDryAirDensity(name="rhod"),
             PySDM_products.AmbientDryAirPotentialTemperature(name="thd"),
@@ -135,9 +143,9 @@ class Simulation:
                 name="na", radius_range=(0, settings.cloud_water_radius_range[0])
             ),
             PySDM_products.MeanRadius(),
-            PySDM_products.RipeningRate(),
-            PySDM_products.ActivatingRate(),
-            PySDM_products.DeactivatingRate(),
+            PySDM_products.RipeningRate(name="ripening"),
+            PySDM_products.ActivatingRate(name="activating"),
+            PySDM_products.DeactivatingRate(name="deactivating"),
             PySDM_products.EffectiveRadius(
                 radius_range=settings.cloud_water_radius_range
             ),
@@ -148,6 +156,33 @@ class Simulation:
                 radius_range=settings.rain_water_radius_range,
             ),
         ]
+        if settings.precip:
+            products.append(
+                PySDM_products.CollisionRatePerGridbox(
+                    name="collision_rate",
+                ),
+            )
+            products.append(
+                PySDM_products.CollisionRateDeficitPerGridbox(
+                    name="collision_deficit",
+                ),
+            )
+            products.append(
+                PySDM_products.CoalescenceRatePerGridbox(
+                    name="coalescence_rate",
+                ),
+            )
+        if settings.breakup and settings.precip:
+            products.append(
+                PySDM_products.BreakupRateDeficitPerGridbox(
+                    name="breakup_deficit",
+                )
+            )
+            products.append(
+                PySDM_products.BreakupRatePerGridbox(
+                    name="breakup_rate",
+                )
+            )
         self.particulator = builder.build(attributes=attributes, products=products)
 
         self.output_attributes = {
