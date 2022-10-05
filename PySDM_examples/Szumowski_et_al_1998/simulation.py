@@ -114,7 +114,7 @@ class Simulation:
             )
         if (
             self.settings.processes["coalescence"]
-            and ~self.settings.processes["breakup"]
+            and not self.settings.processes["breakup"]
         ):
             if self.settings.processes["coalescence"]:
                 builder.add_dynamic(
