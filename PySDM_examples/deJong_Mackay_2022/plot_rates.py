@@ -1,6 +1,4 @@
-import matplotlib as mpl
 import numpy as np
-from atmos_cloud_sim_uj_utils import show_plot
 from matplotlib import pyplot
 from PySDM.physics.constants import convert_to, si
 
