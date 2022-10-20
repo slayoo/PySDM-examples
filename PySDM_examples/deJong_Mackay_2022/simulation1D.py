@@ -1,17 +1,17 @@
-import numpy as np
 import PySDM.products as PySDM_products
-from PySDM.dynamics import Collision, Coalescence
 from PySDM.backends import CPU
+from PySDM.dynamics import Coalescence, Collision
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 
 from PySDM_examples.Shipway_and_Hill_2012.simulation import Simulation as SimulationSH
+
 
 class Simulation1D(SimulationSH):
     def __init__(self, settings, backend=CPU):
         super().__init__(settings, backend)
 
         if settings.breakup:
-            self.builder.remove_dynamic(                    
+            self.builder.remove_dynamic(
                 Coalescence(
                     collision_kernel=Geometric(collection_efficiency=1),
                     adaptive=settings.coalescence_adaptive,

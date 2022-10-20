@@ -26,7 +26,9 @@ class Simulation:
         self.save_spec_and_attr_times = settings.save_spec_and_attr_times
         self.number_of_bins = settings.number_of_bins
 
-        self.particular = None
+        self.particulator = None
+        self.output_attributes = None
+        self.output_products = None
 
         self.builder = Builder(
             n_sd=settings.n_sd, backend=backend(formulae=settings.formulae)
@@ -74,12 +76,12 @@ class Simulation:
         )
         self.builder.add_dynamic(EulerianAdvection(self.mpdata))
         if settings.precip:
-                self.builder.add_dynamic(
-                    Coalescence(
-                        collision_kernel=Geometric(collection_efficiency=1),
-                        adaptive=settings.coalescence_adaptive,
-                    )
+            self.builder.add_dynamic(
+                Coalescence(
+                    collision_kernel=Geometric(collection_efficiency=1),
+                    adaptive=settings.coalescence_adaptive,
                 )
+            )
         displacement = Displacement(
             enable_sedimentation=settings.precip,
             precipitation_counting_level_index=int(
@@ -151,9 +153,11 @@ class Simulation:
                     name="coalescence_rate",
                 ),
             )
-    
+
     def build(self):
-        self.particulator = self.builder.build(attributes=self.attributes, products=self.products)
+        self.particulator = self.builder.build(
+            attributes=self.attributes, products=self.products
+        )
 
         self.output_attributes = {
             "cell origin": [],

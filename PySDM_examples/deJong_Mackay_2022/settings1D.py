@@ -8,6 +8,7 @@ from PySDM.physics import si
 
 from PySDM_examples.Shipway_and_Hill_2012 import Settings as SettingsSH
 
+
 class Settings1D(SettingsSH):
     def __dir__(self) -> Iterable[str]:
         return (
@@ -28,7 +29,7 @@ class Settings1D(SettingsSH):
             "r_bins_edges_dry",
             "r_bins_edges",
         )
-    
+
     def __init__(
         self,
         *,
@@ -45,14 +46,14 @@ class Settings1D(SettingsSH):
         warn_breakup_overflow: bool = False
     ):
         super().__init__(
-            n_sd_per_gridbox=n_sd_per_gridbox, 
-            p0=p0, 
-            kappa=kappa, 
-            rho_times_w_1=rho_times_w_1, 
+            n_sd_per_gridbox=n_sd_per_gridbox,
+            p0=p0,
+            kappa=kappa,
+            rho_times_w_1=rho_times_w_1,
             particles_per_volume_STP=particles_per_volume_STP,
-            dt=dt, 
-            dz=dz, 
-            precip=precip
+            dt=dt,
+            dz=dz,
+            precip=precip,
         )
         self.breakup = breakup
         self.stochastic_breakup = stochastic_breakup
@@ -64,7 +65,9 @@ class Settings1D(SettingsSH):
             self.fragmentation_function = Straub2010Nf(vmin=1 * si.um**3)
         else:
             self.coalescence_efficiency = ConstEc(Ec=0.95)
-            frag_scale_r = 30*si.um
-            frag_scale_v = frag_scale_r**3*4/3*np.pi
-            self.fragmentation_function=Gaussian(mu=frag_scale_v, sigma=frag_scale_v/2, vmin=(1*si.um)**3, nfmax=20)
+            frag_scale_r = 30 * si.um
+            frag_scale_v = frag_scale_r**3 * 4 / 3 * np.pi
+            self.fragmentation_function = Gaussian(
+                mu=frag_scale_v, sigma=frag_scale_v / 2, vmin=(1 * si.um) ** 3, nfmax=20
+            )
         self.warn_breakup_overflow = warn_breakup_overflow
