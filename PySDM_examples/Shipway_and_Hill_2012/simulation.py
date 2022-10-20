@@ -7,7 +7,6 @@ from PySDM.backends import CPU
 from PySDM.dynamics import (
     AmbientThermodynamics,
     Coalescence,
-    Collision,
     Condensation,
     Displacement,
     EulerianAdvection,
@@ -25,17 +24,20 @@ class Simulation:
         self.nt = settings.nt
         self.z0 = -settings.particle_reservoir_depth
         self.save_spec_and_attr_times = settings.save_spec_and_attr_times
+        self.number_of_bins = settings.number_of_bins
 
-        builder = Builder(
+        self.particular = None
+
+        self.builder = Builder(
             n_sd=settings.n_sd, backend=backend(formulae=settings.formulae)
         )
-        mesh = Mesh(
+        self.mesh = Mesh(
             grid=(settings.nz,),
             size=(settings.z_max + settings.particle_reservoir_depth,),
         )
-        env = Kinematic1D(
+        self.env = Kinematic1D(
             dt=settings.dt,
-            mesh=mesh,
+            mesh=self.mesh,
             thd_of_z=settings.thd,
             rhod_of_z=settings.rhod,
             z0=-settings.particle_reservoir_depth,
@@ -60,9 +62,9 @@ class Simulation:
         )
         self.g_factor_vec = settings.rhod(_z_vec)
 
-        builder.set_environment(env)
-        builder.add_dynamic(AmbientThermodynamics())
-        builder.add_dynamic(
+        self.builder.set_environment(self.env)
+        self.builder.add_dynamic(AmbientThermodynamics())
+        self.builder.add_dynamic(
             Condensation(
                 adaptive=settings.condensation_adaptive,
                 rtol_thd=settings.condensation_rtol_thd,
@@ -70,21 +72,9 @@ class Simulation:
                 update_thd=settings.condensation_update_thd,
             )
         )
-        builder.add_dynamic(EulerianAdvection(self.mpdata))
+        self.builder.add_dynamic(EulerianAdvection(self.mpdata))
         if settings.precip:
-            if settings.breakup:
-                builder.add_dynamic(
-                    Collision(
-                        collision_kernel=Geometric(collection_efficiency=1),
-                        coalescence_efficiency=settings.coalescence_efficiency,
-                        breakup_efficiency=settings.breakup_efficiency,
-                        fragmentation_function=settings.fragmentation_function,
-                        adaptive=settings.coalescence_adaptive,
-                        warn_overflows=settings.warn_breakup_overflow,
-                    )
-                )
-            else:
-                builder.add_dynamic(
+                self.builder.add_dynamic(
                     Coalescence(
                         collision_kernel=Geometric(collection_efficiency=1),
                         adaptive=settings.coalescence_adaptive,
@@ -96,15 +86,15 @@ class Simulation:
                 settings.particle_reservoir_depth / settings.dz
             ),
         )
-        builder.add_dynamic(displacement)
-        attributes = env.init_attributes(
+        self.builder.add_dynamic(displacement)
+        self.attributes = self.env.init_attributes(
             spatial_discretisation=spatial_sampling.Pseudorandom(),
             spectral_discretisation=spectral_sampling.ConstantMultiplicity(
                 spectrum=settings.wet_radius_spectrum_per_mass_of_dry_air
             ),
             kappa=settings.kappa,
         )
-        products = [
+        self.products = [
             PySDM_products.AmbientRelativeHumidity(name="RH", unit="%"),
             PySDM_products.AmbientPressure(name="p"),
             PySDM_products.AmbientTemperature(name="T"),
@@ -113,17 +103,7 @@ class Simulation:
                 name="qc", unit="g/kg", radius_range=settings.cloud_water_radius_range
             ),
             PySDM_products.WaterMixingRatio(
-                name="qc_igel",
-                unit="g/kg",
-                radius_range=settings.cloud_water_radius_range_igel,
-            ),
-            PySDM_products.WaterMixingRatio(
                 name="qr", unit="g/kg", radius_range=settings.rain_water_radius_range
-            ),
-            PySDM_products.WaterMixingRatio(
-                name="qr_igel",
-                unit="g/kg",
-                radius_range=settings.rain_water_radius_range_igel,
             ),
             PySDM_products.AmbientDryAirDensity(name="rhod"),
             PySDM_products.AmbientDryAirPotentialTemperature(name="thd"),
@@ -156,33 +136,24 @@ class Simulation:
             ),
         ]
         if settings.precip:
-            products.append(
+            self.products.append(
                 PySDM_products.CollisionRatePerGridbox(
                     name="collision_rate",
                 ),
             )
-            products.append(
+            self.products.append(
                 PySDM_products.CollisionRateDeficitPerGridbox(
                     name="collision_deficit",
                 ),
             )
-            products.append(
+            self.products.append(
                 PySDM_products.CoalescenceRatePerGridbox(
                     name="coalescence_rate",
                 ),
             )
-        if settings.breakup and settings.precip:
-            products.append(
-                PySDM_products.BreakupRateDeficitPerGridbox(
-                    name="breakup_deficit",
-                )
-            )
-            products.append(
-                PySDM_products.BreakupRatePerGridbox(
-                    name="breakup_rate",
-                )
-            )
-        self.particulator = builder.build(attributes=attributes, products=products)
+    
+    def build(self):
+        self.particulator = self.builder.build(attributes=self.attributes, products=self.products)
 
         self.output_attributes = {
             "cell origin": [],
@@ -193,11 +164,11 @@ class Simulation:
         self.output_products = {}
         for k, v in self.particulator.products.items():
             if len(v.shape) == 1:
-                self.output_products[k] = np.zeros((mesh.grid[-1], self.nt + 1))
+                self.output_products[k] = np.zeros((self.mesh.grid[-1], self.nt + 1))
             elif len(v.shape) == 2:
                 number_of_time_sections = len(self.save_spec_and_attr_times)
                 self.output_products[k] = np.zeros(
-                    (mesh.grid[-1], settings.number_of_bins, number_of_time_sections)
+                    (self.mesh.grid[-1], self.number_of_bins, number_of_time_sections)
                 )
 
     def save_scalar(self, step):

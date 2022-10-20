@@ -3,9 +3,6 @@ from typing import Iterable
 import numpy as np
 from PySDM import Formulae
 from PySDM.dynamics import condensation
-from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN, Straub2010Nf
-from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc, Straub2010Ec
 from PySDM.initialisation import spectra
 from PySDM.physics import si
 from pystrict import strict
@@ -14,7 +11,6 @@ from scipy.interpolate import interp1d
 from scipy.misc import derivative
 
 
-@strict
 class Settings:
     def __dir__(self) -> Iterable[str]:
         return (
@@ -26,8 +22,6 @@ class Settings:
             "dt",
             "dz",
             "precip",
-            "breakup",
-            "stochastic_breakup",
             "z_max",
             "t_max",
             "cloud_water_radius_range",
@@ -47,9 +41,6 @@ class Settings:
         dt: float = 1 * si.s,
         dz: float = 25 * si.m,
         precip: bool = True,
-        breakup: bool = False,
-        stochastic_breakup: bool = False,
-        warn_breakup_overflow: bool = True
     ):
         self.formulae = Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox
@@ -60,21 +51,9 @@ class Settings:
         self.dt = dt
         self.dz = dz
         self.precip = precip
-        self.breakup = breakup
-        self.stochastic_breakup = stochastic_breakup
 
         self.z_max = 3000 * si.metres
         self.t_max = 60 * si.minutes
-
-        self.breakup_efficiency = ConstEb(Eb=1.0)
-
-        if stochastic_breakup:
-            self.coalescence_efficiency = Straub2010Ec()
-            self.fragmentation_function = Straub2010Nf(vmin=1 * si.um**3)
-        else:
-            self.coalescence_efficiency = ConstEc(Ec=0.95)
-            self.fragmentation_function = AlwaysN(n=4)
-        self.warn_breakup_overflow = warn_breakup_overflow
 
         t_1 = 600 * si.s
         self.rho_times_w = (
