@@ -101,31 +101,35 @@ class Simulation:
             self.settings.processes["coalescence"]
             and self.settings.processes["breakup"]
         ):
-            Collision(
-                collision_kernel=self.settings.kernel,
-                enable_breakup=self.settings.processes["breakup"],
-                coalescence_efficiency=self.settings.coalescence_efficiency,
-                breakup_efficiency=self.settings.breakup_efficiency,
-                fragmentation_function=self.settings.breakup_fragmentation,
-                adaptive=self.settings.coalescence_adaptive,
-                dt_coal_range=self.settings.coalescence_dt_coal_range,
-                substeps=self.settings.coalescence_substeps,
-                optimized_random=self.settings.coalescence_optimized_random,
+            builder.add_dynamic(
+                Collision(
+                    collision_kernel=self.settings.kernel,
+                    enable_breakup=self.settings.processes["breakup"],
+                    coalescence_efficiency=self.settings.coalescence_efficiency,
+                    breakup_efficiency=self.settings.breakup_efficiency,
+                    fragmentation_function=self.settings.breakup_fragmentation,
+                    adaptive=self.settings.coalescence_adaptive,
+                    dt_coal_range=self.settings.coalescence_dt_coal_range,
+                    substeps=self.settings.coalescence_substeps,
+                    optimized_random=self.settings.coalescence_optimized_random,
+                )
             )
-        if (
+        elif (
             self.settings.processes["coalescence"]
             and not self.settings.processes["breakup"]
         ):
-            if self.settings.processes["coalescence"]:
-                builder.add_dynamic(
-                    Coalescence(
-                        collision_kernel=self.settings.kernel,
-                        adaptive=self.settings.coalescence_adaptive,
-                        dt_coal_range=self.settings.coalescence_dt_coal_range,
-                        substeps=self.settings.coalescence_substeps,
-                        optimized_random=self.settings.coalescence_optimized_random,
-                    )
+            builder.add_dynamic(
+                Coalescence(
+                    collision_kernel=self.settings.kernel,
+                    adaptive=self.settings.coalescence_adaptive,
+                    dt_coal_range=self.settings.coalescence_dt_coal_range,
+                    substeps=self.settings.coalescence_substeps,
+                    optimized_random=self.settings.coalescence_optimized_random,
                 )
+            )
+        assert not (
+            self.settings.processes["breakup"] and not self.settings.processes["coalescence"]
+        )
         if self.settings.processes["freezing"]:
             builder.add_dynamic(Freezing(singular=self.settings.freezing_singular))
 
