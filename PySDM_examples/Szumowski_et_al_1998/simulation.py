@@ -128,7 +128,8 @@ class Simulation:
                 )
             )
         assert not (
-            self.settings.processes["breakup"] and not self.settings.processes["coalescence"]
+            self.settings.processes["breakup"]
+            and not self.settings.processes["coalescence"]
         )
         if self.settings.processes["freezing"]:
             builder.add_dynamic(Freezing(singular=self.settings.freezing_singular))
