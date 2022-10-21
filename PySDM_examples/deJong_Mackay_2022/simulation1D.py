@@ -11,13 +11,7 @@ class Simulation1D(SimulationSH):
         super().__init__(settings, backend)
 
         if settings.breakup:
-            self.builder.remove_dynamic(
-                Coalescence(
-                    collision_kernel=Geometric(collection_efficiency=1),
-                    adaptive=settings.coalescence_adaptive,
-                )
-            )
-            self.builder.add_dynamic(
+            self.builder.replace_dynamic(
                 Collision(
                     collision_kernel=Geometric(collection_efficiency=1),
                     coalescence_efficiency=settings.coalescence_efficiency,
