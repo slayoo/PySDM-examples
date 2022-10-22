@@ -76,12 +76,7 @@ class Simulation:
         )
         self.builder.add_dynamic(EulerianAdvection(self.mpdata))
         if settings.precip:
-            self.builder.add_dynamic(
-                Coalescence(
-                    collision_kernel=Geometric(collection_efficiency=1),
-                    adaptive=settings.coalescence_adaptive,
-                )
-            )
+            self.add_collision_dyanamic(builder, settings, products)
         displacement = Displacement(
             enable_sedimentation=settings.precip,
             precipitation_counting_level_index=int(
@@ -154,7 +149,6 @@ class Simulation:
                 ),
             )
 
-    def build(self):
         self.particulator = self.builder.build(
             attributes=self.attributes, products=self.products
         )
@@ -174,6 +168,15 @@ class Simulation:
                 self.output_products[k] = np.zeros(
                     (self.mesh.grid[-1], self.number_of_bins, number_of_time_sections)
                 )
+
+    @staticmethod
+    def add_collision_dynamic(builder, settings, _):
+        builder.add_dynamic(
+            Coalescence(
+                collision_kernel=Geometric(collection_efficiency=1),
+                adaptive=settings.coalescence_adaptive,
+            )
+        )
 
     def save_scalar(self, step):
         for k, v in self.particulator.products.items():

@@ -7,11 +7,10 @@ from PySDM_examples.Shipway_and_Hill_2012.simulation import Simulation as Simula
 
 
 class Simulation1D(SimulationSH):
-    def __init__(self, settings, backend=CPU):
-        super().__init__(settings, backend)
-
+    @staticmethod
+    def add_collision_dynamic(builder, settings, products):
         if settings.breakup:
-            self.builder.replace_dynamic(
+            builder.add_dynamic(
                 Collision(
                     collision_kernel=Geometric(collection_efficiency=1),
                     coalescence_efficiency=settings.coalescence_efficiency,
@@ -21,13 +20,15 @@ class Simulation1D(SimulationSH):
                     warn_overflows=settings.warn_breakup_overflow,
                 )
             )
-            self.products.append(
+            products.append(
                 PySDM_products.BreakupRateDeficitPerGridbox(
                     name="breakup_deficit",
                 )
             )
-            self.products.append(
+            products.append(
                 PySDM_products.BreakupRatePerGridbox(
                     name="breakup_rate",
                 )
             )
+        else:
+            SimulationSH.add_collision_dynamic(builder, settings, products)
