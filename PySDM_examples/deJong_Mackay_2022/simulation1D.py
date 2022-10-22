@@ -1,5 +1,4 @@
 import PySDM.products as PySDM_products
-from PySDM.backends import CPU
 from PySDM.dynamics import Collision
 from PySDM.dynamics.collisions.collision_kernels import Geometric
 

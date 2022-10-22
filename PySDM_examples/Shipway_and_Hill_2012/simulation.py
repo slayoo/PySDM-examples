@@ -75,8 +75,11 @@ class Simulation:
             )
         )
         self.builder.add_dynamic(EulerianAdvection(self.mpdata))
+
+        self.products = []
         if settings.precip:
-            self.add_collision_dyanamic(builder, settings, products)
+            self.add_collision_dynamic(self.builder, settings, self.products)
+
         displacement = Displacement(
             enable_sedimentation=settings.precip,
             precipitation_counting_level_index=int(
@@ -91,7 +94,7 @@ class Simulation:
             ),
             kappa=settings.kappa,
         )
-        self.products = [
+        self.products += [
             PySDM_products.AmbientRelativeHumidity(name="RH", unit="%"),
             PySDM_products.AmbientPressure(name="p"),
             PySDM_products.AmbientTemperature(name="T"),
