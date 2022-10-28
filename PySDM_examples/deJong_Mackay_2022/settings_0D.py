@@ -11,12 +11,15 @@ from pystrict import strict
 
 @strict
 class Settings0D:
-    def __init__(self):
-        self.formulae = Formulae()
+    def __init__(self, fragmentation: object = None):
+        self.frag_scale = Formulae().trivia.volume(radius=100 * si.micrometres)
+        self.fragmentation = fragmentation or ExponFrag(scale=self.frag_scale)
+        self.formulae = Formulae(
+            fragmentation_function=self.fragmentation.__class__.__name__
+        )
         self.n_sd = 2**10
         self.n_part = 100 / si.cm**3
         self.X0 = self.formulae.trivia.volume(radius=30.531 * si.micrometres)
-        self.frag_scale = self.formulae.trivia.volume(radius=100 * si.micrometres)
         self.dv = 1 * si.m**3
         self.norm_factor = self.n_part * self.dv
         self.rho = 1000 * si.kilogram / si.metre**3
@@ -27,7 +30,6 @@ class Settings0D:
         self._steps = [0]
         self.kernel = Geometric()
         self.coal_eff = Berry1967()
-        self.fragmentation = ExponFrag(scale=self.frag_scale)
         self.vmin = 0.0
         self.break_eff = ConstEb(1.0)  # no "bouncing"
         self.spectrum = Exponential(norm_factor=self.norm_factor, scale=self.X0)

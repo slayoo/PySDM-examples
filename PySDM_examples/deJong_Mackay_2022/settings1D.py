@@ -1,6 +1,7 @@
 from typing import Iterable
 
 import numpy as np
+from PySDM import Formulae
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
 from PySDM.dynamics.collisions.breakup_fragmentations import Gaussian, Straub2010Nf
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc, Straub2010Ec
@@ -45,6 +46,17 @@ class Settings1D(SettingsSH):
         stochastic_breakup: bool = False,
         warn_breakup_overflow: bool = False
     ):
+        if stochastic_breakup:
+            coalescence_efficiency = Straub2010Ec()
+            fragmentation_function = Straub2010Nf(vmin=1 * si.um**3)
+        else:
+            coalescence_efficiency = ConstEc(Ec=0.95)
+            frag_scale_r = 30 * si.um
+            frag_scale_v = frag_scale_r**3 * 4 / 3 * np.pi
+            fragmentation_function = Gaussian(
+                mu=frag_scale_v, sigma=frag_scale_v / 2, vmin=(1 * si.um) ** 3, nfmax=20
+            )
+
         super().__init__(
             n_sd_per_gridbox=n_sd_per_gridbox,
             p0=p0,
@@ -54,20 +66,14 @@ class Settings1D(SettingsSH):
             dt=dt,
             dz=dz,
             precip=precip,
+            formulae=Formulae(
+                fragmentation_function=fragmentation_function.__class__.__name__
+            ),
         )
+
         self.breakup = breakup
         self.stochastic_breakup = stochastic_breakup
-
         self.breakup_efficiency = ConstEb(Eb=1.0)
-
-        if stochastic_breakup:
-            self.coalescence_efficiency = Straub2010Ec()
-            self.fragmentation_function = Straub2010Nf(vmin=1 * si.um**3)
-        else:
-            self.coalescence_efficiency = ConstEc(Ec=0.95)
-            frag_scale_r = 30 * si.um
-            frag_scale_v = frag_scale_r**3 * 4 / 3 * np.pi
-            self.fragmentation_function = Gaussian(
-                mu=frag_scale_v, sigma=frag_scale_v / 2, vmin=(1 * si.um) ** 3, nfmax=20
-            )
+        self.coalescence_efficiency = coalescence_efficiency
+        self.fragmentation_function = fragmentation_function
         self.warn_breakup_overflow = warn_breakup_overflow
