@@ -36,7 +36,9 @@ class Settings:
         self.break_eff = ConstEb(1.0)
         self.spectrum = Gamma(norm_factor=self.norm_factor, k=self.k, theta=self.theta)
         self.rho = rho_w
-        self.formulae = Formulae(fragmentation_function=self.fragmentation.__class__.__name__)
+        self.formulae = Formulae(
+            fragmentation_function=self.fragmentation.__class__.__name__
+        )
 
     @property
     def output_steps(self):
