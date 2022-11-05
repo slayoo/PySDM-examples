@@ -11,7 +11,7 @@ from pystrict import strict
 
 @strict
 class Settings0D:
-    def __init__(self, seed: int=None):
+    def __init__(self, seed: int = None):
         self.formulae = Formulae(**({} if seed is None else {"seed": seed}))
         self.n_sd = 2**10
         self.n_part = 100 / si.cm**3
