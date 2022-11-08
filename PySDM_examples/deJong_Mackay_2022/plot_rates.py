@@ -1,5 +1,5 @@
 import numpy as np
-from matplotlib import pyplot
+from matplotlib import colors, pyplot
 from PySDM.physics.constants import convert_to, si
 
 
@@ -14,22 +14,31 @@ def plot_ax(
     contour_lvl2=None,
     cmin=None,
     cmax=None,
+    clog=False,
 ):
     tgrid = output["t"].copy()
     zgrid = output["z"].copy()
     convert_to(zgrid, si.km)
 
     if cmin is not None and cmax is not None:
-        levels = np.linspace(cmin, cmax, 20)
+        if clog:
+            levels = np.logspace(np.log10(cmin), np.log10(cmax), 20)
+            data = output[var].copy()
+            data[data == 0] = np.nan
+        else:
+            levels = np.linspace(cmin, cmax, 20)
+            data = output[var]
+
         mesh = ax.contourf(
             tgrid,
             zgrid,
-            output[var],
+            data,
             levels=levels,
             cmap="BuPu",
             vmin=cmin,
             vmax=cmax,
             extend="max",
+            norm=colors.LogNorm() if clog else None,
         )
     else:
         mesh = ax.contourf(
@@ -59,7 +68,10 @@ def plot_ax(
     ax.set_ylabel("z [km]")
     ax.set_ylim(0, None)
 
-    cbar_levels = np.linspace(cmin, cmax, 5, endpoint="True")
+    if clog:
+        cbar_levels = np.logspace(np.log10(cmin), np.log10(cmax), 5, endpoint="True")
+    else:
+        cbar_levels = np.linspace(cmin, cmax, 5, endpoint="True")
     cbar = pyplot.colorbar(mesh, fraction=0.05, location="top", ax=ax)
     cbar.set_ticks(cbar_levels)
     cbar.set_label(qlabel)
