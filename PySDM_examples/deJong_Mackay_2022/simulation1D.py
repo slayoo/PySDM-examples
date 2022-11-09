@@ -1,4 +1,3 @@
-import numpy as np
 import PySDM.products as PySDM_products
 from PySDM.dynamics import Collision
 from PySDM.dynamics.collisions.collision_kernels import Geometric

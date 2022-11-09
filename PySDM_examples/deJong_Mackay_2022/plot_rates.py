@@ -6,8 +6,7 @@ from PySDM.physics.constants import convert_to, si
 def log_kwargs(clog, cmin, cmax):
     if clog:
         return {"norm": colors.LogNorm(vmin=cmin, vmax=cmax)}
-    else:
-        return {"vmin": cmin, "vmax": cmax}
+    return {"vmin": cmin, "vmax": cmax}
 
 
 def plot_ax(
@@ -28,11 +27,9 @@ def plot_ax(
     convert_to(zgrid, si.km)
 
     if clog:
-        levels = np.logspace(np.log10(cmin), np.log10(cmax), 20)
         data = output[var].copy()
         data[data == 0] = np.nan
     else:
-        levels = np.linspace(cmin, cmax, 20)
         data = output[var]
 
     mesh = ax.pcolormesh(
