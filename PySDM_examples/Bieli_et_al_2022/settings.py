@@ -11,8 +11,8 @@ from pystrict import strict
 
 @strict
 class Settings:
-    def __init__(self):
-        self.formulae = Formulae()
+    def __init__(self, formulae: Formulae = None):
+        self.formulae = formulae or Formulae()
         self.n_sd = 2**12
         self.n_part = 1e4 / si.cm**3
         self.theta = 0.33e-9 * si.g / rho_w
