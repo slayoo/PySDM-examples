@@ -56,6 +56,7 @@ def make_particulator(
     builder.set_environment(env)
     env["T"] = initial_temperature
     env["RH"] = A_VALUE_LARGER_THAN_ONE
+    env["rhod"] = 1.0
 
     builder.add_dynamic(Freezing(singular=singular))
 
