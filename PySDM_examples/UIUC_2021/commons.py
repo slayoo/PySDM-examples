@@ -1,4 +1,4 @@
-""" ABIFM and INAS parameters for use with Formulae constants """
+""" ABIFM and INAS parameters and other constants """
 
 from PySDM import Formulae
 from PySDM.physics import si
