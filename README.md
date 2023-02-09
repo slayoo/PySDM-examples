@@ -33,11 +33,11 @@ Please use the [PySDM issue-tracking](https://github.com/atmos-cloud-sim-uj/PySD
       [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Bieli_et_al_2022/make_fig_3.ipynb)
       [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Bieli_et_al_2022/make_fig_3.ipynb)
 
-- [deJong Mackay 2022](under preparation) (Box model, coalescence and breakup with Berry 1967 coalescence efficiency):
-    - Fig. 1:
-      [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/make_fig_1.ipynb)
-      [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/deJong_Mackay_2022/make_fig_1.ipynb)
-      [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/make_fig_1.ipynb)
+- [deJong et al. 2023](https://doi.org/10.5194/egusphere-2022-1243) (Box model, coalescence and breakup with Berry 1967 coalescence efficiency):
+    - Figs. 3-5:
+      [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/box_sensitivities.ipynb)
+      [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/deJong_Mackay_2022/box_sensitivities.ipynb)
+      [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/box_sensitivities.ipynb)
   
 ### 0D box-model immersion freezing-only example:
 - [Alpert & Knopf 2016](https://doi.org/10.5194/acp-16-2083-2016) (stochastic immersion freezing with monodisperse vs. lognormal immersed surface areas):
@@ -124,11 +124,11 @@ Please use the [PySDM issue-tracking](https://github.com/atmos-cloud-sim-uj/PySD
     [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Shipway_and_Hill_2012/fig_1.ipynb)
     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/Shipway_and_Hill_2012/fig_1.ipynb)
 
-- [deJong Mackay 2022](under preparation) (Kinematic setup as in Shipway and Hill, including breakup with Berry 1967 coalescence efficiency):
-    - Fig. 1:
-      [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/make_fig_2.ipynb)
-      [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/deJong_Mackay_2022/make_fig_2.ipynb)
-      [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/make_fig_2.ipynb)
+- [deJong et al. 2023](https://doi.org/10.5194/egusphere-2022-1243) (Kinematic setup as in Shipway and Hill, including breakup with Berry 1967 coalescence efficiency):
+    - Figs. 6-8:
+      [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/rainshaft_1D.ipynb)
+      [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/deJong_Mackay_2022/rainshaft_1D.ipynb)
+      [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PySDM-examples/blob/main/PySDM_examples/deJong_Mackay_2022/rainshaft_1D.ipynb)
 
 ### 2D kinematic (prescribed-flow) Sc-mimicking aerosol collisional processing (warm-rain) examples:
 - [Arabas et al. 2015](https://doi.org/10.5194/gmd-8-1677-2015) 
