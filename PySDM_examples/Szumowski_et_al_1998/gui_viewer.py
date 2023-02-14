@@ -1,7 +1,7 @@
 import warnings
 
 import numpy as np
-from atmos_cloud_sim_uj_utils import save_and_make_link
+from open_atmos_jupyter_utils import save_and_make_link
 from matplotlib import pyplot, rcParams
 from PySDM.physics import constants as const
 
