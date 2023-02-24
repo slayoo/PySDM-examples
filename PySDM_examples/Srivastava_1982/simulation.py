@@ -1,8 +1,13 @@
 import numpy as np
 from matplotlib import pyplot
 
+# breakup
+# refactor and polish
+# notebooks
+# smoke tests
 
-class EquationsWithBreakup:
+
+class Equations:
     def __init__(self, alpha_star, beta_star):
         amb = alpha_star - beta_star
         self._alpha_star = alpha_star
@@ -115,9 +120,7 @@ def test2():
     y = {n_sd: {prod: np.empty(n_steps + 1) for prod in prods} for n_sd in n_sds}
 
     M = total_volume * rho
-    mean_mass = EquationsWithBreakup.eq10(
-        M, dt, c, total_volume, total_number_0, rho, x
-    )
+    mean_mass = Equations.eq10(M, dt, c, total_volume, total_number_0, rho, x)
 
     for n_sd in n_sds:
         builder = Builder(backend=backend_class(formulae), n_sd=n_sd)
@@ -182,7 +185,7 @@ def test2():
                 x_theory = np.logspace(
                     np.log10(x[0] if x[0] != 0 else eps), np.log10(x[-1]), 1000
                 )
-                mean_mass_log = EquationsWithBreakup.eq10(
+                mean_mass_log = Equations.eq10(
                     M, dt, c, total_volume, total_number_0, rho, x_theory
                 )
                 print(x_theory)
