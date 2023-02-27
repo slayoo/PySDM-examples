@@ -2,9 +2,12 @@ import numpy as np
 from matplotlib import pyplot
 
 # breakup
-# refactor and polish
 # notebooks
+# simulation ensembles for different seed but same n_sd
+# hardcode seed
+# different initial conditions
 # smoke tests
+# GPU
 
 
 class Equations:
@@ -109,7 +112,7 @@ def test2():
     c = 0.0001  # TODO: unit?
     dt = 1 * si.s
     dv = 1 * si.m**3
-    n_steps = 64
+    n_steps = 256
     prods = ("total volume", "total number", "super-particle count")
 
     formulae = Formulae(fragmentation_function="ConstantSize")
