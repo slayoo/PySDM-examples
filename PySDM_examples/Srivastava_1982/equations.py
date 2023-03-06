@@ -6,17 +6,33 @@ class Equations:
     (https://doi.org/10.1175/1520-0469(1982)039%3C1317:ASMOPC%3E2.0.CO;2)
     note: all equations assume constant fragment mass"""
 
-    @staticmethod
-    def eq6_alpha_star(*, alpha, c, M):
-        return alpha / c / M
+    @property
+    def alpha_star(self):
+        """see eq. 6"""
+        return self._alpha_star or self.alpha / self.c / self.M
 
-    @staticmethod
-    def eq6_beta_star(*, beta, c):
-        return beta / c
+    @property
+    def beta_star(self):
+        """see eq. 6"""
+        return self._beta_star or self.beta / self.c
 
-    def __init__(self, alpha_star=None, beta_star=None):
+    def tau(self, t):
+        """see eq. 6"""
+        return self.c * self.M * t
+
+    def __init__(
+        self, *, M=None, c=None, alpha=None, beta=None, alpha_star=None, beta_star=None
+    ):
+        if alpha_star and (alpha or M or c):
+            raise ValueError("conflicting parameter")
+        self.M = M
+        self.c = c
+        self.alpha = alpha
+        self.beta = beta
+
         self._beta_star = beta_star
         self._alpha_star = alpha_star
+
         if alpha_star and beta_star:
             amb = alpha_star - beta_star
             self._A = amb / 2 / alpha_star
@@ -29,27 +45,27 @@ class Equations:
         """equilibrium (τ→∞) mean mass under collisions and spontaneous breakup
         (no collisional breakup)
         expressed as a ratio to fragment mass (i.e., dimensionless)"""
-        return 0.5 + (0.25 + 0.5 / self._alpha_star) ** 0.5
+        equilibrium_mean_mass_to_frag_mass_ratio = (
+            0.5 + (0.25 + 0.5 / self.alpha_star) ** 0.5
+        )
+        return equilibrium_mean_mass_to_frag_mass_ratio
 
-    def eq13(self, M, dt, c, total_volume, total_number_0, rho, x, frag_mass):
+    def eq13(self, m0, tau):
         """mean mass expressed as a ratio to fragment mass as a function of
         dimensionless scaled time (τ) under coalescence and collisional breakup
         (no spontaneous breakup)"""
-        t = dt * x
-        tau = c * M * t
-        mean_volume_0 = total_volume / total_number_0
-        m0 = rho * mean_volume_0
-        mean_mass = self._eq13(m0 / frag_mass, tau)
-        return mean_mass
+        mean_mass_to_frag_mass_ratio = self._eq13(m0, tau)
+        return mean_mass_to_frag_mass_ratio
 
     def _eq13(self, m0, tau):
-        ebt = np.exp(-self._beta_star * tau)
-        return m0 * ebt + (1 + 0.5 / self._beta_star) * (1 - ebt)
+        ebt = np.exp(-self.beta_star * tau)
+        return m0 * ebt + (1 + 0.5 / self.beta_star) * (1 - ebt)
 
     def eq14(self):
         """equilibrium (τ→∞) mean mass expressed as a ratio to fragment mass for
         under collisional merging and breakup (no spontaneous breakup)"""
-        return 1 + 0.5 / self._beta_star
+        equilibrium_mean_mass_to_frag_mass_ratio = 1 + 0.5 / self.beta_star
+        return equilibrium_mean_mass_to_frag_mass_ratio
 
     def eq15(self, m):
         return (m - self._A) * self._B
@@ -58,15 +74,23 @@ class Equations:
         return (y / self._B) + self._A
 
     def eq16(self, tau):
-        return tau * self._alpha_star / self._B
+        return tau * self.alpha_star / self._B
 
-    @staticmethod
-    def eq10(M, dt, c, total_volume, total_number_0, rho, x, frag_mass):
-        """ration of mean mass to fragment size mass as a function of scaled time
+    def eq10(self, m0, tau):
+        """ratio of mean mass to fragment size mass as a function of scaled time
         for the case of coalescence only"""
-        t = dt * x
-        tau = c * M * t
-        mean_volume_0 = total_volume / total_number_0
-        m0 = rho * mean_volume_0 / frag_mass
-        mean_mass = m0 + tau / 2
-        return mean_mass
+        mean_mass_to_frag_mass_ratio = m0 + tau / 2
+        return mean_mass_to_frag_mass_ratio
+
+
+class EquationsHelpers:
+    def __init__(self, total_volume, total_number_0, rho, frag_mass):
+        self.total_volume = total_volume
+        self.total_number_0 = total_number_0
+        self.rho = rho
+        self.frag_mass = frag_mass
+
+    def m0(self):
+        mean_volume_0 = self.total_volume / self.total_number_0
+        m0 = self.rho * mean_volume_0 / self.frag_mass
+        return m0

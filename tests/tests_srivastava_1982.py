@@ -10,23 +10,10 @@ class TestEquations:
             # arrange
             si = constants_defaults.si
             frag_mass = 1 * si.kg
-            eqs = Equations(
-                alpha_star=Equations.eq6_alpha_star(
-                    alpha=1 / si.s, c=1 / si.s, M=1 * si.kg / frag_mass
-                )
-            )
+            eqs = Equations(alpha=1 / si.s, c=1 / si.s, M=1 * si.kg / frag_mass)
 
             # act
-            m_e = eqs.eq10(
-                M=1 * si.kg / frag_mass,
-                dt=1 * si.s,
-                c=1 / si.s,
-                total_volume=1 * si.m**3,
-                total_number_0=1,
-                rho=1 * si.kg / si.m**3,
-                x=1,
-                frag_mass=frag_mass,
-            )
+            m_e = eqs.eq10(m0=0.1 * si.kg / frag_mass, tau=eqs.tau(1 * si.s))
 
             # assert
             assert m_e.check("[]")
@@ -36,11 +23,7 @@ class TestEquations:
             # arrange
             si = constants_defaults.si
             frag_mass = 1 * si.kg
-            eqs = Equations(
-                alpha_star=Equations.eq6_alpha_star(
-                    alpha=1 / si.s, c=1 / si.s, M=1 * si.kg / frag_mass
-                )
-            )
+            eqs = Equations(alpha=1 / si.s, c=1 / si.s, M=1 * si.kg / frag_mass)
 
             # act
             m_e = eqs.eq12()
@@ -53,21 +36,10 @@ class TestEquations:
             # arrange
             si = constants_defaults.si
             frag_mass = 1 * si.kg
-            eqs = Equations(
-                beta_star=Equations.eq6_beta_star(beta=1 / si.s, c=1 / si.s)
-            )
+            eqs = Equations(beta=1 / si.s, c=1 / si.s, M=1 * si.kg / frag_mass)
 
             # act
-            m_e = eqs.eq13(
-                M=1 * si.kg / frag_mass,
-                dt=1 * si.s,
-                c=1 / si.s,
-                total_volume=1 * si.m**3,
-                total_number_0=1,
-                rho=1 * si.kg / si.m**3,
-                x=1,
-                frag_mass=frag_mass,
-            )
+            m_e = eqs.eq13(m0=0.1 * si.kg / frag_mass, tau=eqs.tau(1 * si.s))
 
             # assert
             assert m_e.check("[]")
@@ -76,9 +48,7 @@ class TestEquations:
         with DimensionalAnalysis():
             # arrange
             si = constants_defaults.si
-            eqs = Equations(
-                beta_star=Equations.eq6_beta_star(beta=1 / si.s, c=1 / si.s)
-            )
+            eqs = Equations(beta_star=1 * si.dimensionless)
 
             # act
             m_e = eqs.eq14()
