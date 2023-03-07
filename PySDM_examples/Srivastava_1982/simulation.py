@@ -3,6 +3,9 @@ from matplotlib import pyplot
 from PySDM import Builder, Formulae
 from PySDM.backends import CPU
 from PySDM.dynamics import Coalescence, Collision
+from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
+from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN, ConstantSize
+from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import ConstantK
 from PySDM.environments import Box
 from PySDM.physics import si
@@ -64,7 +67,7 @@ def test_eq_13_14():
     pyplot.show()
 
 
-def test2():
+def test_coalescence():
     backend_class = CPU
 
     rho = 1 * si.kg / si.m**3
@@ -171,23 +174,7 @@ def test2():
     pyplot.show()
 
 
-def test3():
-    from PySDM import Builder, Formulae
-    from PySDM.backends import CPU
-    from PySDM.dynamics import Collision
-    from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-    from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN, ConstantSize
-    from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
-    from PySDM.dynamics.collisions.collision_kernels import ConstantK
-    from PySDM.environments import Box
-    from PySDM.physics import si
-    from PySDM.products import (
-        MeanRadius,
-        SuperDropletCountPerGridbox,
-        VolumeFirstMoment,
-        ZerothMoment,
-    )
-
+def test_coalescence_and_breakup():
     backend_class = CPU
 
     rho = 1 * si.kg / si.m**3
