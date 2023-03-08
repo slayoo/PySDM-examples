@@ -3,6 +3,7 @@ from PySDM.backends import CPU
 from PySDM.builder import Builder
 from PySDM.dynamics import Coalescence, Collision
 from PySDM.environments import Box
+from PySDM.formulae import Formulae
 from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
 from PySDM.physics import si
 from PySDM.products.collision.collision_rates import (
@@ -11,18 +12,31 @@ from PySDM.products.collision.collision_rates import (
     CollisionRateDeficitPerGridbox,
     CollisionRatePerGridbox,
 )
-from PySDM.products.size_spectral import ParticleVolumeVersusRadiusLogarithmSpectrum
+from PySDM.products.size_spectral import (
+    NumberSizeSpectrum,
+    ParticleSizeSpectrumPerVolume,
+    ParticleVolumeVersusRadiusLogarithmSpectrum,
+)
 
 
-def run_box_breakup(settings, steps=None, backend_class=CPU):
+def run_box_breakup(
+    settings, steps=None, backend_class=CPU, sample_in_radius=False, return_nv=False
+):
     builder = Builder(n_sd=settings.n_sd, backend=backend_class(settings.formulae))
     env = Box(dv=settings.dv, dt=settings.dt)
     builder.set_environment(env)
     env["rhod"] = 1.0
     attributes = {}
-    attributes["volume"], attributes["n"] = ConstantMultiplicity(
-        settings.spectrum
-    ).sample(settings.n_sd)
+    if sample_in_radius:
+        diams, attributes["n"] = ConstantMultiplicity(settings.spectrum).sample(
+            settings.n_sd
+        )
+        radii = diams / 2
+        attributes["volume"] = Formulae().trivia.volume(radius=radii)
+    else:
+        attributes["volume"], attributes["n"] = ConstantMultiplicity(
+            settings.spectrum
+        ).sample(settings.n_sd)
     breakup = Collision(
         collision_kernel=settings.kernel,
         coalescence_efficiency=settings.coal_eff,
@@ -36,6 +50,7 @@ def run_box_breakup(settings, steps=None, backend_class=CPU):
         ParticleVolumeVersusRadiusLogarithmSpectrum(
             radius_bins_edges=settings.radius_bins_edges, name="dv/dlnr"
         ),
+        NumberSizeSpectrum(radius_bins_edges=settings.radius_bins_edges, name="N(v)"),
         CollisionRatePerGridbox(name="cr"),
         CollisionRateDeficitPerGridbox(name="crd"),
         CoalescenceRatePerGridbox(name="cor"),
@@ -48,9 +63,13 @@ def run_box_breakup(settings, steps=None, backend_class=CPU):
     y = np.ndarray((len(steps), len(settings.radius_bins_edges) - 1))
     rates = np.zeros((len(steps), 4))
     # run
+    if return_nv:
+        spectral_product = "N(v)"
+    else:
+        spectral_product = "dv/dlnr"
     for (i, step) in enumerate(steps):
         core.run(step - core.n_steps)
-        y[i] = core.products["dv/dlnr"].get()[0]
+        y[i] = core.products[spectral_product].get()[0]
         rates[i, 0] = core.products["cr"].get()
         rates[i, 1] = core.products["crd"].get()
         rates[i, 2] = core.products["cor"].get()
