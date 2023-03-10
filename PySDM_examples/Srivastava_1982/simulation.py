@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import numpy as np
 from PySDM import Builder, Formulae
 from PySDM.backends import CPU
@@ -6,12 +8,19 @@ from PySDM.products import SuperDropletCountPerGridbox, VolumeFirstMoment, Zerot
 
 
 class Simulation:
-    def __init__(self, n_steps, settings, collision_dynamic=None):
+    # PRODUCTS = namedtuple(
+    #     "_",
+    #     ("total_volume", "super_particle count", "total_number"),
+    # )(
+    #     total_volume=
+    # )
+
+    def __init__(self, n_steps, settings, collision_dynamic=None, seed=None):
         self.backend_class = CPU
         self.collision_dynamic = collision_dynamic
         self.settings = settings
 
-        formulae = Formulae(fragmentation_function="ConstantSize")
+        formulae = Formulae(fragmentation_function="ConstantSize", seed=seed)
 
         self.backend = self.backend_class(formulae)
         self.n_steps = n_steps
