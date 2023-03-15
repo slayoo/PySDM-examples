@@ -14,8 +14,12 @@ from .simulation import Simulation
 
 # notebooks
 # simulation ensembles for different seed but same n_sd
-# hardcode seed
-# different initial conditions
+#   (e.g., mean + min/max or inter-quartile range)
+
+# hardcode seed[s] (i.e., to be able to reproduce paper plots)
+
+# different initial conditions (currently flat with const multiplicity, worth checking )
+
 # smoke tests with asserts
 # GPU
 # unit test na frag_size > drop_size_0
@@ -123,25 +127,31 @@ def test_coalescence(plot=False):
         )
 
 
+# note: for breakup to be representable:
+#       - frag_mass must be smaller than drop size
+#       - breakup rate beta and the multiplicities must make sense :)
+#         (i.e., no total breakup in first timestep)
+
+
 @pytest.mark.parametrize(
-    "c, beta",
+    "case_title, c, beta, frag_mass",
     (
-        (0.001 / si.s, 1e-5),
-        (1e-5, 0.001 / si.s),
-        (0.001 / si.s, 0.001 / si.s),
+        ("merging only", 0.5e-6 / si.s, 1e-15 / si.s, -1 * si.g),
+        ("breakup only", 1e-15 / si.s, 1e-9 / si.s, 0.25 * si.g),
+        ("merge + break", 0.5e-6 / si.s, 1e-9 / si.s, 0.25 * si.g),
     ),
 )
-def test_coalescence_and_breakup(c, beta):
+def test_coalescence_and_breakup(case_title, c, beta, frag_mass):
     # arrange
     settings = Settings(
         srivastava_c=c,
         srivastava_beta=beta,
-        frag_mass=1 * si.g,
+        frag_mass=frag_mass,
         drop_mass_0=1 * si.g,
         dt=1 * si.s,
-        n_sds=[2**power for power in range(7, 10, 1)],
+        n_sds=[2**power for power in range(3, 14, 3)],
     )
-    n_steps = 512
+    n_steps = 2048
     # c in analytics is this settings.c or settings.c / collision_rate
     collision_rate = (
         settings.c + settings.beta
@@ -179,10 +189,8 @@ def test_coalescence_and_breakup(c, beta):
 
     x_log = compute_log_space(x)
     analytic_results = {
-        "coal": get_coalescence_analytic_results(equations, settings, m0, x, x_log),
-        "coal+break": get_breakup_coalescence_analytic_results(
-            equations, settings, m0, x, x_log
-        ),
+        # "coal": get_coalescence_analytic_results(equations, settings, m0, x, x_log),
+        "": get_breakup_coalescence_analytic_results(equations, settings, m0, x, x_log),
     }
 
     plot_simulation_results(
@@ -192,7 +200,8 @@ def test_coalescence_and_breakup(c, beta):
         pysdm_results=pysdm_results,
         analytic_results=analytic_results,
         analytic_keys=analytic_results.keys(),
-        title=f"frag mass: {settings.frag_mass}, c: {settings.c}, beta: {settings.beta}",
+        title=f"{case_title}: frag mass: {settings.frag_mass}g, c: {settings.c}/s, beta: {settings.beta}/s",
+        filename=f"{case_title.replace(' ', '_')}.pdf",
     )
 
 
@@ -304,6 +313,7 @@ def plot_simulation_results(
         )
 
         axs[i].legend()
+        axs[i].grid()
         axs[i].set_xlabel("step: t / dt")
 
     if filename:
@@ -327,4 +337,11 @@ def add_analytic_result_to_axs(axs_i, prod, x, res, key="", ylim=None):
         if prod == "total volume":
             axs_i.set_ylim(0, 1.25 * ylim)
 
-        axs_i.plot(x_theory, y_theory, label=f"analytic {key}", linestyle="-")
+        axs_i.plot(
+            x_theory,
+            y_theory,
+            label=f"analytic {key}",
+            linestyle=":",
+            linewidth=2,
+            color="black",
+        )
