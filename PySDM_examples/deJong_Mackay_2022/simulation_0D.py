@@ -4,7 +4,10 @@ from PySDM.builder import Builder
 from PySDM.dynamics import Coalescence, Collision
 from PySDM.environments import Box
 from PySDM.formulae import Formulae
-from PySDM.initialisation.sampling.spectral_sampling import ConstantMultiplicity
+from PySDM.initialisation.sampling.spectral_sampling import (
+    ConstantMultiplicity,
+    Logarithmic,
+)
 from PySDM.physics import si
 from PySDM.products.collision.collision_rates import (
     BreakupRatePerGridbox,
@@ -28,9 +31,7 @@ def run_box_breakup(
     env["rhod"] = 1.0
     attributes = {}
     if sample_in_radius:
-        diams, attributes["n"] = ConstantMultiplicity(settings.spectrum).sample(
-            settings.n_sd
-        )
+        diams, attributes["n"] = Logarithmic(settings.spectrum).sample(settings.n_sd)
         radii = diams / 2
         attributes["volume"] = Formulae().trivia.volume(radius=radii)
     else:
@@ -61,6 +62,7 @@ def run_box_breakup(
     if steps is None:
         steps = settings.output_steps
     y = np.ndarray((len(steps), len(settings.radius_bins_edges) - 1))
+
     rates = np.zeros((len(steps), 4))
     # run
     if return_nv:
