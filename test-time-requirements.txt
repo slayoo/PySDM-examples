@@ -7,5 +7,5 @@ MarkupSafe<2.1.0  # https://github.com/aws/aws-sam-cli/issues/3661
 Pillow<9.1.0  # https://github.com/python-pillow/Pillow/blob/0606f02860d0c4449bc047a6187043b6188a7404/docs/releasenotes/9.1.0.rst#deprecations
 ipywidgets<8.0.3
 
-PySDM @ git+https://github.com/open-atmos/PySDM@add9dbb#egg=PySDM
+PySDM @ git+https://github.com/slayoo/PySDM@133265e#egg=PySDM
 PyMPDATA @ git+https://github.com/open-atmos/PyMPDATA@d3179a5#egg=PyMPDATA
