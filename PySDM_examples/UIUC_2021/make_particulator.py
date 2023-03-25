@@ -43,11 +43,11 @@ def make_particulator(
     )
     if singular:
         attributes["freezing temperature"], _, attributes["n"] = sampling.sample(
-            backend, n_sd
+            backend=backend, n_sd=n_sd
         )
     else:
         _, attributes["immersed surface area"], attributes["n"] = sampling.sample(
-            backend, n_sd
+            backend=backend, n_sd=n_sd
         )
     attributes["n"] *= total_particle_number
 
