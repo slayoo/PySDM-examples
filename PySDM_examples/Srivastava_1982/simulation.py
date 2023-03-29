@@ -8,56 +8,71 @@ from PySDM.products import SuperDropletCountPerGridbox, VolumeFirstMoment, Zerot
 
 
 class Simulation:
-    # PRODUCTS = namedtuple(
-    #     "_",
-    #     ("total_volume", "super_particle count", "total_number"),
-    # )(
-    #     total_volume=
-    # )
-
-    def __init__(self, n_steps, settings, collision_dynamic=None, seed=None):
-        self.backend_class = CPU
+    def __init__(self, n_steps, settings, collision_dynamic=None):
         self.collision_dynamic = collision_dynamic
         self.settings = settings
-
-        formulae = Formulae(fragmentation_function="ConstantSize", seed=seed)
-
-        self.backend = self.backend_class(formulae)
         self.n_steps = n_steps
 
         self.simulation_res = {
-            n_sd: {prod: np.empty(n_steps + 1) for prod in self.settings.prods}
+            n_sd: {
+                prod: {
+                    "min": np.full(n_steps + 1, +np.inf),
+                    "max": np.full(n_steps + 1, -np.inf),
+                    "avg": np.zeros(n_steps + 1),
+                }
+                for prod in self.settings.prods
+            }
             for n_sd in self.settings.n_sds
         }
 
-    def run(self, x):
+    def run(self, x, seeds):
         for n_sd in self.settings.n_sds:
-            builder = Builder(backend=self.backend, n_sd=n_sd)
-            builder.set_environment(Box(dt=self.settings.dt, dv=self.settings.dv))
-            builder.add_dynamic(self.collision_dynamic)
-            particulator = builder.build(
-                products=(
-                    VolumeFirstMoment(name="total volume"),
-                    SuperDropletCountPerGridbox(name="super-particle count"),
-                    ZerothMoment(name="total number"),
-                ),
-                attributes={
-                    "n": np.full(n_sd, self.settings.total_number_0 / n_sd),
-                    "volume": np.full(
-                        n_sd, self.settings.total_volume / self.settings.total_number_0
+            for seed in seeds:
+                builder = Builder(
+                    backend=CPU(
+                        formulae=Formulae(
+                            fragmentation_function="ConstantSize", seed=seed
+                        )
                     ),
-                },
-            )
+                    n_sd=n_sd,
+                )
+                builder.set_environment(Box(dt=self.settings.dt, dv=self.settings.dv))
+                builder.add_dynamic(self.collision_dynamic)
+                particulator = builder.build(
+                    products=(
+                        SuperDropletCountPerGridbox(name="super-particle count"),
+                        VolumeFirstMoment(
+                            name="total volume"
+                        ),  # TODO: effectively unused
+                        ZerothMoment(name="total number"),
+                    ),
+                    attributes={
+                        "n": np.full(n_sd, self.settings.total_number_0 / n_sd),
+                        "volume": np.full(
+                            n_sd,
+                            self.settings.total_volume / self.settings.total_number_0,
+                        ),
+                        # TODO: report actual total volume
+                    },
+                )
 
-            for i in range(len(x)):
-                if i != 0:
-                    particulator.run(steps=1)
-                for prod in self.settings.prods:
-                    self.simulation_res[n_sd][prod][i] = particulator.products[
-                        prod
-                    ].get()
+                for step in range(len(x)):
+                    if step != 0:
+                        particulator.run(steps=1)
+                    for prod in self.settings.prods:
+                        tmp = particulator.products[prod].get()
+                        self.simulation_res[n_sd][prod]["avg"][step] += tmp
+                        self.simulation_res[n_sd][prod]["max"][step] = max(
+                            self.simulation_res[n_sd][prod]["max"][step], tmp
+                        )
+                        self.simulation_res[n_sd][prod]["min"][step] = min(
+                            self.simulation_res[n_sd][prod]["min"][step], tmp
+                        )
+
+            for prod in self.settings.prods:
+                self.simulation_res[n_sd][prod]["avg"] /= len(seeds)
             np.testing.assert_allclose(
-                actual=self.simulation_res[n_sd]["total volume"],
+                actual=self.simulation_res[n_sd]["total volume"]["avg"],
                 desired=self.settings.total_volume,
                 rtol=1e-3,
             )

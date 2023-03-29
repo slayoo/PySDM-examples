@@ -1,9 +1,8 @@
 import numpy as np
-import pytest
 from matplotlib import pyplot
 from PySDM.dynamics import Coalescence, Collision
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
-from PySDM.dynamics.collisions.breakup_fragmentations import AlwaysN, ConstantSize
+from PySDM.dynamics.collisions.breakup_fragmentations import ConstantSize
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import ConstantK
 from PySDM.physics import si
@@ -11,10 +10,6 @@ from PySDM.physics import si
 from .equations import Equations, EquationsHelpers
 from .settings import Settings
 from .simulation import Simulation
-
-# notebooks
-# simulation ensembles for different seed but same n_sd
-#   (e.g., mean + min/max or inter-quartile range)
 
 # hardcode seed[s] (i.e., to be able to reproduce paper plots)
 
@@ -70,12 +65,15 @@ def test_eq_13_14():
     pyplot.show()
 
 
-def test_coalescence(plot=False):
+def coalescence_eq10(
+    settings=None, n_steps=256, n_realisations=2, title=None, plot=False
+):
     # arrange
-    settings = Settings(
+    seeds = [i for i in range(n_realisations)]
+    settings = settings or Settings(
         srivastava_c=0.0001 / si.s, n_sds=[2**power for power in range(3, 11, 2)]
     )
-    n_steps = 256
+
     simulation = Simulation(
         n_steps=n_steps,
         settings=settings,
@@ -101,30 +99,37 @@ def test_coalescence(plot=False):
     }
 
     # act
-    sim_products = simulation.run(x)
+    sim_products = simulation.run(x, seeds=seeds)
     pysdm_results = get_pysdm_results(
         products=sim_products, total_volume=settings.total_volume
     )
 
+    plot_prods = [
+        k for k in list(pysdm_results.values())[0].keys() if k != "total volume"
+    ]
+
     # plot
-    plot_simulation_results(
-        settings.prods,
+    add_to_plot_simulation_results(
+        plot_prods,
         settings.n_sds,
         x,
         pysdm_results,
         analytic_results,
         analytic_keys=analytic_results.keys(),
+        title=title,
     )
     if plot:
-        pass  # TODO
+        pyplot.show()
 
     # assert
-    for assert_prod in ("total volume",):  # TODO: no longer total volume...
+    for assert_prod in ("mean drop volume / total volume %",):
         np.testing.assert_allclose(
-            actual=pysdm_results[settings.n_sds[-1]][assert_prod],
+            actual=pysdm_results[settings.n_sds[-1]][assert_prod]["avg"],
             desired=analytic_results["coal"][assert_prod],
             rtol=2e-1,
         )
+
+    return pysdm_results, analytic_results
 
 
 # note: for breakup to be representable:
@@ -133,25 +138,30 @@ def test_coalescence(plot=False):
 #         (i.e., no total breakup in first timestep)
 
 
-@pytest.mark.parametrize(
-    "case_title, c, beta, frag_mass",
-    (
+def coalescence_and_breakup_cases():
+    cases = (
         ("merging only", 0.5e-6 / si.s, 1e-15 / si.s, -1 * si.g),
         ("breakup only", 1e-15 / si.s, 1e-9 / si.s, 0.25 * si.g),
         ("merge + break", 0.5e-6 / si.s, 1e-9 / si.s, 0.25 * si.g),
-    ),
-)
-def test_coalescence_and_breakup(case_title, c, beta, frag_mass):
-    # arrange
-    settings = Settings(
-        srivastava_c=c,
-        srivastava_beta=beta,
-        frag_mass=frag_mass,
-        drop_mass_0=1 * si.g,
-        dt=1 * si.s,
-        n_sds=[2**power for power in range(3, 14, 3)],
     )
-    n_steps = 2048
+    for title, c, beta, frag_mass in cases:
+        settings = Settings(
+            srivastava_c=c,
+            srivastava_beta=beta,
+            frag_mass=frag_mass,
+            drop_mass_0=1 * si.g,
+            dt=1 * si.s,
+            n_sds=[2**power for power in range(3, 14, 3)],
+        )
+        coalescence_and_breakup_eq13(settings, title=title)
+
+
+def coalescence_and_breakup_eq13(
+    settings=None, n_steps=256, n_realisations=2, title=None, plot=False
+):
+    # arrange
+    seeds = [i for i in range(n_realisations)]
+
     # c in analytics is this settings.c or settings.c / collision_rate
     collision_rate = (
         settings.c + settings.beta
@@ -168,7 +178,7 @@ def test_coalescence_and_breakup(case_title, c, beta, frag_mass):
     )
 
     x = np.arange(n_steps + 1, dtype=float)
-    sim_products = simulation.run(x)
+    sim_products = simulation.run(x, seeds=seeds)
 
     pysdm_results = get_pysdm_results(
         products=sim_products, total_volume=settings.total_volume
@@ -193,25 +203,37 @@ def test_coalescence_and_breakup(case_title, c, beta, frag_mass):
         "": get_breakup_coalescence_analytic_results(equations, settings, m0, x, x_log),
     }
 
-    plot_simulation_results(
-        settings.prods,
+    prods = [k for k in list(pysdm_results.values())[0].keys() if k != "total volume"]
+
+    add_to_plot_simulation_results(
+        prods,
         settings.n_sds,
         x,
         pysdm_results=pysdm_results,
         analytic_results=analytic_results,
         analytic_keys=analytic_results.keys(),
-        title=f"{case_title}: frag mass: {settings.frag_mass}g, c: {settings.c}/s, beta: {settings.beta}/s",
-        filename=f"{case_title.replace(' ', '_')}.pdf",
+        title=f"{title}: frag mass: {settings.frag_mass}g, c: {settings.c}/s, beta: {settings.beta}/s",
     )
 
+    if plot:
+        pyplot.show()
 
+    return pysdm_results, analytic_results
+
+
+# TODO: not needed
 def get_pysdm_results(products, total_volume):
     pysdm_results = products
     for n_sd in products.keys():
-        pysdm_results[n_sd]["total volume"] = compute_drop_volume_total_volume_ratio(
-            mean_volume=products[n_sd]["total volume"] / products[n_sd]["total number"],
-            total_volume=total_volume,
-        )
+        pysdm_results[n_sd]["mean drop volume / total volume %"] = {}
+
+        for k in pysdm_results[n_sd]["total number"].keys():
+            pysdm_results[n_sd]["mean drop volume / total volume %"][
+                k
+            ] = compute_drop_volume_total_volume_ratio(
+                mean_volume=total_volume / products[n_sd]["total number"][k],
+                total_volume=total_volume,
+            )
     return pysdm_results
 
 
@@ -235,14 +257,14 @@ def get_breakup_coalescence_analytic_results(equations, settings, m0, x, x_log):
 
 def get_analytic_results(equations, settings, mean_mass, mean_mass_ratio):
     res = {}
-    res["total volume"] = compute_drop_volume_total_volume_ratio(
+    res["mean drop volume / total volume %"] = compute_drop_volume_total_volume_ratio(
         mean_volume=mean_mass / settings.rho, total_volume=settings.total_volume
     )
     res["total number"] = equations.M / mean_mass_ratio
     return res
 
 
-def compute_log_space(x, shift=0, num_points=1000, eps=1e-2):
+def compute_log_space(x, shift=0, num_points=1000, eps=1e-1):
     assert eps < x[1]
     return (
         np.logspace(np.log10(x[0] if x[0] != 0 else eps), np.log10(x[-1]), num_points)
@@ -250,23 +272,36 @@ def compute_log_space(x, shift=0, num_points=1000, eps=1e-2):
     )
 
 
+# TODO: not needed
 def compute_drop_volume_total_volume_ratio(mean_volume, total_volume):
     return mean_volume / total_volume * 100
 
 
-def plot_simulation_results(
+def add_to_plot_simulation_results(
     prods,
     n_sds,
     x,
     pysdm_results=None,
     analytic_results=None,
     analytic_keys=None,
-    filename=None,
     title=None,
 ):
     # pyplot.style.use("grayscale")
 
-    fig, axs = pyplot.subplots(len(prods), 1, figsize=(7, 4 * len(prods)))
+    fig = pyplot.figure(layout="constrained", figsize=(10, 4))
+    _wide = 14
+    _shrt = 8
+    _mrgn = 1
+    gs = fig.add_gridspec(nrows=20, ncols=2 * _wide + _shrt + 2 * _mrgn)
+    axs = (
+        fig.add_subplot(gs[2:, _shrt + _mrgn : _shrt + _mrgn + _wide]),
+        fig.add_subplot(gs[2:, 0:_shrt]),
+        fig.add_subplot(gs[2:, _shrt + 2 * _mrgn + _wide :]),
+    )
+    axs[1].set_ylim([0, 2100])
+
+    expons = [3, 7, 8, 9, 10, 11]
+    axs[1].set_yticks([2**e for e in expons], [f"$2^{{{e}}}$" for e in expons])
 
     if title:
         fig.suptitle(title)
@@ -275,7 +310,7 @@ def plot_simulation_results(
     for prod in prods:
         ylims[prod] = 0
         for n_sd in n_sds:
-            ylims[prod] = max(ylims[prod], np.amax(pysdm_results[n_sd][prod]))
+            ylims[prod] = max(ylims[prod], np.amax(pysdm_results[n_sd][prod]["max"]))
 
     for i, prod in enumerate(prods):
         # plot numeric
@@ -285,12 +320,13 @@ def plot_simulation_results(
 
                 axs[i].step(
                     x,
-                    y_model,
+                    y_model["avg"],
                     where="mid",
-                    label=f"n_sd = {n_sd}",
+                    label=f"initial #SD: {n_sd}",
                     linewidth=1 + np.log(n_sd) / 3,
                     # color=f'#8888{int(np.log(n_sd-4)*13)}'
                 )
+                axs[i].fill_between(x, y_model["min"], y_model["max"], alpha=0.2)
 
         # plot analytic
         if analytic_results:
@@ -308,17 +344,13 @@ def plot_simulation_results(
                 add_analytic_result_to_axs(axs[i], prod, x, analytic_results)
 
         # cosmetics
-        axs[i].set_ylabel(
-            "mean drop volume / total volume %" if prod == "total volume" else prod
-        )
+        axs[i].set_ylabel(prod)
 
-        axs[i].legend()
         axs[i].grid()
         axs[i].set_xlabel("step: t / dt")
 
-    if filename:
-        pyplot.savefig(filename)
-    pyplot.show()
+    axs[0].legend()
+    return fig, axs
 
 
 def add_analytic_result_to_axs(axs_i, prod, x, res, key="", ylim=None):
