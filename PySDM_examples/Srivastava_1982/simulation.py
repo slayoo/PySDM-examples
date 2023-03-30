@@ -14,14 +14,7 @@ class Simulation:
         self.n_steps = n_steps
 
         self.simulation_res = {
-            n_sd: {
-                prod: {
-                    "min": np.full(n_steps + 1, +np.inf),
-                    "max": np.full(n_steps + 1, -np.inf),
-                    "avg": np.zeros(n_steps + 1),
-                }
-                for prod in self.settings.prods
-            }
+            n_sd: {prod: {} for prod in self.settings.prods}
             for n_sd in self.settings.n_sds
         }
 
@@ -56,25 +49,23 @@ class Simulation:
                     },
                 )
 
+                for prod in self.settings.prods:
+                    self.simulation_res[n_sd][prod][seed] = np.full(
+                        self.n_steps + 1, -np.inf
+                    )
+
                 for step in range(len(x)):
                     if step != 0:
                         particulator.run(steps=1)
                     for prod in self.settings.prods:
-                        tmp = particulator.products[prod].get()
-                        self.simulation_res[n_sd][prod]["avg"][step] += tmp
-                        self.simulation_res[n_sd][prod]["max"][step] = max(
-                            self.simulation_res[n_sd][prod]["max"][step], tmp
-                        )
-                        self.simulation_res[n_sd][prod]["min"][step] = min(
-                            self.simulation_res[n_sd][prod]["min"][step], tmp
-                        )
+                        self.simulation_res[n_sd][prod][seed][
+                            step
+                        ] = particulator.products[prod].get()
 
-            for prod in self.settings.prods:
-                self.simulation_res[n_sd][prod]["avg"] /= len(seeds)
-            np.testing.assert_allclose(
-                actual=self.simulation_res[n_sd]["total volume"]["avg"],
-                desired=self.settings.total_volume,
-                rtol=1e-3,
-            )
+                np.testing.assert_allclose(
+                    actual=self.simulation_res[n_sd]["total volume"][seed],
+                    desired=self.settings.total_volume,
+                    rtol=1e-3,
+                )
 
         return self.simulation_res

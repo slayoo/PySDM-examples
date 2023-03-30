@@ -100,9 +100,11 @@ def coalescence_eq10(
 
     # act
     sim_products = simulation.run(x, seeds=seeds)
-    pysdm_results = get_pysdm_results(
+    secondary_products = get_pysdm_secondary_products(
         products=sim_products, total_volume=settings.total_volume
     )
+
+    pysdm_results = get_processed_results(secondary_products)
 
     plot_prods = [
         k for k in list(pysdm_results.values())[0].keys() if k != "total volume"
@@ -138,7 +140,7 @@ def coalescence_eq10(
 #         (i.e., no total breakup in first timestep)
 
 
-def coalescence_and_breakup_cases():
+def test_coalescence_and_breakup_cases():
     cases = (
         ("merging only", 0.5e-6 / si.s, 1e-15 / si.s, -1 * si.g),
         ("breakup only", 1e-15 / si.s, 1e-9 / si.s, 0.25 * si.g),
@@ -180,9 +182,11 @@ def coalescence_and_breakup_eq13(
     x = np.arange(n_steps + 1, dtype=float)
     sim_products = simulation.run(x, seeds=seeds)
 
-    pysdm_results = get_pysdm_results(
+    secondary_products = get_pysdm_secondary_products(
         products=sim_products, total_volume=settings.total_volume
     )
+
+    pysdm_results = get_processed_results(secondary_products)
 
     equations = Equations(
         M=settings.total_volume * settings.rho / settings.frag_mass,
@@ -221,8 +225,24 @@ def coalescence_and_breakup_eq13(
     return pysdm_results, analytic_results
 
 
+def get_processed_results(res):
+    processed = {}
+    for n_sd in res.keys():
+        processed[n_sd] = {}
+        for prod in res[n_sd].keys():
+            processed[n_sd][prod] = {}
+            all_runs = np.asarray(list(res[n_sd][prod].values()))
+
+            processed[n_sd][prod]["avg"] = np.mean(all_runs, axis=0)
+            processed[n_sd][prod]["max"] = np.max(all_runs, axis=0)
+            processed[n_sd][prod]["min"] = np.min(all_runs, axis=0)
+            processed[n_sd][prod]["std"] = np.std(all_runs, axis=0)
+
+    return processed
+
+
 # TODO: not needed
-def get_pysdm_results(products, total_volume):
+def get_pysdm_secondary_products(products, total_volume):
     pysdm_results = products
     for n_sd in products.keys():
         pysdm_results[n_sd]["mean drop volume / total volume %"] = {}
@@ -326,7 +346,12 @@ def add_to_plot_simulation_results(
                     linewidth=1 + np.log(n_sd) / 3,
                     # color=f'#8888{int(np.log(n_sd-4)*13)}'
                 )
-                axs[i].fill_between(x, y_model["min"], y_model["max"], alpha=0.2)
+                axs[i].fill_between(
+                    x,
+                    y_model["avg"] - y_model["std"],
+                    y_model["avg"] + y_model["std"],
+                    alpha=0.2,
+                )
 
         # plot analytic
         if analytic_results:
