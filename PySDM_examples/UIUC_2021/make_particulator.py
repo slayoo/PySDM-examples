@@ -35,19 +35,23 @@ def make_particulator(
         "heterogeneous_ice_nucleation_rate": "ABIFM",
     }
     formulae = Formulae(**formulae_ctor_args)
+    backend = CPU(formulae)
 
     sampling = SpectroGlacialSampling(
         freezing_temperature_spectrum=formulae.freezing_temperature_spectrum,
         insoluble_surface_spectrum=ABIFM_spec,
-        seed=formulae.seed,
     )
     if singular:
-        attributes["freezing temperature"], _, attributes["n"] = sampling.sample(n_sd)
+        attributes["freezing temperature"], _, attributes["n"] = sampling.sample(
+            backend=backend, n_sd=n_sd
+        )
     else:
-        _, attributes["immersed surface area"], attributes["n"] = sampling.sample(n_sd)
+        _, attributes["immersed surface area"], attributes["n"] = sampling.sample(
+            backend=backend, n_sd=n_sd
+        )
     attributes["n"] *= total_particle_number
 
-    builder = Builder(n_sd, CPU(formulae))
+    builder = Builder(n_sd, backend)
 
     env = Box(dt, volume)
     builder.set_environment(env)
