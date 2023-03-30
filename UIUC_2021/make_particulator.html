@@ -63,19 +63,23 @@ def make_particulator(
         &#34;heterogeneous_ice_nucleation_rate&#34;: &#34;ABIFM&#34;,
     }
     formulae = Formulae(**formulae_ctor_args)
+    backend = CPU(formulae)
 
     sampling = SpectroGlacialSampling(
         freezing_temperature_spectrum=formulae.freezing_temperature_spectrum,
         insoluble_surface_spectrum=ABIFM_spec,
-        seed=formulae.seed,
     )
     if singular:
-        attributes[&#34;freezing temperature&#34;], _, attributes[&#34;n&#34;] = sampling.sample(n_sd)
+        attributes[&#34;freezing temperature&#34;], _, attributes[&#34;n&#34;] = sampling.sample(
+            backend=backend, n_sd=n_sd
+        )
     else:
-        _, attributes[&#34;immersed surface area&#34;], attributes[&#34;n&#34;] = sampling.sample(n_sd)
+        _, attributes[&#34;immersed surface area&#34;], attributes[&#34;n&#34;] = sampling.sample(
+            backend=backend, n_sd=n_sd
+        )
     attributes[&#34;n&#34;] *= total_particle_number
 
-    builder = Builder(n_sd, CPU(formulae))
+    builder = Builder(n_sd, backend)
 
     env = Box(dt, volume)
     builder.set_environment(env)
@@ -135,19 +139,23 @@ def make_particulator(
         &#34;heterogeneous_ice_nucleation_rate&#34;: &#34;ABIFM&#34;,
     }
     formulae = Formulae(**formulae_ctor_args)
+    backend = CPU(formulae)
 
     sampling = SpectroGlacialSampling(
         freezing_temperature_spectrum=formulae.freezing_temperature_spectrum,
         insoluble_surface_spectrum=ABIFM_spec,
-        seed=formulae.seed,
     )
     if singular:
-        attributes[&#34;freezing temperature&#34;], _, attributes[&#34;n&#34;] = sampling.sample(n_sd)
+        attributes[&#34;freezing temperature&#34;], _, attributes[&#34;n&#34;] = sampling.sample(
+            backend=backend, n_sd=n_sd
+        )
     else:
-        _, attributes[&#34;immersed surface area&#34;], attributes[&#34;n&#34;] = sampling.sample(n_sd)
+        _, attributes[&#34;immersed surface area&#34;], attributes[&#34;n&#34;] = sampling.sample(
+            backend=backend, n_sd=n_sd
+        )
     attributes[&#34;n&#34;] *= total_particle_number
 
-    builder = Builder(n_sd, CPU(formulae))
+    builder = Builder(n_sd, backend)
 
     env = Box(dt, volume)
     builder.set_environment(env)
