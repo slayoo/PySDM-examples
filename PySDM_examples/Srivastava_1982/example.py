@@ -318,9 +318,11 @@ def add_to_plot_simulation_results(
         fig.add_subplot(gs[2:, 0:_shrt]),
         fig.add_subplot(gs[2:, _shrt + 2 * _mrgn + _wide :]),
     )
-    axs[1].set_ylim([0, 2100])
+    axs[1].set_ylim([6, 3500])
 
-    expons = [3, 7, 8, 9, 10, 11]
+    expons = [3, 5, 7, 9, 11]
+
+    axs[1].set_yscale("log")
     axs[1].set_yticks([2**e for e in expons], [f"$2^{{{e}}}$" for e in expons])
 
     if title:
