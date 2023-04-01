@@ -371,7 +371,10 @@ def add_to_plot_simulation_results(
                 add_analytic_result_to_axs(axs[i], prod, x, analytic_results)
 
         # cosmetics
-        axs[i].set_ylabel(prod)
+        if prod == "total number":
+            axs[i].set_ylabel("total droplet number")
+        else:
+            axs[i].set_ylabel(prod)
 
         axs[i].grid()
         axs[i].set_xlabel("step: t / dt")
