@@ -6,6 +6,8 @@ from PySDM.backends import CPU
 from PySDM.environments import Box
 from PySDM.products import SuperDropletCountPerGridbox, VolumeFirstMoment, ZerothMoment
 
+from .settings import SimProducts
+
 
 class Simulation:
     def __init__(self, n_steps, settings, collision_dynamic=None):
@@ -33,11 +35,13 @@ class Simulation:
                 builder.add_dynamic(self.collision_dynamic)
                 particulator = builder.build(
                     products=(
-                        SuperDropletCountPerGridbox(name="super-particle count"),
+                        SuperDropletCountPerGridbox(
+                            name=SimProducts.PySDM.super_particle_count.name
+                        ),
                         VolumeFirstMoment(
-                            name="total volume"
+                            name=SimProducts.PySDM.total_volume.name
                         ),  # TODO: effectively unused
-                        ZerothMoment(name="total number"),
+                        ZerothMoment(name=SimProducts.PySDM.total_numer.name),
                     ),
                     attributes={
                         "n": np.full(n_sd, self.settings.total_number_0 / n_sd),
@@ -63,7 +67,9 @@ class Simulation:
                         ] = particulator.products[prod].get()
 
                 np.testing.assert_allclose(
-                    actual=self.simulation_res[n_sd]["total volume"][seed],
+                    actual=self.simulation_res[n_sd][
+                        SimProducts.PySDM.total_volume.name
+                    ][seed],
                     desired=self.settings.total_volume,
                     rtol=1e-3,
                 )

@@ -3,8 +3,31 @@ from PySDM.physics import si
 DUMMY_FRAG_MASS = -1
 
 
+class SimProd:
+    def __init__(self, name, plot_title=None, plot_xscale=None, plot_yscale=None):
+        self.name = name
+        self.plot_title = plot_title or name
+        self.plot_yscale = plot_yscale
+        self.plot_xscale = plot_xscale
+
+
 class SimProducts:
-    total_numer = "total numer"
+    class PySDM:
+        total_numer = SimProd(
+            name="total numer",
+            plot_title="total droplet numer",
+            plot_xscale="log",
+            plot_yscale="log",
+        )
+        total_volume = SimProd(name="total volume")
+        super_particle_count = SimProd(
+            name="super-particle count", plot_xscale="log", plot_yscale="log"
+        )
+
+    class Computed:
+        mean_drop_volume_total_volume_ratio = SimProd(
+            name="mean drop volume / total volume %"
+        )
 
 
 class Settings:
@@ -32,7 +55,11 @@ class Settings:
         self.dv = dv
         self.frag_mass = frag_mass
 
-        self.prods = ("total volume", "total number", "super-particle count")
+        self.prods = (
+            SimProducts.PySDM.total_volume.name,
+            SimProducts.PySDM.total_numer.name,
+            SimProducts.PySDM.super_particle_count.name,
+        )
         self.n_sds = n_sds
 
         # TODO

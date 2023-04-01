@@ -8,7 +8,7 @@ from PySDM.dynamics.collisions.collision_kernels import ConstantK
 from PySDM.physics import si
 
 from .equations import Equations, EquationsHelpers
-from .settings import Settings
+from .settings import Settings, SimProducts
 from .simulation import Simulation
 
 # hardcode seed[s] (i.e., to be able to reproduce paper plots)
@@ -107,7 +107,9 @@ def coalescence_eq10(
     pysdm_results = get_processed_results(secondary_products)
 
     plot_prods = [
-        k for k in list(pysdm_results.values())[0].keys() if k != "total volume"
+        k
+        for k in list(pysdm_results.values())[0].keys()
+        if k != SimProducts.PySDM.total_volume.name
     ]
 
     # plot
@@ -124,12 +126,12 @@ def coalescence_eq10(
         pyplot.show()
 
     # assert
-    for assert_prod in ("mean drop volume / total volume %",):
-        np.testing.assert_allclose(
-            actual=pysdm_results[settings.n_sds[-1]][assert_prod]["avg"],
-            desired=analytic_results["coal"][assert_prod],
-            rtol=2e-1,
-        )
+    assert_prod = SimProducts.Computed.mean_drop_volume_total_volume_ratio.name
+    np.testing.assert_allclose(
+        actual=pysdm_results[settings.n_sds[-1]][assert_prod]["avg"],
+        desired=analytic_results["coal"][assert_prod],
+        rtol=2e-1,
+    )
 
     return pysdm_results, analytic_results
 
@@ -207,7 +209,11 @@ def coalescence_and_breakup_eq13(
         "": get_breakup_coalescence_analytic_results(equations, settings, m0, x, x_log),
     }
 
-    prods = [k for k in list(pysdm_results.values())[0].keys() if k != "total volume"]
+    prods = [
+        k
+        for k in list(pysdm_results.values())[0].keys()
+        if k != SimProducts.PySDM.total_volume.name
+    ]
 
     add_to_plot_simulation_results(
         prods,
@@ -245,13 +251,16 @@ def get_processed_results(res):
 def get_pysdm_secondary_products(products, total_volume):
     pysdm_results = products
     for n_sd in products.keys():
-        pysdm_results[n_sd]["mean drop volume / total volume %"] = {}
+        pysdm_results[n_sd][
+            SimProducts.Computed.mean_drop_volume_total_volume_ratio.name
+        ] = {}
 
-        for k in pysdm_results[n_sd]["total number"].keys():
-            pysdm_results[n_sd]["mean drop volume / total volume %"][
-                k
-            ] = compute_drop_volume_total_volume_ratio(
-                mean_volume=total_volume / products[n_sd]["total number"][k],
+        for k in pysdm_results[n_sd][SimProducts.PySDM.total_numer.name].keys():
+            pysdm_results[n_sd][
+                SimProducts.Computed.mean_drop_volume_total_volume_ratio.name
+            ][k] = compute_drop_volume_total_volume_ratio(
+                mean_volume=total_volume
+                / products[n_sd][SimProducts.PySDM.total_numer.name][k],
                 total_volume=total_volume,
             )
     return pysdm_results
@@ -277,10 +286,12 @@ def get_breakup_coalescence_analytic_results(equations, settings, m0, x, x_log):
 
 def get_analytic_results(equations, settings, mean_mass, mean_mass_ratio):
     res = {}
-    res["mean drop volume / total volume %"] = compute_drop_volume_total_volume_ratio(
+    res[
+        SimProducts.Computed.mean_drop_volume_total_volume_ratio.name
+    ] = compute_drop_volume_total_volume_ratio(
         mean_volume=mean_mass / settings.rho, total_volume=settings.total_volume
     )
-    res["total number"] = equations.M / mean_mass_ratio
+    res[SimProducts.PySDM.total_numer.name] = equations.M / mean_mass_ratio
     return res
 
 
@@ -322,7 +333,7 @@ def add_to_plot_simulation_results(
 
     expons = [3, 5, 7, 9, 11]
 
-    axs[1].set_yscale("log")
+    axs[1].set_yscale(SimProducts.PySDM.super_particle_count.plot_yscale)
     axs[1].set_yticks([2**e for e in expons], [f"$2^{{{e}}}$" for e in expons])
 
     if title:
@@ -346,7 +357,6 @@ def add_to_plot_simulation_results(
                     where="mid",
                     label=f"initial #SD: {n_sd}",
                     linewidth=1 + np.log(n_sd) / 3,
-                    # color=f'#8888{int(np.log(n_sd-4)*13)}'
                 )
                 axs[i].fill_between(
                     x,
@@ -371,10 +381,7 @@ def add_to_plot_simulation_results(
                 add_analytic_result_to_axs(axs[i], prod, x, analytic_results)
 
         # cosmetics
-        if prod == "total number":
-            axs[i].set_ylabel("total droplet number")
-        else:
-            axs[i].set_ylabel(prod)
+        axs[i].set_ylabel(SimProducts.PySDM.total_numer.plot_title)
 
         axs[i].grid()
         axs[i].set_xlabel("step: t / dt")
@@ -384,19 +391,19 @@ def add_to_plot_simulation_results(
 
 
 def add_analytic_result_to_axs(axs_i, prod, x, res, key="", ylim=None):
-    if prod != "super-particle count":
+    if prod != SimProducts.PySDM.super_particle_count.name:
         x_theory = x
         y_theory = res[prod]
 
-        if prod == "total number":
+        if prod == SimProducts.PySDM.total_numer.name:
             if y_theory.shape != x_theory.shape:
                 x_theory = compute_log_space(x)
 
-                axs_i.set_yscale("log")
-                axs_i.set_xscale("log")
+                axs_i.set_yscale(SimProducts.PySDM.total_numer.plot_yscale)
+                axs_i.set_xscale(SimProducts.PySDM.total_numer.plot_xscale)
                 axs_i.set_xlim(x_theory[0], None)
 
-        if prod == "total volume":
+        if prod == SimProducts.PySDM.total_volume.name:
             axs_i.set_ylim(0, 1.25 * ylim)
 
         axs_i.plot(
