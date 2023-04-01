@@ -216,7 +216,7 @@ def coalescence_and_breakup_eq13(
         pysdm_results=pysdm_results,
         analytic_results=analytic_results,
         analytic_keys=analytic_results.keys(),
-        title=f"{title}: frag mass: {settings.frag_mass}kg, c: {settings.c}/s, beta: {settings.beta}/s",
+        title=f"{title}: c: {settings.c}/s, beta: {settings.beta}/s, frag mass: {settings.frag_mass}kg",
     )
 
     if plot:
