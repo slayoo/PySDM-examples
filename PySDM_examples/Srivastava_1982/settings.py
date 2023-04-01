@@ -26,7 +26,8 @@ class SimProducts:
 
     class Computed:
         mean_drop_volume_total_volume_ratio = SimProd(
-            name="mean drop volume / total volume %"
+            name="mean drop volume / total volume %",
+            plot_title="mean drop mass / total mass %",
         )
 
 
