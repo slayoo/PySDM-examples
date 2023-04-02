@@ -222,7 +222,7 @@ def coalescence_and_breakup_eq13(
         pysdm_results=pysdm_results,
         analytic_results=analytic_results,
         analytic_keys=analytic_results.keys(),
-        title=f"{title}: c: {settings.c}/s, beta: {settings.beta}/s, frag mass: {settings.frag_mass}kg",
+        # title=f"{title}: c: {settings.c}/s, beta: {settings.beta}/s, frag mass: {settings.frag_mass}kg",
     )
 
     if plot:
@@ -341,9 +341,12 @@ def add_to_plot_simulation_results(
 
     ylims = {}
     for prod in prods:
-        ylims[prod] = 0
+        ylims[prod] = (np.inf, -np.inf)
         for n_sd in n_sds:
-            ylims[prod] = max(ylims[prod], np.amax(pysdm_results[n_sd][prod]["max"]))
+            ylims[prod] = (
+                min(ylims[prod][0], 0.75 * np.amin(pysdm_results[n_sd][prod]["avg"])),
+                max(ylims[prod][1], 1.25 * np.amax(pysdm_results[n_sd][prod]["avg"])),
+            )
 
     for i, prod in enumerate(prods):
         # plot numeric
@@ -381,10 +384,23 @@ def add_to_plot_simulation_results(
                 add_analytic_result_to_axs(axs[i], prod, x, analytic_results)
 
         # cosmetics
-        axs[i].set_ylabel(SimProducts.PySDM.total_numer.plot_title)
+        axs[i].set_ylabel(SimProducts.get_prod_by_name(prod).plot_title)
 
         axs[i].grid()
         axs[i].set_xlabel("step: t / dt")
+
+        if prod != SimProducts.PySDM.super_particle_count.name:
+            bottom = ylims[prod][0]
+            top = ylims[prod][1]
+
+            slope = (
+                pysdm_results[n_sds[-1]][prod]["avg"][-1]
+                - pysdm_results[n_sds[-1]][prod]["avg"][0]
+            )
+            if prod == SimProducts.PySDM.total_numer.name and slope < 0:
+                axs[i].set_ylim(0.2 * bottom, top)
+            else:
+                axs[i].set_ylim(bottom, top)
 
     axs[0].legend()
     return fig, axs
@@ -403,8 +419,8 @@ def add_analytic_result_to_axs(axs_i, prod, x, res, key="", ylim=None):
                 axs_i.set_xscale(SimProducts.PySDM.total_numer.plot_xscale)
                 axs_i.set_xlim(x_theory[0], None)
 
-        if prod == SimProducts.PySDM.total_volume.name:
-            axs_i.set_ylim(0, 1.25 * ylim)
+        # if prod == SimProducts.PySDM.total_volume.name:
+        #     axs_i.set_ylim(0, 1.25 * ylim)
 
         axs_i.plot(
             x_theory,

@@ -30,6 +30,15 @@ class SimProducts:
             plot_title="mean drop mass / total mass %",
         )
 
+    def get_prod_by_name(name):
+        for class_obj in (SimProducts.PySDM, SimProducts.Computed):
+            for attribute_str in dir(class_obj):
+                if not attribute_str.startswith("__"):
+                    attribute = getattr(class_obj, attribute_str)
+                    if attribute.name == name:
+                        return attribute
+        return None
+
 
 class Settings:
     """interprets parameters from Srivastava 1982 in PySDM context"""
