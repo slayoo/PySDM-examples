@@ -54,7 +54,7 @@ class Settings:
         dt=1 * si.s,
         dv=1 * si.m**3,
         drop_mass_0=1 * si.g,
-        rho=1 * si.kg / si.m**3,
+        rho=1 * si.kg / si.m**3,  # TODO: 1000 kg / m**3
         total_number=1e6
     ):
         self.rho = rho
