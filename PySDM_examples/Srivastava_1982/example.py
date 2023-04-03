@@ -11,16 +11,6 @@ from .equations import Equations, EquationsHelpers
 from .settings import Settings, SimProducts
 from .simulation import Simulation
 
-# hardcode seed[s] (i.e., to be able to reproduce paper plots)
-
-# different initial conditions (currently flat with const multiplicity, worth checking )
-
-# smoke tests with asserts
-# GPU
-# unit test na frag_size > drop_size_0
-# all rates should be in 1/dv units !
-# unit tests for same effect of changing dt or c
-
 NO_BOUNCE = ConstEb(1)
 
 
@@ -134,12 +124,6 @@ def coalescence_eq10(
     )
 
     return pysdm_results, analytic_results
-
-
-# note: for breakup to be representable:
-#       - frag_mass must be smaller than drop size
-#       - breakup rate beta and the multiplicities must make sense :)
-#         (i.e., no total breakup in first timestep)
 
 
 def test_coalescence_and_breakup_cases():
