@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import numpy as np
 from matplotlib import pyplot
 from PySDM.dynamics import Coalescence, Collision
@@ -5,110 +7,16 @@ from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
 from PySDM.dynamics.collisions.breakup_fragmentations import ConstantSize
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import ConstantK
-from PySDM.physics import si
 
 from .equations import Equations, EquationsHelpers
-from .settings import Settings, SimProducts
+from .settings import SimProducts
 from .simulation import Simulation
 
 NO_BOUNCE = ConstEb(1)
 
 
-def coalescence_eq10(
-    settings=None, n_steps=256, n_realisations=2, title=None, plot=False
-):
-    # arrange
-    seeds = [i for i in range(n_realisations)]
-    settings = settings or Settings(
-        srivastava_c=0.0001 / si.s, n_sds=[2**power for power in range(3, 11, 2)]
-    )
-
-    simulation = Simulation(
-        n_steps=n_steps,
-        settings=settings,
-        collision_dynamic=Coalescence(
-            collision_kernel=ConstantK(a=settings.srivastava_c)
-        ),
-    )
-
-    x = np.arange(n_steps + 1, dtype=float)
-
-    equations = Equations(
-        M=settings.total_volume * settings.rho / settings.frag_mass,
-        c=settings.srivastava_c,
-    )
-    equation_helper = EquationsHelpers(
-        settings.total_volume,
-        settings.total_number_0,
-        settings.rho,
-        frag_mass=settings.frag_mass,
-    )
-    m0 = equation_helper.m0()
-
-    x_log = compute_log_space(x)
-    analytic_results = {
-        "coal": get_coalescence_analytic_results(equations, settings, m0, x, x_log),
-    }
-
-    # act
-    sim_products = simulation.run(x, seeds=seeds)
-    secondary_products = get_pysdm_secondary_products(
-        products=sim_products, total_volume=settings.total_volume
-    )
-
-    pysdm_results = get_processed_results(secondary_products)
-
-    plot_prods = [
-        k
-        for k in list(pysdm_results.values())[0].keys()
-        if k != SimProducts.PySDM.total_volume.name
-    ]
-
-    # plot
-    add_to_plot_simulation_results(
-        plot_prods,
-        settings.n_sds,
-        x,
-        pysdm_results,
-        analytic_results,
-        title=title,
-    )
-    if plot:
-        pyplot.show()
-
-    # assert
-    assert_prod = SimProducts.Computed.mean_drop_volume_total_volume_ratio.name
-    np.testing.assert_allclose(
-        actual=pysdm_results[settings.n_sds[-1]][assert_prod]["avg"],
-        desired=analytic_results["coal"][assert_prod],
-        rtol=2e-1,
-    )
-
-    return pysdm_results, analytic_results
-
-
-def test_coalescence_and_breakup_cases():
-    cases = (
-        ("merging only", 0.5e-6 / si.s, 1e-15 / si.s, -1 * si.g),
-        ("breakup only", 1e-15 / si.s, 1e-9 / si.s, 0.25 * si.g),
-        ("merge + break", 0.5e-6 / si.s, 1e-9 / si.s, 0.25 * si.g),
-    )
-    for title, c, beta, frag_mass in cases:
-        settings = Settings(
-            srivastava_c=c,
-            srivastava_beta=beta,
-            frag_mass=frag_mass,
-            drop_mass_0=1 * si.g,
-            dt=1 * si.s,
-            dv=1 * si.m**3,
-            n_sds=[2**power for power in range(3, 14, 3)],
-            total_number=1e6,
-        )
-        coalescence_and_breakup_eq13(settings, title=title)
-
-
 def coalescence_and_breakup_eq13(
-    settings=None, n_steps=256, n_realisations=2, title=None, plot=False
+    settings=None, n_steps=256, n_realisations=2, title=None
 ):
     # arrange
     seeds = [i for i in range(n_realisations)]
@@ -167,10 +75,10 @@ def coalescence_and_breakup_eq13(
         title=title,
     )
 
-    if plot:
-        pyplot.show()
-
-    return pysdm_results, analytic_results
+    results = namedtuple("_", "pysdm, analytic")(
+        pysdm=pysdm_results, analytic=analytic_results
+    )
+    return results
 
 
 def get_processed_results(res):
