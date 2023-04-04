@@ -40,9 +40,7 @@ class Simulation:
                         SuperDropletCountPerGridbox(
                             name=SimProducts.PySDM.super_particle_count.name
                         ),
-                        VolumeFirstMoment(
-                            name=SimProducts.PySDM.total_volume.name
-                        ),  # TODO: effectively unused
+                        VolumeFirstMoment(name=SimProducts.PySDM.total_volume.name),
                         ZerothMoment(name=SimProducts.PySDM.total_numer.name),
                     ),
                     attributes={
@@ -51,7 +49,6 @@ class Simulation:
                             n_sd,
                             self.settings.total_volume / self.settings.total_number_0,
                         ),
-                        # TODO: report actual total volume
                     },
                 )
 

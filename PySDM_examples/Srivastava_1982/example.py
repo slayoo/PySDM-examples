@@ -18,7 +18,7 @@ def test_fig1():
     alpha_star = 1e-5
     beta_star = 1e-4
 
-    pyplot.title("fig 1")
+    pyplot.title("fig 1 (note: value from paper: m_E=215)")
     for m0 in (100, 450):
         eqs = Equations(alpha_star=alpha_star, beta_star=beta_star)
         tau = np.linspace(0, 900)
@@ -27,9 +27,7 @@ def test_fig1():
         y = (y0 + np.tanh(x)) / (1 + y0 * np.tanh(x))
         pyplot.plot(tau, eqs.eq15_m_of_y(y), label=f"$m(τ, m_0={m0})$")
 
-    pyplot.axhline(
-        eqs.eq12(), linestyle="--", label="$m_E$"
-    )  # TODO: value from paper = 215 ???
+    pyplot.axhline(eqs.eq12(), linestyle="--", label="$m_E$")
     pyplot.xlabel("τ")
     pyplot.ylabel("mass")
     pyplot.grid()
@@ -67,13 +65,16 @@ def coalescence_eq10(
     simulation = Simulation(
         n_steps=n_steps,
         settings=settings,
-        collision_dynamic=Coalescence(collision_kernel=ConstantK(a=settings.c)),
+        collision_dynamic=Coalescence(
+            collision_kernel=ConstantK(a=settings.srivastava_c)
+        ),
     )
 
     x = np.arange(n_steps + 1, dtype=float)
 
     equations = Equations(
-        M=settings.total_volume * settings.rho / settings.frag_mass, c=settings.c
+        M=settings.total_volume * settings.rho / settings.frag_mass,
+        c=settings.srivastava_c,
     )
     equation_helper = EquationsHelpers(
         settings.total_volume,
@@ -109,7 +110,6 @@ def coalescence_eq10(
         x,
         pysdm_results,
         analytic_results,
-        analytic_keys=analytic_results.keys(),
         title=title,
     )
     if plot:
@@ -141,6 +141,7 @@ def test_coalescence_and_breakup_cases():
             dt=1 * si.s,
             dv=1 * si.m**3,
             n_sds=[2**power for power in range(3, 14, 3)],
+            total_number=1e6,
         )
         coalescence_and_breakup_eq13(settings, title=title)
 
@@ -151,16 +152,13 @@ def coalescence_and_breakup_eq13(
     # arrange
     seeds = [i for i in range(n_realisations)]
 
-    # c in analytics is this settings.c or settings.c / collision_rate
-    collision_rate = (
-        settings.c + settings.beta
-    )  # TODO !!! there is no such notion in the paper
+    collision_rate = settings.srivastava_c + settings.srivastava_beta
     simulation = Simulation(
         n_steps=n_steps,
         settings=settings,
         collision_dynamic=Collision(
             collision_kernel=ConstantK(a=collision_rate),
-            coalescence_efficiency=ConstEc(settings.c / collision_rate),
+            coalescence_efficiency=ConstEc(settings.srivastava_c / collision_rate),
             breakup_efficiency=NO_BOUNCE,
             fragmentation_function=ConstantSize(c=settings.frag_mass / settings.rho),
         ),
@@ -177,8 +175,8 @@ def coalescence_and_breakup_eq13(
 
     equations = Equations(
         M=settings.total_volume * settings.rho / settings.frag_mass,
-        c=settings.c,
-        beta=settings.beta,
+        c=settings.srivastava_c,
+        beta=settings.srivastava_beta,
     )
     equation_helper = EquationsHelpers(
         settings.total_volume,
@@ -189,10 +187,9 @@ def coalescence_and_breakup_eq13(
     m0 = equation_helper.m0()
 
     x_log = compute_log_space(x)
-    analytic_results = {
-        # "coal": get_coalescence_analytic_results(equations, settings, m0, x, x_log),
-        "": get_breakup_coalescence_analytic_results(equations, settings, m0, x, x_log),
-    }
+    analytic_results = get_breakup_coalescence_analytic_results(
+        equations, settings, m0, x, x_log
+    )
 
     prods = [
         k
@@ -206,8 +203,7 @@ def coalescence_and_breakup_eq13(
         x,
         pysdm_results=pysdm_results,
         analytic_results=analytic_results,
-        analytic_keys=analytic_results.keys(),
-        # title=f"{title}: c: {settings.c}/s, beta: {settings.beta}/s, frag mass: {settings.frag_mass}kg",
+        title=title,
     )
 
     if plot:
@@ -299,11 +295,8 @@ def add_to_plot_simulation_results(
     x,
     pysdm_results=None,
     analytic_results=None,
-    analytic_keys=None,
     title=None,
 ):
-    # pyplot.style.use("grayscale")
-
     fig = pyplot.figure(layout="constrained", figsize=(10, 4))
     _wide = 14
     _shrt = 8
@@ -336,7 +329,7 @@ def add_to_plot_simulation_results(
     for i, prod in enumerate(prods):
         # plot numeric
         if pysdm_results:
-            for n_sd in n_sds:  # TODO reversed(n_sds):
+            for n_sd in n_sds:
                 y_model = pysdm_results[n_sd][prod]
 
                 axs[i].step(
@@ -355,18 +348,7 @@ def add_to_plot_simulation_results(
 
         # plot analytic
         if analytic_results:
-            if analytic_keys:
-                for key in analytic_keys:
-                    add_analytic_result_to_axs(
-                        axs[i],
-                        prod,
-                        x,
-                        analytic_results[key],
-                        key=key,
-                        ylim=ylims[prod],
-                    )
-            else:
-                add_analytic_result_to_axs(axs[i], prod, x, analytic_results)
+            add_analytic_result_to_axs(axs[i], prod, x, analytic_results)
 
         # cosmetics
         axs[i].set_ylabel(SimProducts.get_prod_by_name(prod).plot_title)
@@ -391,7 +373,7 @@ def add_to_plot_simulation_results(
     return fig, axs
 
 
-def add_analytic_result_to_axs(axs_i, prod, x, res, key="", ylim=None):
+def add_analytic_result_to_axs(axs_i, prod, x, res, key=""):
     if prod != SimProducts.PySDM.super_particle_count.name:
         x_theory = x
         y_theory = res[prod]
@@ -403,9 +385,6 @@ def add_analytic_result_to_axs(axs_i, prod, x, res, key="", ylim=None):
                 axs_i.set_yscale(SimProducts.PySDM.total_numer.plot_yscale)
                 axs_i.set_xscale(SimProducts.PySDM.total_numer.plot_xscale)
                 axs_i.set_xlim(x_theory[0], None)
-
-        # if prod == SimProducts.PySDM.total_volume.name:
-        #     axs_i.set_ylim(0, 1.25 * ylim)
 
         axs_i.plot(
             x_theory,

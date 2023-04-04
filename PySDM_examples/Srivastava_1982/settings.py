@@ -70,6 +70,5 @@ class Settings:
         )
         self.n_sds = n_sds
 
-        # TODO
-        self.c = srivastava_c
-        self.beta = srivastava_beta
+        self.srivastava_c = srivastava_c
+        self.srivastava_beta = srivastava_beta
