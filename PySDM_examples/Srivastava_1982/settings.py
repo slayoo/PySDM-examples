@@ -47,15 +47,14 @@ class Settings:
         self,
         *,
         n_sds,
+        dt,
+        dv,
+        total_number,
+        drop_mass_0,
         srivastava_c,
         srivastava_beta=None,
         frag_mass=DUMMY_FRAG_MASS,
-        # TODO: get rid of the surplus parameters below
-        dt=1 * si.s,
-        dv=1 * si.m**3,
-        drop_mass_0=1 * si.g,
         rho=constants_defaults.rho_w,
-        total_number=1e6
     ):
         self.rho = rho
         self.total_number_0 = total_number

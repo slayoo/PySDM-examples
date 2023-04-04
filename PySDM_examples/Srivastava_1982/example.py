@@ -139,6 +139,7 @@ def test_coalescence_and_breakup_cases():
             frag_mass=frag_mass,
             drop_mass_0=1 * si.g,
             dt=1 * si.s,
+            dv=1 * si.m**3,
             n_sds=[2**power for power in range(3, 14, 3)],
         )
         coalescence_and_breakup_eq13(settings, title=title)
