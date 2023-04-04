@@ -1,4 +1,4 @@
-from PySDM.physics import si
+from PySDM.physics import constants_defaults, si
 
 DUMMY_FRAG_MASS = -1
 
@@ -54,13 +54,12 @@ class Settings:
         dt=1 * si.s,
         dv=1 * si.m**3,
         drop_mass_0=1 * si.g,
-        rho=1 * si.kg / si.m**3,  # TODO: 1000 kg / m**3
+        rho=constants_defaults.rho_w,
         total_number=1e6
     ):
         self.rho = rho
         self.total_number_0 = total_number
-        self.drop_mass_0 = drop_mass_0
-        self.total_volume = self.total_number_0 * self.drop_mass_0 / self.rho
+        self.total_volume = self.total_number_0 * drop_mass_0 / self.rho
         self.dt = dt
         self.dv = dv
         self.frag_mass = frag_mass

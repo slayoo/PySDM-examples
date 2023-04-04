@@ -26,7 +26,9 @@ class Simulation:
                 builder = Builder(
                     backend=CPU(
                         formulae=Formulae(
-                            fragmentation_function="ConstantSize", seed=seed
+                            constants={"rho_w": self.settings.rho},
+                            fragmentation_function="ConstantSize",
+                            seed=seed,
                         )
                     ),
                     n_sd=n_sd,
