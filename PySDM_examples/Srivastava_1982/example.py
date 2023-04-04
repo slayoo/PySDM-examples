@@ -14,45 +14,6 @@ from .simulation import Simulation
 NO_BOUNCE = ConstEb(1)
 
 
-def test_fig1():
-    alpha_star = 1e-5
-    beta_star = 1e-4
-
-    pyplot.title("fig 1 (note: value from paper: m_E=215)")
-    for m0 in (100, 450):
-        eqs = Equations(alpha_star=alpha_star, beta_star=beta_star)
-        tau = np.linspace(0, 900)
-        y0 = eqs.eq15(m0)
-        x = eqs.eq16(tau)
-        y = (y0 + np.tanh(x)) / (1 + y0 * np.tanh(x))
-        pyplot.plot(tau, eqs.eq15_m_of_y(y), label=f"$m(τ, m_0={m0})$")
-
-    pyplot.axhline(eqs.eq12(), linestyle="--", label="$m_E$")
-    pyplot.xlabel("τ")
-    pyplot.ylabel("mass")
-    pyplot.grid()
-    pyplot.legend()
-    pyplot.show()
-
-
-def test_eq_13_14():
-    # coalescence + breakup analytic
-    alpha_star = 1e-5
-    beta_star = 1e-4
-    eqs = Equations(alpha_star=alpha_star, beta_star=beta_star)
-
-    tau = np.linspace(0, 90000)
-    m0 = 100
-    pyplot.title("equations (13) and (14)")
-    pyplot.plot(tau, eqs.eq13(m0, tau), label=f"m(τ, m_0={m0})")
-    pyplot.axhline(eqs.eq14(), linestyle="--", label="$m_E$")
-    pyplot.xlabel("τ")
-    pyplot.ylabel("mass")
-    pyplot.grid()
-    pyplot.legend()
-    pyplot.show()
-
-
 def coalescence_eq10(
     settings=None, n_steps=256, n_realisations=2, title=None, plot=False
 ):
