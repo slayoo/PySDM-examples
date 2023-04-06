@@ -1,4 +1,4 @@
-from PySDM.physics import constants_defaults, si
+from PySDM.physics import constants_defaults
 
 DUMMY_FRAG_MASS = -1
 
@@ -30,6 +30,7 @@ class SimProducts:
             plot_title="mean drop mass / total mass %",
         )
 
+    @staticmethod
     def get_prod_by_name(name):
         for class_obj in (SimProducts.PySDM, SimProducts.Computed):
             for attribute_str in dir(class_obj):
