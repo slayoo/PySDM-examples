@@ -1,5 +1,3 @@
-from collections import namedtuple
-
 import numpy as np
 from PySDM import Builder, Formulae
 from PySDM.backends import CPU
