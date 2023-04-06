@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import numpy as np
 from matplotlib import pyplot
-from PySDM.dynamics import Coalescence, Collision
+from PySDM.dynamics import Collision
 from PySDM.dynamics.collisions.breakup_efficiencies import ConstEb
 from PySDM.dynamics.collisions.breakup_fragmentations import ConstantSize
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
@@ -19,7 +19,7 @@ def coalescence_and_breakup_eq13(
     settings=None, n_steps=256, n_realisations=2, title=None
 ):
     # arrange
-    seeds = [i for i in range(n_realisations)]
+    seeds = list(range(n_realisations))
 
     collision_rate = settings.srivastava_c + settings.srivastava_beta
     simulation = Simulation(
