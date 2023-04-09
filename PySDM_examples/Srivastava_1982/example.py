@@ -8,9 +8,12 @@ from PySDM.dynamics.collisions.breakup_fragmentations import ConstantSize
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import ConstantK
 
-from .equations import Equations, EquationsHelpers
-from .settings import SimProducts
-from .simulation import Simulation
+from PySDM_examples.Srivastava_1982 import (
+  Equations,
+  EquationsHelpers,
+  SimProducts,
+  Simulation,
+)
 
 NO_BOUNCE = ConstEb(1)
 
@@ -97,7 +100,7 @@ def get_processed_results(res):
     return processed
 
 
-# TODO: not needed
+# TODO #1045 (not needed)
 def get_pysdm_secondary_products(products, total_volume):
     pysdm_results = products
     for n_sd in products.keys():
@@ -153,7 +156,7 @@ def compute_log_space(x, shift=0, num_points=1000, eps=1e-1):
     )
 
 
-# TODO: not needed
+# TODO #1045 (not needed)
 def compute_drop_volume_total_volume_ratio(mean_volume, total_volume):
     return mean_volume / total_volume * 100
 
