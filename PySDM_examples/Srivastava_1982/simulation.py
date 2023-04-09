@@ -4,7 +4,7 @@ from PySDM.backends import CPU
 from PySDM.environments import Box
 from PySDM.products import SuperDropletCountPerGridbox, VolumeFirstMoment, ZerothMoment
 
-from PySDM_examples.Srivastava_1982 import SimProducts
+from PySDM_examples.Srivastava_1982.settings import SimProducts
 
 
 class Simulation:

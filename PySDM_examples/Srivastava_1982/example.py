@@ -8,12 +8,9 @@ from PySDM.dynamics.collisions.breakup_fragmentations import ConstantSize
 from PySDM.dynamics.collisions.coalescence_efficiencies import ConstEc
 from PySDM.dynamics.collisions.collision_kernels import ConstantK
 
-from PySDM_examples.Srivastava_1982 import (
-  Equations,
-  EquationsHelpers,
-  SimProducts,
-  Simulation,
-)
+from PySDM_examples.Srivastava_1982.equations import Equations, EquationsHelpers
+from PySDM_examples.Srivastava_1982.settings import SimProducts
+from PySDM_examples.Srivastava_1982.simulation import Simulation
 
 NO_BOUNCE = ConstEb(1)
 
