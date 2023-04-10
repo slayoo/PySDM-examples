@@ -51,10 +51,10 @@ def run_box_breakup(
         ParticleVolumeVersusRadiusLogarithmSpectrum(
             radius_bins_edges=settings.radius_bins_edges, name="dv/dlnr"
         ),
-        NumberSizeSpectrum(radius_bins_edges=settings.radius_bins_edges, name="N(v)"),
-        # ParticleSizeSpectrumPerVolume(
-        #    radius_bins_edges=settings.radius_bins_edges, name="N(v)"
-        # ),
+        # NumberSizeSpectrum(radius_bins_edges=settings.radius_bins_edges, name="N(v)"),
+        ParticleSizeSpectrumPerVolume(
+            radius_bins_edges=settings.radius_bins_edges, name="N(v)"
+        ),
         CollisionRatePerGridbox(name="cr"),
         CollisionRateDeficitPerGridbox(name="crd"),
         CoalescenceRatePerGridbox(name="cor"),
