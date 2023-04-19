@@ -43,7 +43,7 @@ class Settings:
         t_max: float = 60 * si.minutes,
         precip: bool = True,
         formulae: Formulae = None,
-        save_spec_and_attr_times=[]
+        save_spec_and_attr_times=()
     ):
         self.formulae = formulae or Formulae()
         self.n_sd_per_gridbox = n_sd_per_gridbox

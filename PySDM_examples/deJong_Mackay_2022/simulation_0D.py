@@ -80,8 +80,7 @@ def run_box_breakup(
 
     if return_nv:
         return (x, y, y2, rates)
-    else:
-        return (x, y, rates)
+    return (x, y, rates)
 
 
 def run_box_NObreakup(settings, steps=None, backend_class=CPU):
