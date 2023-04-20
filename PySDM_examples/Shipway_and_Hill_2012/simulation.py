@@ -202,7 +202,7 @@ class Simulation:
     def save(self, step):
         self.save_scalar(step)
         time = step * self.particulator.dt
-        if (
+        if len(self.save_spec_and_attr_times) > 0 and (
             np.min(
                 np.abs(
                     np.ones_like(self.save_spec_and_attr_times) * time
