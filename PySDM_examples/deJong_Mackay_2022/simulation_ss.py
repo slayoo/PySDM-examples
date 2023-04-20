@@ -76,7 +76,7 @@ def run_to_steady_state(parameterization, n_sd, steps, nruns=1, dt=1 * si.s):
                 irun += 1
                 dt = 1 * si.s
 
-    data_filename = "data/steadystate_" + parameterization + "_" + str(n_sd) + "sd.pkl"
+    data_filename = "steadystate_" + parameterization + "_" + str(n_sd) + "sd.pkl"
 
     with open(data_filename, "wb") as handle:
         pkl.dump(
