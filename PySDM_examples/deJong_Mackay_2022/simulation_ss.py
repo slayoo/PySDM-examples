@@ -48,9 +48,8 @@ def run_to_steady_state(parameterization, n_sd, steps, nruns=1, dt=1 * si.s):
         settings.warn_overflows = False
         settings._steps = steps  # pylint: disable=protected-access
         try:
-            (x, y, y2, rates) = run_box_breakup(
-                settings, sample_in_radius=True, return_nv=True
-            )
+            res = run_box_breakup(settings, sample_in_radius=True, return_nv=True)
+            x, y, y2, rates = res.x, res.y, res.y2, res.rates
             y_ensemble[irun] = y
             y2_ensemble[irun] = y2
             print("Success with run #" + str(irun + 1))

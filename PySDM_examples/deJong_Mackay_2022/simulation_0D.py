@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import numpy as np
 from PySDM.backends import CPU
 from PySDM.builder import Builder
@@ -63,6 +65,8 @@ def run_box_breakup(
     y = np.ndarray((len(steps), len(settings.radius_bins_edges) - 1))
     if return_nv:
         y2 = np.ndarray((len(steps), len(settings.radius_bins_edges) - 1))
+    else:
+        y2 = None
 
     rates = np.zeros((len(steps), 4))
     # run
@@ -78,9 +82,7 @@ def run_box_breakup(
 
     x = (settings.radius_bins_edges[:-1] / si.micrometres,)[0]
 
-    if return_nv:
-        return (x, y, y2, rates)
-    return (x, y, rates)
+    return namedtuple("_", ("x", "y", "y2", "rates"))(x=x, y=y, y2=y2, rates=rates)
 
 
 def run_box_NObreakup(settings, steps=None, backend_class=CPU):
