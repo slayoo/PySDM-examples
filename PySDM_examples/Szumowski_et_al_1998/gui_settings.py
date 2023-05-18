@@ -309,28 +309,28 @@ class GUISettings:
         for widget in self.ui_mpdata_options:
             if widget.description == self.tot_description:
                 return widget.value
-        raise Exception()
+        raise NotImplemetedError()
 
     @property
     def mpdata_fct(self):
         for widget in self.ui_mpdata_options:
             if widget.description == self.fct_description:
                 return widget.value
-        raise Exception()
+        raise NotImplemetedError()
 
     @property
     def mpdata_iga(self):
         for widget in self.ui_mpdata_options:
             if widget.description == self.iga_description:
                 return widget.value
-        raise Exception()
+        raise NotImplemetedError()
 
     @property
     def mpdata_iters(self):
         for widget in self.ui_mpdata_options:
             if widget.description == self.nit_description:
                 return widget.value
-        raise Exception()
+        raise NotImplemetedError()
 
     def stream_function(self, xX, zZ, _):
         assert hasattr(self.__settings, "rhod_w_max")
