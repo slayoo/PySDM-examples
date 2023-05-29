@@ -1,5 +1,6 @@
 # pylint: disable=wrong-import-position
 # https://bugs.python.org/issue37373
+import itertools
 import sys
 
 if sys.platform == "win32" and sys.version_info[:2] >= (3, 7):
@@ -16,27 +17,19 @@ import pytest
 from nbconvert.preprocessors import ExecutePreprocessor
 
 
-# https://stackoverflow.com/questions/7012921/recursive-grep-using-python
-def findfiles(path, regex):
-    reg_obj = re.compile(regex)
-    res = []
-    for root, _, fnames in os.walk(path):
-        for fname in fnames:
-            if reg_obj.match(fname):
-                res.append(os.path.join(root, fname))
-    return res
-
-
-@pytest.fixture(
-    params=findfiles(pathlib.Path(__file__).parent.parent.absolute(), r".*\.(ipynb)$")
-)
-def notebook_filename(request):
-    return request.param
-
-
-# pylint: disable=redefined-outer-name
 def test_run_notebooks(notebook_filename, tmp_path):
+    print(notebook_filename)
     with open(notebook_filename, encoding="utf8") as f:
         nb = nbformat.read(f, as_version=4)
         ep = ExecutePreprocessor(timeout=15 * 60, kernel_name="python3")
         ep.preprocess(nb, {"metadata": {"path": tmp_path}})
+
+
+def test_all_cases_in_testsuites():
+    # raise error, e.g., if a newly added example is not within TEST_SUITES dict
+    pass
+
+
+def test_no_cases_in_multiple_testsuites():
+    # raise an error if an example is featured in multiple TEST_SUITES
+    pass

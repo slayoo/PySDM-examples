@@ -83,6 +83,7 @@ jobs:
       matrix:
         platform: [ubuntu-22.04, macos-latest, windows-latest]
         python-version: ["3.7", "3.10"]
+        test-suite: ["aqueous_chemistry", "freezing", "condensation", "coagulation", "breakup", "multi-process"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -122,7 +123,7 @@ jobs:
 
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m pytest --durations=10 -v -p no:unraisableexception -We
+        run: python -m pytest --durations=10 -v -p no:unraisableexception -We ${{ matrix.test-suite }}
         
   dist:
     runs-on: ubuntu-latest
