@@ -17,13 +17,3 @@ def test_run_notebooks(notebook_filename, tmp_path):
         nb = nbformat.read(f, as_version=4)
         ep = ExecutePreprocessor(timeout=15 * 60, kernel_name="python3")
         ep.preprocess(nb, {"metadata": {"path": tmp_path}})
-
-
-def test_all_cases_in_testsuites():
-    # raise error, e.g., if a newly added example is not within TEST_SUITES dict
-    pass
-
-
-def test_no_cases_in_multiple_testsuites():
-    # raise an error if an example is featured in multiple TEST_SUITES
-    pass

@@ -14,41 +14,39 @@ def findfiles(path, regex):
     return res
 
 
-def get_test_suites():
-    return {
-        "aqueous_chemistry": ["Jaruga_and_Pawlowska_2018", "Kreidenweis_et_al_2003"],
-        "freezing": [
-            "Alpert_and_Knopf_2016",
-            "Ervens_and_Feingold_2012",
-            "Niedermeier_et_al_2014",
-        ],
-        "condensation": [
-            "Abdul_Razzak_Ghan_2000",
-            "Arabas_and_Shima_2017",
-            "Lowe_et_al_2019",
-            "Pyrcel",
-            "Yang_et_al_2018",
-            "Singer_Ward",
-        ],
-        "coagulation": ["Bartman_et_al_2021", "Berry_1967", "Shima_et_al_2009"],
-        "breakup": ["Bieli_et_al_2022", "deJong_Mackay_2022", "Srivastava_1982"],
-        "multi-process": [
-            "Morrison_and_Grabowski_2007",
-            "Arabas_et_al_2015",
-            "Bartman_2020_MasterThesis",
-            "UIUC_2021",
-            "Szumowski_et_al_1998",
-            "Shipway_and_Hill_2012",
-        ],
-    }
+TEST_SUITES = {
+    "aqueous_chemistry": ["Jaruga_and_Pawlowska_2018", "Kreidenweis_et_al_2003"],
+    "freezing": [
+        "Alpert_and_Knopf_2016",
+        "Ervens_and_Feingold_2012",
+        "Niedermeier_et_al_2014",
+    ],
+    "condensation": [
+        "Abdul_Razzak_Ghan_2000",
+        "Arabas_and_Shima_2017",
+        "Lowe_et_al_2019",
+        "Pyrcel",
+        "Yang_et_al_2018",
+        "Singer_Ward",
+    ],
+    "coagulation": ["Bartman_et_al_2021", "Berry_1967", "Shima_et_al_2009"],
+    "breakup": ["Bieli_et_al_2022", "deJong_Mackay_2022", "Srivastava_1982"],
+    "multi-process": [
+        "Morrison_and_Grabowski_2007",
+        "Arabas_et_al_2015",
+        "Bartman_2020_MasterThesis",
+        "UIUC_2021",
+        "Szumowski_et_al_1998",
+        "Shipway_and_Hill_2012",
+    ],
+}
 
 
 def get_selected_test_suites(suite_name, paths):
     if suite_name is None:
         return paths
 
-    test_suites = get_test_suites()
-    cases = test_suites[suite_name]
+    cases = TEST_SUITES[suite_name]
 
     result = []
     for path in paths:
