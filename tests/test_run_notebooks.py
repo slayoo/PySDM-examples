@@ -8,7 +8,6 @@ if sys.platform == "win32" and sys.version_info[:2] >= (3, 7):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import nbformat
-import pytest
 from nbconvert.preprocessors import ExecutePreprocessor
 
 

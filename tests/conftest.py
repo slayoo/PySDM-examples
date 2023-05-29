@@ -2,8 +2,6 @@ import os
 import pathlib
 import re
 
-import pytest
-
 
 # https://stackoverflow.com/questions/7012921/recursive-grep-using-python
 def findfiles(path, regex):
