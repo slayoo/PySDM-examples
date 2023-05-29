@@ -1,5 +1,6 @@
 import pathlib
 import re
+from itertools import chain
 
 import pytest
 from conftest import TEST_SUITES, findfiles, get_selected_test_suites
@@ -30,7 +31,9 @@ def test_all_cases_in_testsuites():
 
 def test_no_cases_in_multiple_testsuites():
     """raise an error if an example is featured in multiple TEST_SUITES"""
-    pass
+    flattened_suites = sum(list(TEST_SUITES.values()), [])
+
+    assert len(set(flattened_suites)) == len(flattened_suites)
 
 
 @pytest.fixture(
