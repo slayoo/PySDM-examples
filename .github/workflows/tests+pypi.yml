@@ -123,7 +123,7 @@ jobs:
 
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m pytest --durations=10 -v -p no:unraisableexception -We ${{ matrix.test-suite }}
+        run: python -m pytest --durations=10 -v -p no:unraisableexception -We --suite ${{ matrix.test-suite }}
         
   dist:
     runs-on: ubuntu-latest

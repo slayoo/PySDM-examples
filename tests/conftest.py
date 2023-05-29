@@ -43,9 +43,7 @@ def get_test_suites():
     }
 
 
-def get_selected_test_suites(suite_name):
-    paths = findfiles(pathlib.Path(__file__).parent.parent.absolute(), r".*\.(ipynb)$")
-
+def get_selected_test_suites(suite_name, paths):
     if suite_name is None:
         return paths
 
@@ -68,7 +66,18 @@ def pytest_addoption(parser):
 
 def pytest_generate_tests(metafunc):
     suite_name = metafunc.config.option.suite
-    selected_suites = get_selected_test_suites(suite_name)
 
     if "notebook_filename" in metafunc.fixturenames:
+        notebook_paths = findfiles(
+            pathlib.Path(__file__).parent.parent.absolute(), r".*\.(ipynb)$"
+        )
+        selected_suites = get_selected_test_suites(suite_name, notebook_paths)
         metafunc.parametrize("notebook_filename", selected_suites)
+
+    if "example_filename" in metafunc.fixturenames:
+        examples_paths = findfiles(
+            pathlib.Path(__file__).parent.parent.absolute().joinpath("PySDM_examples"),
+            r".*\.(py)$",
+        )
+        selected_suites = get_selected_test_suites(suite_name, examples_paths)
+        metafunc.parametrize("example_filename", selected_suites)
