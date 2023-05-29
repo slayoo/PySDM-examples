@@ -1,6 +1,5 @@
 # pylint: disable=wrong-import-position
 # https://bugs.python.org/issue37373
-import itertools
 import sys
 
 if sys.platform == "win32" and sys.version_info[:2] >= (3, 7):
