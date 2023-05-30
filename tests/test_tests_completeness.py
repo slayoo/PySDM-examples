@@ -1,6 +1,5 @@
 import pathlib
 
-import pytest
 from conftest import TEST_SUITES, findfiles, get_selected_test_suites
 
 
