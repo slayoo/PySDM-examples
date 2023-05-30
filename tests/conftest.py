@@ -38,6 +38,7 @@ TEST_SUITES = {
         "UIUC_2021",
         "Szumowski_et_al_1998",
         "Shipway_and_Hill_2012",
+        "utils",
     ],
 }
 

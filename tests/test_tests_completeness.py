@@ -12,8 +12,7 @@ def test_all_cases_in_testsuites():
     )
     all_files = list(
         filter(
-            lambda x: pathlib.Path(x).name != "__init__.py"
-            and "utils" not in pathlib.Path(x).parts,
+            lambda x: pathlib.Path(x).name != "__init__.py",
             tmp,
         )
     )
@@ -32,22 +31,3 @@ def test_no_cases_in_multiple_testsuites():
     flattened_suites = sum(list(TEST_SUITES.values()), [])
 
     assert len(set(flattened_suites)) == len(flattened_suites)
-
-
-@pytest.fixture(
-    params=findfiles(
-        pathlib.Path(__file__)
-        .parent.parent.absolute()
-        .joinpath("PySDM_examples")
-        .joinpath("utils"),
-        r".*\.(py)$",
-    )
-)
-def utils_filename(request):
-    return request.param
-
-
-# pylint: disable=redefined-outer-name
-def test_run_utils(utils_filename):
-    with open(utils_filename, encoding="utf8") as f:
-        exec(f.read(), {"__name__": "__main__"})  # pylint: disable=exec-used

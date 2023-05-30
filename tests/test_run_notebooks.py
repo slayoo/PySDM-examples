@@ -12,7 +12,6 @@ from nbconvert.preprocessors import ExecutePreprocessor
 
 
 def test_run_notebooks(notebook_filename, tmp_path):
-    print(notebook_filename)
     with open(notebook_filename, encoding="utf8") as f:
         nb = nbformat.read(f, as_version=4)
         ep = ExecutePreprocessor(timeout=15 * 60, kernel_name="python3")
